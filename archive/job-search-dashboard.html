@@ -1,0 +1,3058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search Command Center - John Ra</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .copy-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .tabs {
+            display: flex;
+            background: #f7f9fc;
+            border-bottom: 2px solid #e1e8ed;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e1e8ed;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+            background: #f7f9fc;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .filter-btn.hidden {
+            background: #f5f5f5;
+            color: #999;
+            border-color: #e1e8ed;
+            text-decoration: line-through;
+        }
+
+        .filter-btn.only {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .jobs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .jobs-table th {
+            background: #f7f9fc;
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e1e8ed;
+            position: sticky;
+            top: 0;
+        }
+
+        .jobs-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #e1e8ed;
+            font-size: 14px;
+        }
+
+        .jobs-table tr:hover {
+            background: #f7f9fc;
+        }
+
+        .job-row {
+            cursor: pointer;
+        }
+
+        .row-applied {
+            background-color: #fef3c7 !important;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .row-applied:hover {
+            background-color: #fde68a !important;
+        }
+
+        .row-archived {
+            opacity: 0.4;
+            background-color: #f3f4f6 !important;
+        }
+
+        .row-archived:hover {
+            opacity: 0.6;
+            background-color: #e5e7eb !important;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-apply-now { background: #fee; color: #c00; }
+        .status-maybe { background: #ffe4cc; color: #cc6600; }
+        .status-probably-not { background: #fff4cc; color: #cc9900; }
+        .status-applied { background: #e8f5e9; color: #2e7d32; }
+        .status-archived { background: #f5f5f5; color: #999; }
+
+        .symbols {
+            display: flex;
+            gap: 5px;
+            font-size: 16px;
+        }
+
+        .fit-score {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .fit-high { color: #2e7d32; }
+        .fit-medium { color: #f57c00; }
+        .fit-low { color: #c62828; }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f7f9fc;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .filter-section {
+            margin-bottom: 30px;
+        }
+
+        .filter-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .salary-low { color: #c62828; }
+        .salary-mid { color: #f57c00; }
+        .salary-high { color: #2e7d32; font-weight: bold; }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .date-posted { color: #667eea; }
+        .date-found { color: #f57c00; }
+        .date-applied { color: #2e7d32; }
+
+        .job-title-link {
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .job-title-link:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+
+        .connection-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .connection-reached-out {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .connection-not-reached {
+            background: #fff4cc;
+            color: #cc9900;
+        }
+
+        .connection-none {
+            background: #f5f5f5;
+            color: #999;
+        }
+
+        .days-since {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .days-urgent {
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        .days-recent {
+            color: #f57c00;
+        }
+
+        .days-old {
+            color: #2e7d32;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
+        }
+
+        .job-detail {
+            padding: 20px;
+            background: #f7f9fc;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .company-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .company-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <h1>🎯 Job Search Command Center</h1>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="#" onclick="showCommandModal(); return false;" style="color: white; text-decoration: none; font-size: 12px; opacity: 0.8;">View Search Command</a>
+                    <button class="copy-btn" onclick="copySearchCommand()">
+                        📋 Copy Search Command
+                    </button>
+                    <button class="copy-btn" onclick="copyStatusCheckCommand()">
+                        📊 Check Job Status
+                    </button>
+                </div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-label">Last Research</div>
+                    <div class="stat-value" id="lastSearchDisplay">Never</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Jobs in Pipeline</div>
+                    <div class="stat-value" id="totalJobsDisplay">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Apply Now</div>
+                    <div class="stat-value" id="applyNowCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Applied</div>
+                    <div class="stat-value" id="appliedCount">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('pipeline')">📊 Job Pipeline</button>
+            <button class="tab" onclick="switchTab('filters')">⚙️ Filter Controls</button>
+            <button class="tab" onclick="switchTab('history')">📅 Search History</button>
+            <button class="tab" onclick="switchTab('analytics')">📈 Analytics</button>
+            <button class="tab" onclick="switchTab('archive')">📚 PDF Archive</button>
+        </div>
+
+        <div id="pipeline" class="tab-content active">
+            <input type="text" class="search-box" placeholder="🔍 Search jobs by title, company, or keywords..." id="searchInput" oninput="filterJobs()">
+            
+            <div id="filterStatus" style="font-size: 12px; color: #6c757d; margin-bottom: 10px; min-height: 18px;"></div>
+            
+            <div class="filters-bar">
+                <button class="filter-btn active tooltip" onclick="filterByStatus('all')">
+                    All Jobs
+                    <span class="tooltiptext">Show all jobs</span>
+                </button>
+                <button class="filter-btn tooltip" onclick="setDefaultView()" style="background: #667eea; color: white; font-weight: 600;">
+                    ⭐ Default View
+                    <span class="tooltiptext">Sort by fit score, hide archived jobs</span>
+                </button>
+                <button class="filter-btn active tooltip" onclick="filterByStatus('apply-now')">
+                    🔴 Apply Now
+                    <span class="tooltiptext">Click once: hide | Click twice: show only | Click three: show all</span>
+                </button>
+                <button class="filter-btn active tooltip" onclick="filterByStatus('maybe')">
+                    🟠 Maybe
+                    <span class="tooltiptext">Click once: hide | Click twice: show only | Click three: show all</span>
+                </button>
+                <button class="filter-btn active tooltip" onclick="filterByStatus('applied')">
+                    🟢 Applied
+                    <span class="tooltiptext">Click once: hide | Click twice: show only | Click three: show all</span>
+                </button>
+                <button class="filter-btn active tooltip" onclick="filterByStatus('archived')">
+                    ⚪ Archived
+                    <span class="tooltiptext">Click once: hide | Click twice: show only | Click three: show all</span>
+                </button>
+            </div>
+
+            <div id="jobsContainer"></div>
+        </div>
+
+        <div id="filters" class="tab-content">
+            <h2 style="margin-bottom: 20px;">🎚️ Search Filters & Criteria</h2>
+            <p style="color: #6c757d; margin-bottom: 30px;">Toggle filters on/off. System learns and adapts over time.</p>
+
+            <div class="filter-section">
+                <h3>Job Titles</h3>
+                <p style="color: #6c757d; font-size: 13px; margin-bottom: 10px;">✨ This list grows automatically as we find great fits with similar titles</p>
+                <div class="toggle-switch">
+                    <span>Creative Director</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="title-creative-director">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>VP of Creative / VP Creative Services</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="title-vp-creative">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>Director of Creative Services</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="title-director-creative">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>Creative Operations Manager/Director</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="title-creative-ops">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Industries</h3>
+                <div class="toggle-switch">
+                    <span>Healthcare (Nonprofits & Mission-Driven)</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="industry-healthcare">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>Education (K-12, Higher Ed, EdTech)</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="industry-education">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>Arts & Culture</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="industry-arts">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>Nonprofit / Social Impact</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="industry-nonprofit">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>Purpose-Driven Tech / Agency</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="industry-tech">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Locations</h3>
+                <div class="toggle-switch">
+                    <span>Boston / Greater Boston</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="location-boston">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>Remote (US)</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="location-remote-us">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>Hybrid NYC</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="location-nyc">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>Hybrid Bay Area</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="location-bay">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>Remote Europe / Canada</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="location-international">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Salary Range</h3>
+                <div class="toggle-switch">
+                    <span>$90k - $120k (Consider if other factors strong)</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="salary-90-120">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>$120k+ (Senior Manager level acceptable)</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="salary-120-plus">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span>$160k+ (High Pay Priority)</span>
+                    <label class="switch">
+                        <input type="checkbox" checked data-filter="salary-160-plus">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3>📊 Job Board Performance</h3>
+                <p style="color: #6c757d; font-size: 13px; margin-bottom: 15px;">Track which boards deliver quality "Apply Now" jobs. Same job can appear on multiple boards.</p>
+                <div id="boardStats" style="margin-top: 15px;"></div>
+            </div>
+
+            <button class="btn-primary" onclick="saveFilters()">💾 Save Filter Settings</button>
+            <button class="btn-primary" style="background: #6c757d; margin-left: 10px;" onclick="resetFilters()">🔄 Reset to Defaults</button>
+        </div>
+
+        <div id="history" class="tab-content">
+            <h2 style="margin-bottom: 20px;">📅 Search History</h2>
+            <div id="searchHistoryContainer"></div>
+        </div>
+
+        <div id="analytics" class="tab-content">
+            <h2 style="margin-bottom: 20px;">📈 Analytics & Insights</h2>
+            <div id="analyticsContainer">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <h3>Analytics Coming Soon</h3>
+                    <p>Run a few searches and apply to jobs to see insights and patterns</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="archive" class="tab-content">
+            <h2 style="margin-bottom: 20px;">📚 PDF Archive</h2>
+            <p style="color: #6c757d; margin-bottom: 20px;">All "Apply Now" job descriptions are automatically saved here for keyword analysis</p>
+            <div id="archiveContainer"></div>
+        </div>
+    </div>
+
+    <div id="jobModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <div id="commandModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeCommandModal()">&times;</span>
+            <h2>Search Command</h2>
+            <p>Copy this text and paste it into Claude:</p>
+            <textarea id="commandText" readonly style="width: 100%; height: 400px; padding: 10px; font-family: monospace; font-size: 12px; border: 2px solid #667eea; border-radius: 6px; margin: 15px 0;"></textarea>
+            <button class="btn-primary" onclick="copyFromModal()">📋 Copy Command</button>
+            <button class="btn-primary" style="background: #6c757d; margin-left: 10px;" onclick="closeCommandModal()">Close</button>
+        </div>
+    </div>
+
+    <div id="updateModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" onclick="closeUpdateModal()">&times;</span>
+            <h2>Add Update</h2>
+            <form id="updateForm" onsubmit="submitUpdate(event)" style="margin-top: 20px;">
+                <input type="hidden" id="updateJobId">
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Update Type:</label>
+                    <select id="updateType" required style="width: 100%; padding: 10px; border: 2px solid #e0e4e8; border-radius: 6px; font-size: 14px;">
+                        <option value="">-- Select Type --</option>
+                        <option value="Response Received">Response Received</option>
+                        <option value="Interview Scheduled">Interview Scheduled</option>
+                        <option value="Interview Completed">Interview Completed</option>
+                        <option value="Follow-up Sent">Follow-up Sent</option>
+                        <option value="Offer Received">Offer Received</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Withdrew Application">Withdrew Application</option>
+                        <option value="Contact Made">Contact Made</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Date & Time (US Eastern):</label>
+                    <input type="datetime-local" id="updateTimestamp" required 
+                        style="width: 100%; padding: 10px; border: 2px solid #e0e4e8; border-radius: 6px; font-size: 14px;">
+                    <small style="color: #6c757d;">Edit this to backdate or schedule future updates</small>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Notes (optional):</label>
+                    <textarea id="updateNotes" rows="4" placeholder="Add any details about this update..."
+                        style="width: 100%; padding: 10px; border: 2px solid #e0e4e8; border-radius: 6px; font-size: 14px; font-family: inherit;"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">Save Update</button>
+                    <button type="button" class="btn-primary" style="flex: 1; background: #6c757d;" onclick="closeUpdateModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Search command template
+        const SEARCH_COMMAND = `search
+
+Run comprehensive job search with these parameters:
+
+**JOB TITLES:** Creative Director, VP of Creative, VP Creative Services, Director of Creative Services, Creative Operations Manager, Creative Operations Director, Head of Creative, Head of Design, Design Director, Executive Creative Director, Senior Creative Director
+
+**INDUSTRIES (Priority):** Healthcare nonprofits, Education (K-12, higher ed, edtech), Arts & Culture (museums, galleries, music), Nonprofit/Social Impact, Purpose-driven technology, Purpose-driven agencies
+
+**LOCATIONS:** Boston/Greater Boston, Remote US, Hybrid NYC, Hybrid Bay Area, Remote Europe/Canada, Remote Western Europe (Spain, Portugal, Switzerland, Scandinavia), High-happiness index countries with relocation support
+
+**SALARY RANGE:** $90k-$260k (minimum $120k for management roles, minimum $130k for senior director+)
+
+**TIMING:** Posted within last 3-5 days (fresher is better for breaking through)
+
+**JOB BOARDS TO SEARCH:**
+⭐ TIER 1 - FOCUS 80% EFFORT (Best mission-driven signal):
+- Foundation List (nonprofit-specific, disclosed salaries)
+- site:jobs.lever.co (nonprofit agencies, clean URLs)
+- site:greenhouse.io (mission-driven companies)
+
+🔄 TIER 2 - MONITOR 15% EFFORT:
+- Built In (healthcare tech)
+- Breezy HR (mission-driven orgs)
+- site:wd1.myworkdayjobs.com (corporate healthcare/edu)
+- site:jobs.smartrecruiters.com (healthcare agencies)
+- site:jobs.jobvite.com (healthcare agencies)
+- LinkedIn
+- site:ashbyhq.com
+- site:careers.workable.com
+
+⚠️ TIER 3 - LOW PRIORITY 5% EFFORT (Aggregators, stale postings):
+- Indeed (aggregator, poor URLs)
+- Media Bistro (weak mission alignment)
+- Idealist (stale postings confirmed)
+
+❌ SKIP: Glassdoor (no direct URLs)
+
+**CONNECTION TRACKING:** For each job, identify:
+- LinkedIn 1st/2nd degree connections at the company (HIGH PRIORITY - dramatically boosts interview chances)
+- Michigan State University alumni at the company
+- Hiring managers if identifiable
+- Note: I haven't actively used MSU connections yet, so these are untapped opportunities
+
+**SPECIAL PRIORITY FACTORS:**
+- LinkedIn 1st/2nd degree connections (HIGH PRIORITY - boosts interview chances)
+- Michigan State University alumni at company
+- Posted today (urgent - apply same day)
+- Small orgs <200 people (less competition)
+- Design systems mentioned
+- Remote flexibility
+
+**SCAN TARGET:** 100+ jobs, identify top 10-15 best fits for deep research
+
+**OUTPUT:** Update dashboard with:
+- Top 10-15 red tier (Apply Now) with full details
+- For each job, list all connections found (name, role, connection type)
+- Track which job board(s) each job was found on (multiple boards can credit same job)
+- Questionable jobs (❓) in compact format for quick sorting
+- All jobs organized by fit score
+- Flag any international opportunities (Asia, high-happiness countries) if 85+ fit score
+
+**LEARNING:** Ask about any low-scored jobs I end up applying to - may reveal hidden preferences or connections to adjust scoring.
+
+**FOLLOW-UP TRACKING:** Note if any jobs need follow-up action (connections to reach out to, applications to check on, etc.)`;
+
+        // Weekly status check command template
+        const STATUS_CHECK_COMMAND = `Check Job Posting Status
+
+I need you to verify which job postings from my dashboard are still active. This helps me track which opportunities have closed and which I should prioritize.
+
+**CRITICAL FIRST STEP:**
+Before checking any URLs, FIRST review my dashboard and create a list of ONLY the jobs that meet ALL these criteria:
+- Status is NOT "archived"
+- I have NOT been rejected (no ❌ symbol, no "REJECTED" in status)
+- Job is in one of these statuses: Apply Now, Maybe, Applied (without rejection), Probably Not
+
+Then check ONLY those jobs. Do NOT waste time checking archived or rejected jobs.
+
+**IMPORTANT INSTRUCTIONS:**
+- **SKIP ARCHIVED AND REJECTED JOBS** - Only check jobs where I haven't been rejected and that aren't archived
+- Check only jobs with these statuses: Apply Now, Maybe, Applied (without rejection), Probably Not
+- For each job, first try the direct URL provided
+- If direct URL is dead/404, search the company's careers page to see if job was reposted with new URL
+- Assess timing: If job was posted recently (< 2 weeks ago) but link is dead, it may have been reposted - search harder
+- If job was posted >30 days ago and link is dead, it's likely filled/closed
+
+**JOBS TO CHECK:**
+(⚠️ DO NOT copy this example list! First check the dashboard to identify which jobs are NOT archived and NOT rejected, then list only those jobs below)
+
+**Example format for listing jobs:**
+
+3. NDWA - Senior Creative Director (APPLY NOW)
+   https://ndwa.hrmdirect.com/employment/job-opening.php?req=3333522&req_loc=628514
+   Posted: 2026-01-10 | Found: 2026-01-22
+
+3. NDWA - Senior Creative Director (APPLY NOW)
+   https://ndwa.hrmdirect.com/employment/job-opening.php?req=3333522&req_loc=628514
+   Posted: 2026-01-10 | Found: 2026-01-22
+
+13. Sollis Health - VP, Brand & Creative Services (MAYBE)
+    https://job-boards.greenhouse.io/sollishealth/jobs/6598247003
+    Posted: 2026-01-12 | Found: 2026-01-22
+
+14. Age of Learning - Creative Director (APPLY NOW)
+    https://jobs.lever.co/aofl/f9a40670-91b7-41ae-819e-36b4944efdc9
+    Posted: 2026-01-05 | Found: 2026-01-22
+
+15. Lexia Learning - Creative Director (APPLIED 1/22/2026)
+    https://cambiumlearning.wd1.myworkdayjobs.com/en-US/camb/job/Creative-Director_REQ-4250
+    Posted: 2026-01-18 | Found: 2026-01-22
+
+16. Chorus Innovations - Creative Director, Brand (APPLY NOW)
+    https://boards.greenhouse.io/chorusinnovations/jobs/4231451007
+    Posted: 2026-01-08 | Found: 2026-01-22
+
+17. Jobgether - Creative Director (MAYBE)
+    https://jobs.lever.co/jobgether/ea7c4939-c988-4a85-bfb4-d8dd54d2eaef
+    Posted: 2026-01-15 | Found: 2026-01-22
+
+18. East Boston Social Centers - Director of Marketing (INTERVIEW MONDAY 1/27)
+    https://www.indeed.com/viewjob?jk=bd24d45ec90e04ae
+    Posted: 2025-12-15 | Found: 2025-12-16
+
+21. Boston Children's Hospital - Graphic Designer III (APPLIED)
+    https://jobs.bostonchildrens.org/job/22597473/graphics-designer-iii-trust-boston-ma/
+    Posted: 2025-11-20 | Found: 2026-01-22
+
+22. Givebutter - Creative Director (APPLIED)
+    https://jobs.ashbyhq.com/givebutter/ee5bb880-11fc-4ad0-a5c9-b72acbd5f544
+    Posted: 2025-12-10 | Found: 2026-01-22
+
+**FOR EACH JOB, REPORT:**
+- ✅ **ACTIVE** - Job posting is live and accepting applications at the URL provided
+- 🔄 **REPOSTED** - Original link dead, but found active posting at new URL on company careers page (provide new URL)
+- ⏰ **CLOSING SOON** - Deadline visible and approaching (specify date if shown)
+- ⚠️ **UNCERTAIN** - Posted recently but link dead, unclear if filled or just moved (searched careers page, no match found)
+- ❌ **CLOSED** - Link dead, not on careers page, likely filled (especially if posted >30 days ago)
+
+**OUTPUT FORMAT:**
+Create a simple table:
+| Job ID | Company | Status | Notes |
+|--------|---------|--------|-------|
+| 3 | NDWA | ❌ CLOSED | Link dead, posted 2+ weeks ago |
+| 15 | Lexia Learning | 🔄 REPOSTED | New URL: [link] |
+
+**ACTION REQUIRED:**
+- Any jobs marked ❌ CLOSED should be archived in my dashboard
+- Any jobs marked 🔄 REPOSTED → **IMMEDIATELY UPDATE THE URL IN THE DASHBOARD** - Don't just report it, actually change the job's URL field to the new link
+- Any jobs marked ⚠️ UNCERTAIN need manual review
+
+**CRITICAL:** When you find a reposted job with a new URL, you MUST update the dashboard's job URL immediately in the same response. Don't wait for me to ask - just do it.
+
+**AFTER COMPLETING THE CHECK:**
+Add a new entry to the Search History tab documenting:
+- Date/time of check
+- Number of jobs checked
+- How many were CLOSED, ACTIVE, REPOSTED, UNCERTAIN
+- Brief summary of findings
+
+**TIMING CONTEXT:**
+Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' })} (US Eastern Time)`;
+
+        // Initialize storage
+        let filterStates = {
+            'all': 'active',
+            'apply-now': 'active',
+            'maybe': 'active',
+            'applied': 'active',
+            'probably-not': 'active',
+            'archived': 'active'
+        };
+
+        async function initStorage() {
+            try {
+                const stored = await window.storage.get('job-tracker-data');
+                if (stored && stored.value) {
+                    return JSON.parse(stored.value);
+                }
+            } catch (e) {
+                console.log('No stored data, using defaults');
+            }
+            
+            return {
+                jobs: getSampleJobs(),
+                lastSearch: "2026-01-24T22:00:00Z",
+                searchHistory: [
+                    {
+                        timestamp: "2026-01-24T22:00:00Z",
+                        jobsFound: 0,
+                        newJobs: 0,
+                        sources: ["Status Check"],
+                        notes: "Job Status Verification: Checked 11 non-archived jobs. Found 7 CLOSED (NDWA, Sollis Health, Lexia, Chorus, Boston Children's, Givebutter, Sincere - all archived). 2 UNCERTAIN (Age of Learning, Jobgether - 403 errors). 1 ACTIVE (East Boston - interview confirmed 1/27). Updated Status Check prompt to skip archived/rejected jobs."
+                    },
+                    {
+                        timestamp: "2026-01-24T18:30:00Z",
+                        jobsFound: 5,
+                        newJobs: 5,
+                        sources: ["Lever", "Greenhouse", "Foundation List", "Built In"],
+                        notes: "Round 1-3 Board Evaluation: Tested 15 boards, added 5 jobs (Alma 86, M+R 84, Abortion in America 83, Arcadia 82, Omada 81). Dropped JazzHR, BambooHR, iCIMS. Tier 1: Lever, Greenhouse, Foundation List."
+                    },
+                    {
+                        timestamp: "2026-01-22T03:30:00Z",
+                        jobsFound: 117,
+                        newJobs: 17,
+                        sources: ["Indeed", "LinkedIn", "Glassdoor", "Idealist", "Built In", "Media Bistro", "Foundation List", "Breezy HR", "Greenhouse", "Lever", "Workday", "MeetLifeSciences"]
+                    }
+                ],
+                filters: {},
+                pdfArchive: []
+            };
+        }
+
+        // Save data
+        async function saveData(data) {
+            try {
+                console.log('Attempting to save data to storage...');
+                await window.storage.set('job-tracker-data', JSON.stringify(data));
+                console.log('Data saved successfully');
+            } catch (e) {
+                console.error('Storage error:', e);
+                throw new Error(`Failed to save data: ${e.message}`);
+            }
+        }
+
+        // Jobs from comprehensive search - Jan 22, 2026
+        function getSampleJobs() {
+            return [
+                {
+                    id: 1,
+                    title: "VP, Creative",
+                    company: "Media Cause",
+                    industry: "Nonprofit Marketing Agency",
+                    location: "Remote (US) - DC/Atlanta/SF/Boston offices",
+                    salary: "$160k-$220k (estimated)",
+                    fitScore: 98,
+                    status: "applied",
+                    posted: "2025-11-14",
+                    found: "2025-11-14",
+                    applied: "2025-11-17",
+                    followup: null,
+                    url: "https://media-cause.breezy.hr/p/614f670c806a-vp-creative",
+                    symbols: ["❌"],
+                    connections: ["Sarah Dunlap (former PIH colleague)"],
+                    sources: ['Breezy HR'],
+                    notes: "REJECTED. Sarah Dunlap (former PIH colleague) referred. Went through multiple rounds of interviews. Great mission/role fit but didn't make final cut. Dropped after final rounds. Perfect fit: Mission-driven agency serving ONLY nonprofits, lead creative AND content departments, 50+ team, remote-first."
+                },
+                {
+                    id: 2,
+                    title: "Vice President of Creative",
+                    company: "EF Education First",
+                    industry: "Education (International)",
+                    location: "Boston, MA",
+                    salary: "$200k-$240k",
+                    fitScore: 95,
+                    status: "apply-now",
+                    posted: "2026-01-15",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: ["💰"],
+                    connections: [],
+                    
+                    sources: ['Indeed', 'LinkedIn'],
+                    notes: "🔗 URL needed - check application email | Dream sector (education) + Boston + VP level. Data-rich environment. 'Approach creative as business partnership' aligns with your philosophy. Highest disclosed salary in search."
+                },
+                {
+                    id: 3,
+                    title: "Senior Creative Director",
+                    company: "National Domestic Workers Alliance",
+                    industry: "Labor Rights / Advocacy Nonprofit",
+                    location: "Remote (Roslindale, MA office)",
+                    salary: "$130k-$170k (estimated)",
+                    fitScore: 92,
+                    status: "apply-now",
+                    posted: "2026-01-10",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "https://ndwa.hrmdirect.com/employment/job-opening.php?req=3333522&req_loc=628514",
+                    symbols: [],
+                    connections: [],
+                    
+                    sources: ['Idealist'],
+                    notes: "⚠️ POSTING MAY BE OUTDATED - URL found but job may no longer be accepting applications (start date was Jan 5, 2026). Idealist showed outdated posting. | 501(c)(4) advocacy org. Lead Content Department (design director, graphic designer, video). Reports to VP Brand. Political advocacy + economic justice mission. $122K-$144K disclosed."
+                },
+                {
+                    id: 4,
+                    title: "Creative Director",
+                    company: "Human Rights Foundation",
+                    industry: "Human Rights Nonprofit",
+                    location: "New York, NY (Hybrid)",
+                    salary: "$120k-$160k (estimated)",
+                    fitScore: 90,
+                    status: "apply-now",
+                    posted: "2026-01-08",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: [],
+                    connections: [],
+                    
+                    sources: ['Idealist'],
+                    notes: "⚠️ POSTING NOT FOUND - URL missing, likely outdated. Idealist shows stale postings. | Manage creative team + contractors. Oslo Freedom Forum conference series (global impact). 10+ years exp required. Comprehensive benefits, flex PTO, hybrid. Visual identity + brand consistency focus."
+                },
+                {
+                    id: 5,
+                    title: "Design Director for Social Impact",
+                    company: "Constructive",
+                    industry: "Social Impact Design Agency",
+                    location: "Remote (F/T)",
+                    salary: "$130k-$145k + variable comp",
+                    fitScore: 88,
+                    status: "apply-now",
+                    posted: "2026-01-12",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: [],
+                    connections: [],
+                    
+                    sources: ['Idealist'],
+                    notes: "⚠️ POSTING NOT FOUND - URL missing, likely outdated. Idealist shows stale postings. | Lead visual design practice, manage design team. Reports to Founder & Creative Director. Clients: nonprofits, social impact orgs. Management team member with ongoing leadership investment."
+                },
+                {
+                    id: 6,
+                    title: "Group Creative Director",
+                    company: "Bully Pulpit International",
+                    industry: "Public Affairs Agency",
+                    location: "Not specified (likely NYC/DC/Remote)",
+                    salary: "$175k-$250k (estimated)",
+                    fitScore: 85,
+                    status: "maybe",
+                    posted: "2026-01-05",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: ["💰", "❓"],
+                    connections: [],
+                    
+                    sources: ['Indeed'],
+                    notes: "🔗 URL needed - check application email | Serves 'movement-defining nonprofits'. Award-caliber work focus. Public affairs + social impact. Need to confirm remote options and get full job post details."
+                },
+                {
+                    id: 7,
+                    title: "Executive Creative Director",
+                    company: "Various (Boston)",
+                    industry: "Various",
+                    location: "Boston, MA",
+                    salary: "Not listed",
+                    fitScore: 82,
+                    status: "maybe",
+                    posted: "2026-01-18",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: ["⚡", "❓"],
+                    connections: [],
+                    
+                    sources: ['LinkedIn'],
+                    notes: "❌ 'Various (Boston)' not a specific company - needs clarification | Boston location, ECD level, actively hiring per LinkedIn (4 days ago). Need more research on specific company. Placeholder for investigation."
+                },
+                {
+                    id: 8,
+                    title: "VP, Brand and Creative",
+                    company: "SimpliSafe",
+                    industry: "Tech (Home Security)",
+                    location: "Boston, MA",
+                    salary: "$180k-$240k (estimated)",
+                    fitScore: 75,
+                    status: "maybe",
+                    posted: "2026-01-10",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: ["💰"],
+                    connections: [],
+                    
+                    sources: ['Indeed'],
+                    notes: "🔗 URL needed - check application email | Boston, VP level, strong salary likely. RED FLAG: Commercial tech (not mission-driven), but Boston location strong. Consider for backup."
+                },
+                {
+                    id: 9,
+                    title: "VP, Creative",
+                    company: "Bose",
+                    industry: "Consumer Electronics",
+                    location: "Manhattan, NY",
+                    salary: "$254k-$339k",
+                    fitScore: 72,
+                    status: "probably-not",
+                    posted: "2026-01-12",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: ["💰"],
+                    connections: [],
+                    
+                    sources: ['Indeed', 'LinkedIn'],
+                    notes: "🔗 URL needed - check application email | Exceptional salary, VP level. RED FLAGS: Corporate, NYC, not mission-driven. High pay but low mission alignment. Keep as backup only."
+                },
+                {
+                    id: 10,
+                    title: "Digital Creative Director",
+                    company: "Interactive Strategies",
+                    industry: "Digital Agency",
+                    location: "Washington, DC",
+                    salary: "Not listed",
+                    fitScore: 70,
+                    status: "probably-not",
+                    posted: "2026-01-08",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: ["❓"],
+                    connections: [],
+                    
+                    sources: ['Indeed'],
+                    notes: "🔗 URL needed - check application email | 10+ years creative roles, brand leadership required. Need to research mission alignment and client roster. DC location workable but not ideal."
+                },
+                {
+                    id: 11,
+                    title: "Creative Director (Art) - Healthcare",
+                    company: "Rare Disease Healthcare Agency",
+                    industry: "Healthcare Communications",
+                    location: "Remote",
+                    salary: "Not listed",
+                    fitScore: 78,
+                    status: "maybe",
+                    posted: "2026-01-15",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: ["❓"],
+                    connections: [],
+                    
+                    sources: ['MeetLifeSciences'],
+                    notes: "❌ Generic company name - needs actual agency name | Full-service healthcare comms agency specializing in rare disease. Remote. Need more details on agency name and mission alignment. Commercial pharma likely."
+                },
+                {
+                    id: 12,
+                    title: "VP, Brand Creative",
+                    company: "The Cape Agency",
+                    industry: "Marketing Agency",
+                    location: "Remote (US)",
+                    salary: "Not listed",
+                    fitScore: 68,
+                    status: "probably-not",
+                    posted: "2026-01-10",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: ["❓"],
+                    connections: [],
+                    sources: ["Indeed"],
+                    
+                    sources: ['Indeed'],
+                    notes: "🔗 URL needed - reported: link goes to search results | Mortgage/financial services company. Remote, VP level. RED FLAG: Financial services sector, not mission-driven. Low priority unless desperate."
+                },
+                {
+                    id: 13,
+                    title: "VP, Brand & Creative Services",
+                    company: "Sollis Health",
+                    industry: "Healthcare (Concierge Medical)",
+                    location: "New York, NY (135 E 57th St)",
+                    salary: "$200k-$280k (estimated)",
+                    fitScore: 82,
+                    status: "maybe",
+                    posted: "2026-01-18",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "https://job-boards.greenhouse.io/sollishealth/jobs/6598247003",
+                    symbols: ["💰"],
+                    connections: [],
+                    sources: ["Greenhouse"],
+                    
+                    sources: ['Greenhouse'],
+                    notes: "✅ Direct Greenhouse link | 24/7 on-demand medical membership. Category-defining healthcare brand. Own end-to-end brand strategy. 10-15+ years required. NYC location (not Boston). For-profit concierge medicine (less mission-driven than PIH)."
+                },
+                {
+                    id: 14,
+                    title: "Creative Director",
+                    company: "Age of Learning (ABCmouse)",
+                    industry: "Education Technology",
+                    location: "Remote",
+                    salary: "$180k-$240k",
+                    fitScore: 88,
+                    status: "apply-now",
+                    posted: "2026-01-15",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "https://jobs.lever.co/aofl/f9a40670-91b7-41ae-819e-36b4944efdc9",
+                    symbols: ["💰"],
+                    connections: [],
+                    sources: ["Lever"],
+                    
+                    sources: ['Lever'],
+                    notes: "✅ Direct Lever link | DREAM SECTOR: Education tech serving 50M+ children globally. Remote, high disclosed salary. Own experience system for ABCmouse. Lead visual design, game mechanics, educational outcomes. Mission: advance equity/access for all children. Product/UX focus (less traditional brand)."
+                },
+                {
+                    id: 15,
+                    title: "Creative Director",
+                    company: "Lexia Learning",
+                    industry: "Education Technology (Literacy)",
+                    location: "Concord, MA (Remote)",
+                    salary: "$135k-$155k (estimated)",
+                    fitScore: 92,
+                    status: "applied",
+                    posted: "2026-01-14",
+                    found: "2026-01-22",
+                    applied: "2026-01-22",
+                    followup: null,
+                    url: "https://cambiumlearning.wd1.myworkdayjobs.com/en-US/camb/job/Creative-Director_REQ-4250",
+                    symbols: [],
+                    connections: [],
+                    sources: ['Workday'],
+                    notes: "✅ Direct Workday link | Applied 1/22/2026. PERFECT FIT: Education + literacy mission, Boston area location (Concord). Lead brand visual direction, campaign concepts, design strategy. Manage graphic designers. Part of Cambium Learning Group. Science-backed reading instruction."
+                },
+                {
+                    id: 16,
+                    title: "Creative Director, Brand",
+                    company: "Chorus Innovations",
+                    industry: "Health Tech (Public Health)",
+                    location: "Not specified",
+                    salary: "Not listed (+ bonus + stock options)",
+                    fitScore: 85,
+                    status: "apply-now",
+                    posted: "2026-01-16",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "https://boards.greenhouse.io/chorusinnovations/jobs/4231451007",
+                    symbols: ["❓"],
+                    connections: [],
+                    sources: ["Greenhouse"],
+                    
+                    sources: ['Greenhouse'],
+                    notes: "✅ Direct Greenhouse link | MISSION-DRIVEN: Democratizing health tech for institutions/public health agencies. Powers transformative healthcare, biomedical research, community health. Reports to VP Design. Startup (stock options). Location unclear - need to confirm."
+                },
+                {
+                    id: 17,
+                    title: "Creative Director",
+                    company: "Jobgether (Digital Learning Partner)",
+                    industry: "Education Technology",
+                    location: "Remote (US)",
+                    salary: "$135k-$155k",
+                    fitScore: 78,
+                    status: "maybe",
+                    posted: "2026-01-17",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "https://jobs.lever.co/jobgether/ea7c4939-c988-4a85-bfb4-d8dd54d2eaef",
+                    symbols: [],
+                    connections: [],
+                    sources: ["Lever"],
+                    notes: "✅ Direct Lever link | Digital learning platform. Remote US. Lead creative team, define vision. AI tools focus. Portfolio required. Lower salary range. Via recruiting platform (actual company unclear)."
+                },
+                {
+                    id: 18,
+                    title: "Director of Marketing and Communications",
+                    company: "East Boston Social Centers",
+                    industry: "Nonprofit (Community Services)",
+                    location: "East Boston, MA",
+                    salary: "Not listed",
+                    fitScore: 76,
+                    status: "applied",
+                    posted: "2026-01-10",
+                    found: "2026-01-10",
+                    applied: "2026-01-12",
+                    followup: null,
+                    url: "https://www.indeed.com/viewjob?jk=bd24d45ec90e04ae",
+                    symbols: ["❤️"],
+                    connections: [],
+                    sources: ["Indeed"],
+                    notes: "✅ INTERVIEW SCHEDULED FOR MONDAY (1/27/2026) | Applied 1/12 via Indeed. Score bumped 68→76: Working directly with MY community (East Boston) = unique personal value. Community nonprofit, great mission. Split marketing/comms role but strong local connection."
+                },
+                {
+                    id: 19,
+                    title: "Customer Success Manager",
+                    company: "Anthropic",
+                    industry: "AI/Technology",
+                    location: "Remote or San Francisco",
+                    salary: "Not listed",
+                    fitScore: 25,
+                    status: "applied",
+                    posted: "2026-01-14",
+                    found: "2026-01-14",
+                    applied: "2026-01-14",
+                    followup: null,
+                    url: "",
+                    symbols: [],
+                    connections: [],
+                    sources: [],
+                    notes: "🔗 URL needed - check application email | Applied directly. Pending response. HARD PASS FIT: Customer Success ≠ Creative Director. Outside creative track entirely. Why applied?"
+                },
+                {
+                    id: 20,
+                    title: "Director of Creative Services and Marketing Communications",
+                    company: "Evident Scientific",
+                    industry: "Life Sciences/Healthcare Technology",
+                    location: "Waltham, MA (Hybrid)",
+                    salary: "$175k-$199k + 20% bonus",
+                    fitScore: 82,
+                    status: "applied",
+                    posted: "2026-01-20",
+                    found: "2026-01-20",
+                    applied: "2026-01-20",
+                    followup: null,
+                    url: "",
+                    symbols: ["💰", "🏢"],
+                    connections: [],
+                    sources: [],
+                    notes: "⚠️ Posting closed - applied 1/20/2026 | Applied 1/20/2026. PE-backed life sciences company (Olympus spinoff). Best disclosed salary applied to. Healthcare adjacent mission. Strong follow-up candidate after 2 weeks (Feb 3)."
+                },
+                {
+                    id: 21,
+                    title: "Graphic Designer III",
+                    company: "Boston Children's Hospital",
+                    industry: "Healthcare (Pediatric Hospital)",
+                    location: "Boston, MA",
+                    salary: "$78k-$126k",
+                    fitScore: 45,
+                    status: "applied",
+                    posted: "2025-11-24",
+                    found: "2025-11-24",
+                    applied: "2025-11-24",
+                    followup: null,
+                    url: "https://jobs.bostonchildrens.org/job/22597473/graphics-designer-iii-trust-boston-ma/",
+                    symbols: ["❤️"],
+                    connections: [],
+                    sources: ["LinkedIn"],
+                    notes: "IC role (no reports). Spoke with Kim (HR) 11/24. Personal mission connection (toddler with rare condition). OVERQUALIFIED: HR flagged title/salary concerns. Heart says yes, head says no. 40-50% pay cut."
+                },
+                {
+                    id: 22,
+                    title: "Creative Director",
+                    company: "Givebutter",
+                    industry: "Nonprofit Technology",
+                    location: "Remote",
+                    salary: "$215k-$240k",
+                    fitScore: 92,
+                    status: "applied",
+                    posted: "2025-12-10",
+                    found: "2025-12-10",
+                    applied: "2025-12-12",
+                    followup: null,
+                    url: "https://jobs.ashbyhq.com/givebutter/ee5bb880-11fc-4ad0-a5c9-b72acbd5f544",
+                    symbols: ["💰", "🚀"],
+                    connections: ["Jeizzon Viana Mendes (VP Design)"],
+                    sources: ["Ashby"],
+                    notes: "TOP MATCH: Best overall fit in pipeline. Nonprofit tech ($7B+ processed). Highest disclosed salary. Remote. Build brand design team, templates, guidelines. Connected with VP Design. Strong follow-up if no response."
+                },
+                {
+                    id: 23,
+                    title: "Senior Director of Creative",
+                    company: "Berklee College of Music",
+                    industry: "Higher Education (Arts/Music)",
+                    location: "Boston, MA (Hybrid)",
+                    salary: "$132k-$160k",
+                    fitScore: 95,
+                    status: "applied",
+                    posted: "2025-11-25",
+                    found: "2025-11-25",
+                    applied: "2025-11-26",
+                    followup: null,
+                    url: "",
+                    symbols: ["🎵", "❤️"],
+                    connections: ["MJ Kim (CMO)", "Amy Carzo (referral)"],
+                    sources: [],
+                    notes: "⚠️ Posting closed/filled - applied 11/26/2025 to MJ Kim | DREAM FIT: Exact title match (Senior Director). Education + Arts + Music = dream sector. Boston. Hybrid. Amy Carzo referral to MJ Kim (CMO). Strong follow-up via Amy/MJ."
+                },
+                {
+                    id: 24,
+                    title: "Creative Operations",
+                    company: "Drata",
+                    industry: "Security/Compliance SaaS",
+                    location: "Remote",
+                    salary: "Not listed",
+                    fitScore: 55,
+                    status: "applied",
+                    posted: "2025-12-10",
+                    found: "2025-12-10",
+                    applied: "2025-12-10",
+                    followup: null,
+                    url: "",
+                    symbols: [],
+                    connections: [],
+                    sources: [],
+                    notes: "🔗 URL needed - check application email | Creative ops role (less strategic). No mission alignment. Title/level unclear. Why applied?"
+                },
+                {
+                    id: 25,
+                    title: "Senior Manager, Design",
+                    company: "Sincere",
+                    industry: "Technology (Sympathy/Condolences)",
+                    location: "Framingham, MA (Hybrid)",
+                    salary: "$100k-$130k",
+                    fitScore: 62,
+                    status: "applied",
+                    posted: "2025-11-11",
+                    found: "2025-11-11",
+                    applied: "2025-11-11",
+                    followup: null,
+                    url: "https://apply.workable.com/sincere/j/CCB8676A7A/",
+                    symbols: ["❌"],
+                    connections: ["Emma (works at Sincere)"],
+                    sources: ["Workable"],
+                    notes: "REJECTED. Emma (friend at company) referred. Went through multiple interviews + homework. Title downgrade + 30-40% pay cut = not worth it. Referrals work but salary/title still matters."
+                },
+                {
+                    id: 26,
+                    title: "Creative Director",
+                    company: "Tufts University",
+                    industry: "Higher Education",
+                    location: "Medford/Somerville, MA",
+                    salary: "Not listed (likely $140k-$180k)",
+                    fitScore: 93,
+                    status: "applied",
+                    posted: "2025-10-10",
+                    found: "2025-10-10",
+                    applied: "2025-10-10",
+                    followup: null,
+                    url: "",
+                    symbols: ["🎓"],
+                    connections: ["MJ Kim (CMO)", "Amy Carzo (referral)"],
+                    sources: [],
+                    notes: "⚠️ Posting taken down - applied 10/10/2025 to MJ Kim | TOP 3 FIT: Higher ed dream sector. Direct CMO partnership (MJ Kim). Amy Carzo referral. Boston area. Posting taken down due to volume, submitted directly via email. Strong follow-up via Amy/MJ."
+                },
+                {
+                    id: 27,
+                    title: "Director, Catalog Visual Creative",
+                    company: "Universal Music Group",
+                    industry: "Music Industry (Record Label)",
+                    location: "Santa Monica, CA",
+                    salary: "$140k-$190k (estimated)",
+                    fitScore: 85,
+                    status: "research",
+                    posted: "2026-01-22",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "https://umusic.wd5.myworkdayjobs.com/en-US/UMGUS/job/Santa-Monica-California/Director--Catalog-Visual-Creative_UMG-24371",
+                    symbols: ["🎵"],
+                    connections: [],
+                    sources: ["Workday"],
+                    notes: "✅ Direct Workday link | DREAM SECTOR: Music industry! Education + arts + MUSIC intersection. Lead visual creative for UMG music catalog. Santa Monica location (not Boston, but MUSIC!). Major record label with established artists."
+                },
+                {
+                    id: 28,
+                    title: "Executive Creative Director",
+                    company: "Cramer",
+                    industry: "Experiential Marketing Agency (Events, Brand Experiences)",
+                    location: "Norwood, MA",
+                    salary: "$150k-$190k (estimated)",
+                    fitScore: 83,
+                    status: "research",
+                    posted: "2026-01-22",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "https://www.theladders.com/job/executive-creative-director-cramerkrasselt-norwood-ma_85276865",
+                    symbols: [],
+                    connections: [],
+                    sources: ["The Ladders"],
+                    notes: "⚠️ Need direct careers URL | PERFECT LOCATION: Norwood, MA (Boston suburb). Executive Creative Director = perfect title. Founded by US Olympian, 40+ years, Boston Globe Top Places to Work. Lead experiential/live event marketing. B2B focus with tech, healthcare, financial clients. Need to find direct Cramer careers link."
+                },
+                {
+                    id: 29,
+                    title: "Senior Designer / Design Director",
+                    company: "Sandberg Goldberg Bernthal Family Foundation",
+                    industry: "Family Foundation (Philanthropy)",
+                    location: "United States (likely remote)",
+                    salary: "$120k-$160k (estimated)",
+                    fitScore: 82,
+                    status: "research",
+                    posted: "2026-01-22",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "",
+                    symbols: ["❤️"],
+                    connections: [],
+                    sources: ["LinkedIn"],
+                    notes: "⚠️ NO URL - need to find foundation careers page or LinkedIn posting | PERFECT MISSION: Family foundation (Paul Rudd + others), social impact philanthropy. Design Director level. US-based, likely remote or LA. Need URL to verify posting still active."
+                },
+                {
+                    id: 30,
+                    title: "Associate Creative Director, Art",
+                    company: "WHOOP",
+                    industry: "Health/Fitness Wearables",
+                    location: "Boston, MA (or NYC)",
+                    salary: "$150k-$190k + equity",
+                    fitScore: 81,
+                    status: "research",
+                    posted: "2026-01-22",
+                    found: "2026-01-22",
+                    applied: null,
+                    followup: null,
+                    url: "https://jobs.lever.co/whoop/175eca0e-8fa1-4c93-a482-dd8040704a1d",
+                    symbols: ["💰"],
+                    connections: [],
+                    sources: ["Lever"],
+                    notes: "✅ Direct Lever link | PERFECT LOCATION: Boston HQ (or NYC option). Health/wellness mission. Associate Creative Director = slight step down but senior. $150K-$190K disclosed salary + equity. Lead brand visual expression, mentor designers. Fast-growing health tech."
+                },
+                {
+                    id: 31,
+                    title: "Creative Director, Product",
+                    company: "Ethos Life",
+                    industry: "InsurTech (Life Insurance)",
+                    location: "Remote US",
+                    salary: "$126k-$224k",
+                    fitScore: 80,
+                    status: "research",
+                    posted: "2026-01-14",
+                    found: "2026-01-14",
+                    applied: null,
+                    followup: null,
+                    url: "https://job-boards.greenhouse.io/ethoslife/jobs/8328097002",
+                    symbols: ["💰"],
+                    connections: [],
+                    sources: ["Greenhouse"],
+                    notes: "✅ Direct Greenhouse link | BORDERLINE: Right at 80/100 threshold. Remote US = perfect location. $126K-$224K disclosed (excellent range). Life insurance tech with accessibility mission (not nonprofit). Lead small creative team, B2C storytelling, product + lifecycle marketing. 10+ years required. Commercial but some social good angle."
+                },
+                {
+                    id: 32,
+                    title: "Creative Director",
+                    company: "Alma",
+                    industry: "Mental Health Tech",
+                    location: "Remote (Contiguous US)",
+                    salary: "Not disclosed",
+                    fitScore: 86,
+                    status: "apply-now",
+                    posted: "2026-01-15",
+                    found: "2026-01-24",
+                    applied: null,
+                    followup: null,
+                    url: "https://job-boards.greenhouse.io/alma/jobs/8035297002",
+                    symbols: ["❤️"],
+                    connections: [],
+                    sources: ["Greenhouse"],
+                    notes: "✅ Direct Greenhouse link | PERFECT MISSION: Simplifying access to high-quality, affordable mental health care. Reports to SVP Brand & Marketing. Lead + grow creative team. Mental health benefits mission. Inc's Best Workplaces 2022-2024. $220.5M funded. 20K+ therapist network. 6+ years creative leadership required. Visual innovator + storytelling focus. Remote US."
+                },
+                {
+                    id: 33,
+                    title: "Advertising Associate Creative Director",
+                    company: "M+R",
+                    industry: "Nonprofit Advertising Agency",
+                    location: "Remote US",
+                    salary: "Not disclosed",
+                    fitScore: 84,
+                    status: "apply-now",
+                    posted: "2026-01-18",
+                    found: "2026-01-24",
+                    applied: null,
+                    followup: null,
+                    url: "https://jobs.lever.co/mrss/07f17be9-fb5f-4765-90c5-6623e17c4de6",
+                    symbols: ["❤️"],
+                    connections: [],
+                    sources: ["Lever"],
+                    notes: "✅ Direct Lever link | DREAM MISSION: ONLY works with nonprofit clients. Planned Parenthood, League of Conservation Voters, PETA clients. Remote-first org with DC/NYC/Oakland offices. Run advertising campaigns that create change. Progressive nonprofits focus. Big + tiny campaigns. Fast-paced deadline-driven. Perfect mission alignment."
+                },
+                {
+                    id: 34,
+                    title: "Creative Director",
+                    company: "Abortion in America",
+                    industry: "Reproductive Justice Nonprofit",
+                    location: "Remote US",
+                    salary: "$160k-$185k",
+                    fitScore: 83,
+                    status: "apply-now",
+                    posted: "2026-01-20",
+                    found: "2026-01-24",
+                    applied: null,
+                    followup: null,
+                    url: "https://abortioninamerica.org/current-openings/",
+                    symbols: ["❤️", "💰"],
+                    connections: [],
+                    sources: ["Foundation List"],
+                    notes: "✅ Foundation List org careers page | BOLD MISSION + DISCLOSED SALARY! National initiative reclaiming power through personal stories. Executive-level Creative Director. Reports to Executive Director. Shape brand identity, creative vision, storytelling across platforms (video, audio, written). Build something new from ground up. Reproductive freedom fight. Remote with travel for events/filming. $160K-$185K + 100% health/dental/vision. HIDDEN GEM - only found on Foundation List!"
+                },
+                {
+                    id: 35,
+                    title: "Creative Director",
+                    company: "Arcadia",
+                    industry: "Healthcare Data Analytics",
+                    location: "Remote-friendly",
+                    salary: "Not disclosed",
+                    fitScore: 82,
+                    status: "apply-now",
+                    posted: "2026-01-12",
+                    found: "2026-01-24",
+                    applied: null,
+                    followup: null,
+                    url: "https://jobs.lever.co/arcadia/6c27c1e2-642a-485c-bed0-2da5519d6f0b",
+                    symbols: ["❤️"],
+                    connections: [],
+                    sources: ["Lever"],
+                    notes: "✅ Direct Lever link | Healthcare mission: Transforming healthcare to reduce cost while improving patient health. Population health management software leader. Reports to VP Marketing. Build + lead content/creative team. Define B2B content strategy. Digital-first approach. Executive producer for HIMSS + annual customer event. Multi-faceted role. Remote position when safe. Hybrid future."
+                },
+                {
+                    id: 36,
+                    title: "Creative Director",
+                    company: "Omada Health",
+                    industry: "Digital Health (Chronic Disease)",
+                    location: "Remote",
+                    salary: "Not disclosed",
+                    fitScore: 81,
+                    status: "apply-now",
+                    posted: "2026-01-16",
+                    found: "2026-01-24",
+                    applied: null,
+                    followup: null,
+                    url: "https://builtin.com/job/creative-director/2516470",
+                    symbols: ["❤️"],
+                    connections: [],
+                    sources: ["Built In"],
+                    notes: "✅ Built In link | Healthcare mission: Chronic disease management (diabetes, hypertension, behavioral health). 1,800+ customers including Fortune 500. Virtual care programs that are clinically supported + evidence-based. Lead in-house creative team + external partners. B2B + B2C creative. Healthcare & Life Sciences agency/in-house experience required. 7+ years. Customer-obsessed entrepreneur. Great Place to Work certified."
+                }
+            ];
+        }
+
+        // Copy search command
+        function copySearchCommand() {
+            const btn = event ? event.target : document.querySelector('.copy-btn');
+            
+            // Try modern clipboard API first (but log failures for debugging)
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(SEARCH_COMMAND).then(() => {
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '✅ Copied! Paste in Claude';
+                    btn.style.background = '#2e7d32';
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = 'white';
+                    }, 3000);
+                }).catch((err) => {
+                    console.log('📋 Clipboard API blocked (' + err.name + ') - trying fallback');
+                    tryExecCommandCopy(btn);
+                });
+            } else {
+                console.log('📋 Clipboard API not available - using fallback');
+                tryExecCommandCopy(btn);
+            }
+        }
+        
+        function tryExecCommandCopy(btn) {
+            const textArea = document.createElement('textarea');
+            textArea.value = SEARCH_COMMAND;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                if (successful) {
+                    console.log('✅ Copy succeeded via execCommand');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '✅ Copied! Paste in Claude';
+                    btn.style.background = '#2e7d32';
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = 'white';
+                    }, 3000);
+                } else {
+                    console.log('❌ execCommand failed - opening modal');
+                    showCommandModal();
+                }
+            } catch (e) {
+                console.log('❌ Copy error (' + e.name + ') - opening modal');
+                if (textArea.parentNode) {
+                    document.body.removeChild(textArea);
+                }
+                showCommandModal();
+            }
+        }
+
+        // Copy status check command
+        function copyStatusCheckCommand() {
+            const btn = event ? event.target : null;
+            
+            // Try modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(STATUS_CHECK_COMMAND).then(() => {
+                    if (btn) {
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = '✅ Copied! Paste in Claude';
+                        const originalBg = btn.style.background;
+                        btn.style.background = '#059669';
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                            btn.style.background = originalBg;
+                        }, 3000);
+                    }
+                }).catch((err) => {
+                    console.log('📋 Clipboard API blocked (' + err.name + ') - trying fallback');
+                    tryStatusCheckExecCommand(btn);
+                });
+            } else {
+                console.log('📋 Clipboard API not available - using fallback');
+                tryStatusCheckExecCommand(btn);
+            }
+        }
+        
+        function tryStatusCheckExecCommand(btn) {
+            const textArea = document.createElement('textarea');
+            textArea.value = STATUS_CHECK_COMMAND;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                if (successful) {
+                    console.log('✅ Status check copy succeeded via execCommand');
+                    if (btn) {
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = '✅ Copied! Paste in Claude';
+                        const originalBg = btn.style.background;
+                        btn.style.background = '#059669';
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                            btn.style.background = originalBg;
+                        }, 3000);
+                    }
+                } else {
+                    console.log('❌ execCommand failed - showing alert');
+                    alert('Please manually copy the status check command from the modal that will appear.');
+                }
+            } catch (e) {
+                console.log('❌ Copy error (' + e.name + ')');
+                if (textArea.parentNode) {
+                    document.body.removeChild(textArea);
+                }
+                alert('Copy failed. Please try again or manually copy the command.');
+            }
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            // Render board stats when filters tab is shown
+            if (tabName === 'filters') {
+                initStorage().then(data => {
+                    renderBoardStats(data.jobs);
+                });
+            }
+        }
+
+        // Render jobs table
+        // Render job board performance stats
+        function renderBoardStats(jobs) {
+            // Board tier rankings with scores and distinctiveness (after 3 rounds of evaluation)
+            const boardTiers = {
+                // TIER 1 - ESSENTIAL (80-100) - Focus 80% of search effort
+                'Lever': { tier: 1, score: 92, note: 'Best nonprofit/mission signal. Found M+R (nonprofit-only agency), Arcadia. Low duplicates.' },
+                'Greenhouse': { tier: 1, score: 90, note: 'Consistent quality mission-driven companies. Found Alma, Ethos Life. Excellent URL access.' },
+                'Foundation List': { tier: 1, score: 88, note: '🎁 Hidden gems! Nonprofit-specific. Found Abortion in America ($160K-$185K disclosed). Unique jobs not cross-posted.' },
+                
+                // TIER 2 - VALUABLE (60-79) - Monitor, 15% effort
+                'Breezy HR': { tier: 2, score: 75, note: 'Used by mission-driven orgs. Found Media Cause. Clean URLs.' },
+                'Built In': { tier: 2, score: 75, note: 'Healthcare tech focus. Found Omada Health. Some salary data.' },
+                'Workday': { tier: 2, score: 70, note: 'Corporate healthcare/education. Found UMG, Lexia. Excellent URLs but not nonprofit-focused.' },
+                'SmartRecruiters': { tier: 2, score: 65, note: 'Healthcare advertising agencies. Pharma focus, not nonprofit mission.' },
+                'Jobvite': { tier: 2, score: 60, note: 'Healthcare agencies (VMLY&R, APCO). Commercial pharma focus.' },
+                
+                // TIER 3 - LOW PRIORITY (45-59) - 5% effort
+                'Indeed': { tier: 3, score: 60, note: '⚠️ Aggregator. Poor URL quality (only search results pages). High duplicates.' },
+                'Media Bistro': { tier: 3, score: 65, note: '⚠️ Creative-focused but weak mission alignment. Mostly agency/corporate.' },
+                'Idealist': { tier: 3, score: 55, note: '⚠️ STALE POSTINGS CONFIRMED. Constructive, NDWA, HRF all closed but still listed.' },
+                
+                // TIER 4 - SKIP (0-44)
+                'Glassdoor': { tier: 4, score: 45, note: '❌ Cannot access direct URLs. Only aggregator pages.' },
+                
+                // Other boards not yet fully evaluated
+                'LinkedIn': { tier: 2, score: 70, note: 'General job board. Not yet fully evaluated for nonprofit/mission roles.' },
+                'Ashby': { tier: 2, score: 65, note: 'Tech-heavy ATS. Need more evaluation rounds.' },
+                'MeetLifeSciences': { tier: 2, score: 60, note: 'Life sciences focus. Not yet fully evaluated.' },
+                'Workable': { tier: 2, score: 60, note: 'General ATS. Not yet fully evaluated.' }
+            };
+            
+            const boardStats = {};
+            Object.keys(boardTiers).forEach(board => {
+                boardStats[board] = { total: 0, applyNow: 0, ...boardTiers[board] };
+            });
+            
+            // Count jobs per board
+            jobs.forEach(job => {
+                if (job.sources && Array.isArray(job.sources)) {
+                    job.sources.forEach(source => {
+                        if (boardStats[source]) {
+                            boardStats[source].total++;
+                            if (job.status === 'apply-now') {
+                                boardStats[source].applyNow++;
+                            }
+                        }
+                    });
+                }
+            });
+            
+            // Sort by tier, then score, then apply-now count
+            const sortedBoards = Object.entries(boardStats).sort((a, b) => {
+                if (a[1].tier !== b[1].tier) return a[1].tier - b[1].tier;
+                if (b[1].score !== a[1].score) return b[1].score - a[1].score;
+                if (b[1].applyNow !== a[1].applyNow) return b[1].applyNow - a[1].applyNow;
+                return b[1].total - a[1].total;
+            });
+            
+            // Render table with tier groupings
+            let html = `
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #dee2e6;">
+                            <th style="text-align: left; padding: 8px; width: 25%;">Job Board</th>
+                            <th style="text-align: center; padding: 8px; width: 8%;">Score</th>
+                            <th style="text-align: center; padding: 8px; width: 8%;">Jobs</th>
+                            <th style="text-align: center; padding: 8px; width: 8%;">Apply</th>
+                            <th style="text-align: left; padding: 8px; width: 51%;">Distinctiveness</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            let currentTier = 0;
+            const tierLabels = {
+                1: '⭐ TIER 1 - ESSENTIAL (Focus 80% effort)',
+                2: '🔄 TIER 2 - VALUABLE (Monitor, 15% effort)',
+                3: '⚠️ TIER 3 - LOW PRIORITY (5% effort)',
+                4: '❌ TIER 4 - SKIP'
+            };
+            
+            sortedBoards.forEach(([board, stats]) => {
+                // Add tier header when tier changes
+                if (stats.tier !== currentTier) {
+                    currentTier = stats.tier;
+                    html += `
+                        <tr style="background: #f8f9fa;">
+                            <td colspan="5" style="padding: 10px 8px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #495057;">
+                                ${tierLabels[currentTier]}
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+                const qualityPct = stats.total > 0 ? Math.round((stats.applyNow / stats.total) * 100) : 0;
+                const scoreColor = stats.score >= 80 ? '#2e7d32' : stats.score >= 60 ? '#1976d2' : stats.score >= 45 ? '#f57c00' : '#d32f2f';
+                const rowOpacity = stats.total === 0 ? 'opacity: 0.5;' : '';
+                const tierBg = stats.tier === 1 ? 'background: #f1f8f4;' : stats.tier === 4 ? 'background: #fef2f2;' : '';
+                
+                html += `
+                    <tr style="border-bottom: 1px solid #f0f0f0; ${rowOpacity} ${tierBg}">
+                        <td style="padding: 8px; font-weight: 600;">${board}</td>
+                        <td style="text-align: center; padding: 8px; color: ${scoreColor}; font-weight: bold;">${stats.score}</td>
+                        <td style="text-align: center; padding: 8px;">${stats.total}</td>
+                        <td style="text-align: center; padding: 8px; color: #c62828; font-weight: bold;">${stats.applyNow}</td>
+                        <td style="padding: 8px; font-size: 11px; color: #495057; line-height: 1.4;">${stats.note}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+                <div style="font-size: 11px; color: #6c757d; margin-top: 12px; line-height: 1.6;">
+                    <p style="margin: 4px 0;"><strong>🎯 Search Strategy:</strong> Focus 80% effort on Tier 1 (Lever, Greenhouse, Foundation List), 15% on Tier 2, 5% on Tier 3, skip Tier 4.</p>
+                    <p style="margin: 4px 0;"><strong>📊 Scoring:</strong> Based on 3 rounds of evaluation. Score = URL quality + mission alignment + duplicate rate + hidden gems.</p>
+                    <p style="margin: 4px 0;"><strong>🔄 Evaluation Status:</strong> 15 boards tested. Next scan: Monday to monitor tier performance consistency.</p>
+                    <p style="margin: 4px 0;"><strong>❌ Dropped Boards:</strong> JazzHR (no searchable database), BambooHR (not a job board), iCIMS (poor URL access).</p>
+                </div>
+            `;
+            
+            document.getElementById('boardStats').innerHTML = html;
+        }
+
+        // Sorting state
+        let sortColumn = 'fitScore';
+        let sortDirection = 'desc';
+
+        function sortJobs(column) {
+            // Safety check
+            if (!window.currentData || !window.currentData.jobs) {
+                console.error('Data not loaded yet');
+                return;
+            }
+            
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = column === 'fitScore' || column === 'salary' ? 'desc' : 'asc';
+            }
+            
+            const data = window.currentData;
+            
+            // Apply filter first
+            let jobs = [...data.jobs];
+            const onlyStatus = Object.keys(filterStates).find(key => filterStates[key] === 'only');
+            
+            if (onlyStatus) {
+                jobs = jobs.filter(job => job.status === onlyStatus);
+            } else {
+                const hiddenStatuses = Object.keys(filterStates).filter(key => filterStates[key] === 'hidden');
+                jobs = jobs.filter(job => !hiddenStatuses.includes(job.status));
+            }
+            
+            // Then sort
+            const sorted = jobs.sort((a, b) => {
+                let aVal, bVal;
+                
+                switch(column) {
+                    case 'fitScore':
+                        return sortDirection === 'desc' ? b.fitScore - a.fitScore : a.fitScore - b.fitScore;
+                    
+                    case 'title':
+                        return sortDirection === 'asc' ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
+                    
+                    case 'company':
+                        return sortDirection === 'asc' ? a.company.localeCompare(b.company) : b.company.localeCompare(a.company);
+                    
+                    case 'salary':
+                        // Extract first number from salary string
+                        aVal = parseInt((a.salary.match(/\d+/) || [0])[0]);
+                        bVal = parseInt((b.salary.match(/\d+/) || [0])[0]);
+                        return sortDirection === 'desc' ? bVal - aVal : aVal - bVal;
+                    
+                    case 'status':
+                        const statusOrder = {'apply-now': 0, 'maybe': 1, 'applied': 2, 'probably-not': 3, 'archived': 4};
+                        aVal = statusOrder[a.status] || 99;
+                        bVal = statusOrder[b.status] || 99;
+                        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+                    
+                    case 'connections':
+                        aVal = a.connections ? a.connections.length : 0;
+                        bVal = b.connections ? b.connections.length : 0;
+                        return sortDirection === 'desc' ? bVal - aVal : aVal - bVal;
+                    
+                    case 'daysSince':
+                        // Use found date for days since
+                        aVal = a.found ? new Date(a.found).getTime() : 0;
+                        bVal = b.found ? new Date(b.found).getTime() : 0;
+                        return sortDirection === 'desc' ? bVal - aVal : aVal - bVal;
+                    
+                    default:
+                        return 0;
+                }
+            });
+            
+            renderJobs(sorted);
+        }
+
+        function getSortArrow(column) {
+            if (sortColumn !== column) return '';
+            return sortDirection === 'asc' ? ' ↑' : ' ↓';
+        }
+
+        function renderJobs(jobs) {
+            const container = document.getElementById('jobsContainer');
+            
+            if (jobs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💼</div>
+                        <h3>No Jobs Found</h3>
+                        <p>Copy the search command above and paste it into Claude to start finding jobs</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <table class="jobs-table">
+                    <thead>
+                        <tr>
+                            <th onclick="sortJobs('fitScore')" style="cursor: pointer;">Fit${getSortArrow('fitScore')}</th>
+                            <th onclick="sortJobs('title')" style="cursor: pointer;">Title${getSortArrow('title')}</th>
+                            <th onclick="sortJobs('company')" style="cursor: pointer;">Company${getSortArrow('company')}</th>
+                            <th>Industry</th>
+                            <th>Location</th>
+                            <th onclick="sortJobs('salary')" style="cursor: pointer;">Salary${getSortArrow('salary')}</th>
+                            <th onclick="sortJobs('status')" style="cursor: pointer;">Status${getSortArrow('status')}</th>
+                            <th onclick="sortJobs('connections')" style="cursor: pointer;">Connections${getSortArrow('connections')}</th>
+                            <th onclick="sortJobs('daysSince')" style="cursor: pointer;">Days Since${getSortArrow('daysSince')}</th>
+                            <th>Info</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${jobs.map(job => `
+                            <tr class="job-row ${job.status === 'applied' ? 'row-applied' : ''} ${job.status === 'archived' ? 'row-archived' : ''}" onclick="showJobDetail(${job.id})">
+                                <td>
+                                    <span class="fit-score ${getFitClass(job.fitScore)}">
+                                        ${job.fitScore}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="#" class="job-title-link" onclick="event.stopPropagation(); viewPDF(${job.id})">
+                                        ${job.title}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="${job.url}" target="_blank" class="company-link" onclick="event.stopPropagation()">
+                                        ${job.company}
+                                    </a>
+                                    ${job.url ? '<span style="color: #10b981; margin-left: 5px;" title="Direct job posting link verified">🔗</span>' : '<span style="color: #dc2626; margin-left: 5px;" title="No direct link - may be closed or needs URL from application email">⚠️</span>'}
+                                </td>
+                                <td>${job.industry}</td>
+                                <td>${job.location}</td>
+                                <td>${getSalaryHTML(job.salary)}</td>
+                                <td><span class="status-badge status-${job.status}">${getStatusLabel(job.status)}</span></td>
+                                <td onclick="event.stopPropagation()">${getConnectionsHTML(job)}</td>
+                                <td>${getDaysSinceHTML(job)}</td>
+                                <td><div class="symbols">${getSymbolsHTML(job.symbols)}</div></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        function getFitClass(score) {
+            if (score >= 85) return 'fit-high';
+            if (score >= 70) return 'fit-medium';
+            return 'fit-low';
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'apply-now': '🔴 Apply Now',
+                'maybe': '🟠 Maybe',
+                'probably-not': '🟡 Probably Not',
+                'applied': '🟢 Applied',
+                'archived': '⚪ Archived'
+            };
+            return labels[status] || status;
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            
+            if (diff === 0) return '⚡ Today';
+            if (diff === 1) return '1 day ago';
+            if (diff < 7) return `${diff} days ago`;
+            return dateStr;
+        }
+
+        function getSalaryHTML(salary) {
+            // Extract number from salary string if possible
+            const match = salary.match(/\$(\d+)k/i);
+            if (!match) return salary;
+            
+            const amount = parseInt(match[1]);
+            let className = 'salary-low';
+            
+            if (amount >= 160) {
+                className = 'salary-high';
+            } else if (amount >= 120) {
+                className = 'salary-mid';
+            }
+            
+            return `<span class="${className}">${salary}</span>`;
+        }
+
+        function getDatesHTML(job) {
+            const dates = [];
+            
+            if (job.posted) {
+                dates.push(`<span class="tooltip date-posted">P<span class="tooltiptext">Posted: ${job.posted}</span></span>`);
+            }
+            if (job.found) {
+                dates.push(`<span class="tooltip date-found">F<span class="tooltiptext">Found: ${job.found}</span></span>`);
+            }
+            if (job.applied) {
+                dates.push(`<span class="tooltip date-applied">A<span class="tooltiptext">Applied: ${job.applied}</span></span>`);
+            }
+            
+            return dates.join(' / ');
+        }
+
+        function getSymbolsHTML(symbols) {
+            const symbolMap = {
+                '⚡': 'Posted Today - Apply immediately for best chances',
+                '💰': 'High Pay - $160k+ disclosed salary range',
+                '❓': 'Needs Review - Questionable fit, review before applying',
+                '🎓': 'MSU Alumni at Company - Leverage alumni network',
+                '🔗': 'LinkedIn Connection - You have 1st or 2nd degree connections',
+                '🏢': 'Enterprise/PE-Backed - Established company with resources',
+                '🚀': 'High Growth - Fast-growing startup or scaleup',
+                '❤️': 'Mission Alignment - Strong personal connection to cause',
+                '🎵': 'Arts/Music - Education + arts/culture sector',
+                '❌': 'Rejected - Application was not successful'
+            };
+            
+            return symbols.map(symbol => 
+                `<span class="tooltip">${symbol}<span class="tooltiptext">${symbolMap[symbol] || symbol}</span></span>`
+            ).join(' ');
+        }
+
+        function getConnectionsHTML(job) {
+            if (!job.connections || job.connections.length === 0) {
+                return '<span class="connection-badge connection-none">None</span>';
+            }
+            
+            return job.connections.map(conn => {
+                const badgeClass = conn.reachedOut ? 'connection-reached-out' : 'connection-not-reached';
+                const status = conn.reachedOut ? '✓' : '○';
+                return `<span class="connection-badge ${badgeClass}" onclick="toggleReachOut(${job.id}, '${conn.name}')" style="cursor: pointer;">
+                    ${status} ${conn.name}
+                </span>`;
+            }).join('');
+        }
+
+        function getDaysSinceHTML(job) {
+            // Find the most recent action date
+            const dates = [
+                job.applied ? { date: job.applied, label: 'applied' } : null,
+                job.followup ? { date: job.followup, label: 'follow-up' } : null,
+                job.found ? { date: job.found, label: 'found' } : null
+            ].filter(Boolean);
+            
+            if (dates.length === 0) return '-';
+            
+            // Sort by most recent
+            dates.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const mostRecent = dates[0];
+            
+            const daysSince = Math.floor((new Date() - new Date(mostRecent.date)) / (1000 * 60 * 60 * 24));
+            
+            let colorClass = 'days-old';
+            if (daysSince <= 2) {
+                colorClass = 'days-urgent';
+            } else if (daysSince <= 5) {
+                colorClass = 'days-recent';
+            }
+            
+            // Build tooltip with all dates
+            const tooltipParts = [];
+            if (job.posted) {
+                tooltipParts.push(`<span class="date-posted">Posted: ${job.posted}</span>`);
+            }
+            if (job.found) {
+                tooltipParts.push(`<span class="date-found">Found: ${job.found}</span>`);
+            }
+            if (job.applied) {
+                tooltipParts.push(`<span class="date-applied">Applied: ${job.applied}</span>`);
+            }
+            if (job.followup) {
+                tooltipParts.push(`<span style="color: #9c27b0;">Follow-up: ${job.followup}</span>`);
+            }
+            
+            return `<span class="tooltip days-since ${colorClass}">
+                ${daysSince}d
+                <span class="tooltiptext" style="white-space: normal; text-align: left; min-width: 150px;">
+                    ${tooltipParts.join('<br>')}
+                    <br><strong>${daysSince} days since ${mostRecent.label}</strong>
+                </span>
+            </span>`;
+        }
+
+        async function toggleReachOut(jobId, connectionName) {
+            // Safety check
+            if (!window.currentData || !window.currentData.jobs) {
+                console.error('Data not loaded yet');
+                return;
+            }
+            
+            const data = window.currentData;
+            const job = data.jobs.find(j => j.id === jobId);
+            if (!job || !job.connections) return;
+            
+            const connection = job.connections.find(c => c.name === connectionName);
+            if (connection) {
+                connection.reachedOut = !connection.reachedOut;
+                await saveData(data);
+                await loadData();
+            }
+        }
+
+        function viewPDF(jobId) {
+            alert('PDF viewer coming soon! This will open the saved job description PDF.');
+        }
+
+        function showJobDetail(jobId) {
+            // Safety check
+            if (!window.currentData || !window.currentData.jobs) {
+                console.error('Data not loaded yet');
+                return;
+            }
+            
+            const data = window.currentData;
+            const job = data.jobs.find(j => j.id === jobId);
+            
+            if (!job) return;
+            
+            const modal = document.getElementById('jobModal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <h2>${job.title}</h2>
+                <h3><a href="${job.url}" target="_blank" class="company-link">${job.company}</a></h3>
+                
+                <div style="margin: 20px 0;">
+                    <span class="status-badge status-${job.status}">${getStatusLabel(job.status)}</span>
+                    <span class="fit-score ${getFitClass(job.fitScore)}" style="margin-left: 10px; font-size: 20px;">
+                        Fit Score: ${job.fitScore}/100
+                    </span>
+                </div>
+                
+                <div class="job-detail">
+                    <p><strong>Industry:</strong> ${job.industry}</p>
+                    <p><strong>Location:</strong> ${job.location}</p>
+                    <p><strong>Salary:</strong> ${job.salary}</p>
+                    <p><strong>Posted:</strong> ${job.posted || 'Unknown'}</p>
+                    <p><strong>Found:</strong> ${job.found || 'Unknown'}</p>
+                    ${job.applied ? `<p><strong>Applied:</strong> ${job.applied}</p>` : ''}
+                    ${job.followup ? `<p><strong>Follow-up:</strong> ${job.followup}</p>` : ''}
+                    <p><strong>Days Since Last Action:</strong> ${getDaysSinceHTML(job)}</p>
+                    <p><strong>Symbols:</strong> ${job.symbols.join(' ') || 'None'}</p>
+                </div>
+                
+                ${job.connections && job.connections.length > 0 ? `
+                <div style="margin-top: 20px;">
+                    <h4>🔗 Connections at ${job.company}:</h4>
+                    ${job.connections.map(conn => `
+                        <div style="padding: 10px; background: #f7f9fc; border-radius: 6px; margin: 5px 0;">
+                            <strong>${conn.name}</strong> - ${conn.role}
+                            <br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                                ${conn.reachedOut ? '✅ Reached out' : '⏳ Not contacted yet'}
+                            </span>
+                            <button class="btn-primary" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;" 
+                                onclick="toggleReachOut(${job.id}, '${conn.name}'); showJobDetail(${job.id});">
+                                ${conn.reachedOut ? 'Mark as Not Contacted' : 'Mark as Reached Out'}
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+                ` : '<p style="margin-top: 20px; color: #6c757d;"><em>No known connections at this company yet</em></p>'}
+                
+                <div style="margin-top: 20px;">
+                    <h4>Notes:</h4>
+                    <p>${job.notes}</p>
+                </div>
+                
+                ${job.updates && job.updates.length > 0 ? `
+                <div style="margin-top: 20px; background: #f7f9fc; padding: 15px; border-radius: 8px;">
+                    <h4 style="margin-top: 0;">📝 Update History:</h4>
+                    ${job.updates.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map(update => `
+                        <div style="padding: 10px 0; border-bottom: 1px solid #e0e4e8;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <strong style="color: #667eea;">${update.type}</strong>
+                                    <span style="color: #6c757d; font-size: 12px; margin-left: 10px;">
+                                        ${new Date(update.timestamp).toLocaleString('en-US', { 
+                                            timeZone: 'America/New_York',
+                                            month: 'short', 
+                                            day: 'numeric', 
+                                            year: 'numeric',
+                                            hour: 'numeric',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })} ET
+                                    </span>
+                                </div>
+                            </div>
+                            ${update.notes ? `<p style="margin: 5px 0 0 0; color: #495057;">${update.notes}</p>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+                
+                <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-primary" onclick="window.open('${job.url}', '_blank')" style="background: #28a745;">View Job</button>
+                    <button class="btn-primary" onclick="updateJobStatus(${job.id}, 'applied')">Applied</button>
+                    <button class="btn-primary" onclick="showUpdateForm(${job.id})" style="background: #667eea;">Update</button>
+                    <button class="btn-primary" onclick="markAsRejected(${job.id})" style="background: #dc3545;">Rejected</button>
+                    <button class="btn-primary" onclick="updateJobStatus(${job.id}, 'archived')" style="background: #6c757d;">Archive</button>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('jobModal').classList.remove('active');
+        }
+
+        function closeCommandModal() {
+            document.getElementById('commandModal').classList.remove('active');
+        }
+
+        function closeUpdateModal() {
+            document.getElementById('updateModal').classList.remove('active');
+            document.getElementById('updateForm').reset();
+        }
+
+        function showUpdateForm(jobId) {
+            console.log('Opening update form for job:', jobId);
+            
+            // Reset form first
+            document.getElementById('updateForm').reset();
+            
+            // Get current time in Eastern Time
+            const now = new Date();
+            const etTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+            
+            // Format for datetime-local input (YYYY-MM-DDTHH:MM)
+            const year = etTime.getFullYear();
+            const month = String(etTime.getMonth() + 1).padStart(2, '0');
+            const day = String(etTime.getDate()).padStart(2, '0');
+            const hours = String(etTime.getHours()).padStart(2, '0');
+            const minutes = String(etTime.getMinutes()).padStart(2, '0');
+            const formattedTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            
+            console.log('Setting form values:', { jobId, formattedTime });
+            
+            // Set form values
+            document.getElementById('updateJobId').value = jobId;
+            document.getElementById('updateTimestamp').value = formattedTime;
+            document.getElementById('updateType').value = '';
+            document.getElementById('updateNotes').value = '';
+            
+            // Open modal
+            document.getElementById('updateModal').classList.add('active');
+        }
+
+        async function submitUpdate(event) {
+            event.preventDefault();
+            
+            try {
+                const jobId = parseInt(document.getElementById('updateJobId').value);
+                const type = document.getElementById('updateType').value;
+                const timestamp = document.getElementById('updateTimestamp').value;
+                const notes = document.getElementById('updateNotes').value;
+                
+                console.log('Submitting update:', { jobId, type, timestamp, notes });
+                
+                // Validate inputs
+                if (!jobId) {
+                    alert('Error: Job ID is missing');
+                    return;
+                }
+                
+                if (!type) {
+                    alert('Error: Please select an update type');
+                    return;
+                }
+                
+                if (!timestamp) {
+                    alert('Error: Please select a date and time');
+                    return;
+                }
+                
+                // Convert local datetime to ISO string (preserve the ET time intent)
+                const localDate = new Date(timestamp);
+                if (isNaN(localDate.getTime())) {
+                    alert('Error: Invalid date/time format');
+                    return;
+                }
+                const isoTimestamp = new Date(localDate.getTime() - (localDate.getTimezoneOffset() * 60000)).toISOString();
+                
+                // Get current data
+                if (!window.currentData || !window.currentData.jobs) {
+                    alert('Error: Data not loaded yet. Please refresh the page.');
+                    console.error('Data not loaded yet');
+                    return;
+                }
+                
+                const data = window.currentData;
+                const job = data.jobs.find(j => j.id === jobId);
+                
+                if (!job) {
+                    alert(`Error: Could not find job with ID ${jobId}`);
+                    console.error('Job not found:', jobId);
+                    return;
+                }
+                
+                console.log('Found job:', job);
+                
+                // Initialize updates array if it doesn't exist
+                if (!job.updates) {
+                    job.updates = [];
+                }
+                
+                // Add new update
+                const newUpdate = {
+                    type: type,
+                    timestamp: isoTimestamp,
+                    notes: notes
+                };
+                job.updates.push(newUpdate);
+                
+                console.log('Added update:', newUpdate);
+                
+                // If rejected, add symbol and update status
+                if (type === 'Rejected') {
+                    if (!job.symbols.includes('❌')) {
+                        job.symbols.push('❌');
+                    }
+                    job.status = 'archived';
+                }
+                
+                // If interview scheduled, ensure applied status
+                if (type === 'Interview Scheduled' || type === 'Interview Completed') {
+                    if (job.status === 'apply-now' || job.status === 'maybe') {
+                        job.status = 'applied';
+                    }
+                }
+                
+                // Save and reload
+                console.log('Saving data...');
+                await saveData(data);
+                console.log('Reloading data...');
+                await loadData();
+                
+                // Close modal and refresh job detail
+                closeUpdateModal();
+                showJobDetail(jobId);
+                
+                console.log('Update complete!');
+            } catch (error) {
+                console.error('Error submitting update:', error);
+                alert(`Error saving update: ${error.message}`);
+            }
+        }
+
+        async function markAsRejected(jobId) {
+            if (!confirm('Mark this job as rejected? This will add a rejection update and archive the job.')) {
+                return;
+            }
+            
+            if (!window.currentData || !window.currentData.jobs) {
+                console.error('Data not loaded yet');
+                return;
+            }
+            
+            const data = window.currentData;
+            const job = data.jobs.find(j => j.id === jobId);
+            
+            if (!job) return;
+            
+            // Initialize updates array if it doesn't exist
+            if (!job.updates) {
+                job.updates = [];
+            }
+            
+            // Add rejection update with current ET time
+            const now = new Date();
+            job.updates.push({
+                type: 'Rejected',
+                timestamp: now.toISOString(),
+                notes: 'Marked as rejected'
+            });
+            
+            // Add rejected symbol if not present
+            if (!job.symbols.includes('❌')) {
+                job.symbols.push('❌');
+            }
+            
+            // Archive the job
+            job.status = 'archived';
+            
+            // Save and reload
+            await saveData(data);
+            await loadData();
+            
+            // Refresh job detail
+            showJobDetail(jobId);
+        }
+
+        function showCommandModal() {
+            const modal = document.getElementById('commandModal');
+            const textarea = document.getElementById('commandText');
+            textarea.value = SEARCH_COMMAND;
+            modal.classList.add('active');
+        }
+
+        function copyFromModal() {
+            const textarea = document.getElementById('commandText');
+            textarea.select();
+            
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(SEARCH_COMMAND).then(() => {
+                    alert('✅ Copied to clipboard! Paste into Claude.');
+                    closeCommandModal();
+                }).catch(() => {
+                    // Try fallback
+                    tryModalExecCommand(textarea);
+                });
+            } else {
+                tryModalExecCommand(textarea);
+            }
+        }
+        
+        function tryModalExecCommand(textarea) {
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    alert('✅ Copied to clipboard! Paste into Claude.');
+                    closeCommandModal();
+                } else {
+                    alert('Please manually select the text and copy it (Ctrl+C or Cmd+C)');
+                }
+            } catch (e) {
+                alert('Please manually select the text and copy it (Ctrl+C or Cmd+C)');
+            }
+        }
+
+        function setDefaultView() {
+            // Reset all filters to show (except archived)
+            filterStates = {
+                'all': 'active',
+                'apply-now': 'active',
+                'maybe': 'active',
+                'applied': 'active',
+                'probably-not': 'active',
+                'archived': 'hidden'
+            };
+            
+            // Force sort to fit score descending (reset sortColumn first to avoid toggle)
+            sortColumn = null; // Reset so sortJobs doesn't toggle
+            sortDirection = 'desc';
+            
+            // Update filter button UI
+            updateFilterButtons();
+            
+            // Apply filters and sort (this will call renderJobs properly)
+            sortJobs('fitScore');
+        }
+
+        async function updateJobStatus(jobId, newStatus) {
+            // Safety check
+            if (!window.currentData || !window.currentData.jobs) {
+                console.error('Data not loaded yet');
+                return;
+            }
+            
+            const data = window.currentData;
+            const job = data.jobs.find(j => j.id === jobId);
+            if (job) {
+                const oldStatus = job.status;
+                job.status = newStatus;
+                
+                // Auto-log updates for certain status changes
+                if (newStatus === 'applied' && oldStatus !== 'applied') {
+                    if (!job.updates) {
+                        job.updates = [];
+                    }
+                    job.updates.push({
+                        type: 'Application Submitted',
+                        timestamp: new Date().toISOString(),
+                        notes: 'Marked as applied in dashboard'
+                    });
+                    // Set applied date if not already set
+                    if (!job.applied) {
+                        job.applied = new Date().toISOString().split('T')[0];
+                    }
+                }
+                
+                await saveData(data);
+                await loadData();
+                closeModal();
+                
+                // If job was archived, switch to default view
+                if (newStatus === 'archived') {
+                    setDefaultView();
+                }
+            }
+        }
+
+        function filterJobs() {
+            // Safety check
+            if (!window.currentData || !window.currentData.jobs) {
+                console.error('Data not loaded yet');
+                return;
+            }
+            
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = window.currentData.jobs;
+            
+            // Apply status filters first
+            const onlyStatus = Object.keys(filterStates).find(key => filterStates[key] === 'only');
+            if (onlyStatus) {
+                filtered = filtered.filter(job => job.status === onlyStatus);
+            } else {
+                const hiddenStatuses = Object.keys(filterStates).filter(key => filterStates[key] === 'hidden');
+                filtered = filtered.filter(job => !hiddenStatuses.includes(job.status));
+            }
+            
+            // Then apply search filter
+            if (searchTerm) {
+                filtered = filtered.filter(job => {
+                    return job.title.toLowerCase().includes(searchTerm) ||
+                           job.company.toLowerCase().includes(searchTerm) ||
+                           job.industry.toLowerCase().includes(searchTerm);
+                });
+            }
+            
+            renderJobs(filtered);
+        }
+
+        function filterByStatus(status) {
+            const btn = event.target;
+            
+            // Handle "All Jobs" button - reset everything
+            if (status === 'all') {
+                filterStates = {
+                    'all': 'active',
+                    'apply-now': 'active',
+                    'maybe': 'active',
+                    'applied': 'active',
+                    'probably-not': 'active',
+                    'archived': 'active'
+                };
+                updateFilterButtons();
+                sortJobs(sortColumn); // Maintain current sort
+                return;
+            }
+            
+            // 3-state cycle for other buttons: active → hidden → only → active
+            const currentState = filterStates[status];
+            
+            if (currentState === 'active') {
+                // First click: hide this status
+                filterStates[status] = 'hidden';
+            } else if (currentState === 'hidden') {
+                // Second click: show ONLY this status
+                filterStates[status] = 'only';
+            } else {
+                // Third click: back to active (show all)
+                filterStates[status] = 'active';
+            }
+            
+            // Reset "All Jobs" since we're filtering now
+            filterStates['all'] = 'inactive';
+            
+            updateFilterButtons();
+            applyFilters();
+        }
+
+        function updateFilterButtons() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'hidden', 'only');
+                
+                // Safely extract status from onclick attribute
+                const onclick = btn.getAttribute('onclick');
+                if (!onclick) return; // Skip buttons without onclick
+                
+                const match = onclick.match(/'([^']+)'/);
+                if (!match) return; // Skip if regex doesn't match
+                
+                const status = match[1];
+                const state = filterStates[status];
+                
+                if (state === 'active' || state === 'inactive') {
+                    btn.classList.add('active');
+                } else if (state === 'hidden') {
+                    btn.classList.add('hidden');
+                } else if (state === 'only') {
+                    btn.classList.add('only');
+                }
+            });
+            
+            // Update filter status message
+            const statusEl = document.getElementById('filterStatus');
+            if (statusEl) {
+                const onlyStatus = Object.keys(filterStates).find(key => filterStates[key] === 'only');
+                const hiddenStatuses = Object.keys(filterStates).filter(key => filterStates[key] === 'hidden' && key !== 'all');
+                
+                if (onlyStatus) {
+                    const labels = {
+                        'apply-now': '🔴 Apply Now',
+                        'maybe': '🟠 Maybe',
+                        'applied': '🟢 Applied',
+                        'archived': '⚪ Archived'
+                    };
+                    statusEl.innerHTML = `<strong>Showing only:</strong> ${labels[onlyStatus] || onlyStatus}`;
+                } else if (hiddenStatuses.length > 0) {
+                    const labels = hiddenStatuses.map(s => {
+                        const labelMap = {
+                            'apply-now': '🔴 Apply Now',
+                            'maybe': '🟠 Maybe',
+                            'applied': '🟢 Applied',
+                            'archived': '⚪ Archived'
+                        };
+                        return labelMap[s] || s;
+                    });
+                    statusEl.innerHTML = `<strong>Hidden:</strong> ${labels.join(', ')}`;
+                } else {
+                    statusEl.innerHTML = '';
+                }
+            }
+        }
+
+        function applyFilters() {
+            // Safety check
+            if (!window.currentData || !window.currentData.jobs) {
+                console.error('Data not loaded yet');
+                return;
+            }
+            
+            let filtered = window.currentData.jobs;
+            
+            // Check if any status is set to "only"
+            const onlyStatus = Object.keys(filterStates).find(key => filterStates[key] === 'only');
+            
+            if (onlyStatus) {
+                // Show only this status
+                filtered = filtered.filter(job => job.status === onlyStatus);
+            } else {
+                // Hide statuses marked as "hidden"
+                const hiddenStatuses = Object.keys(filterStates).filter(key => filterStates[key] === 'hidden');
+                filtered = filtered.filter(job => !hiddenStatuses.includes(job.status));
+            }
+            
+            // Sort the filtered array
+            const sorted = filtered.sort((a, b) => {
+                let aVal, bVal;
+                
+                switch(sortColumn) {
+                    case 'fitScore':
+                        return sortDirection === 'desc' ? b.fitScore - a.fitScore : a.fitScore - b.fitScore;
+                    
+                    case 'title':
+                        return sortDirection === 'asc' ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
+                    
+                    case 'company':
+                        return sortDirection === 'asc' ? a.company.localeCompare(b.company) : b.company.localeCompare(a.company);
+                    
+                    case 'salary':
+                        aVal = parseInt((a.salary.match(/\d+/) || [0])[0]);
+                        bVal = parseInt((b.salary.match(/\d+/) || [0])[0]);
+                        return sortDirection === 'desc' ? bVal - aVal : aVal - bVal;
+                    
+                    case 'status':
+                        const statusOrder = {'apply-now': 0, 'maybe': 1, 'applied': 2, 'probably-not': 3, 'archived': 4};
+                        aVal = statusOrder[a.status] || 99;
+                        bVal = statusOrder[b.status] || 99;
+                        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+                    
+                    case 'connections':
+                        aVal = a.connections ? a.connections.length : 0;
+                        bVal = b.connections ? b.connections.length : 0;
+                        return sortDirection === 'desc' ? bVal - aVal : aVal - bVal;
+                    
+                    case 'daysSince':
+                        aVal = a.found ? new Date(a.found).getTime() : 0;
+                        bVal = b.found ? new Date(b.found).getTime() : 0;
+                        return sortDirection === 'desc' ? bVal - aVal : aVal - bVal;
+                    
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Render the sorted, filtered jobs
+            renderJobs(sorted);
+        }
+
+        function updateStats(data) {
+            const lastSearch = data.lastSearch ? new Date(data.lastSearch) : null;
+            const now = new Date();
+            
+            if (lastSearch) {
+                const diffDays = Math.floor((now - lastSearch) / (1000 * 60 * 60 * 24));
+                const timeStr = lastSearch.toLocaleString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit'
+                });
+                
+                document.getElementById('lastSearchDisplay').innerHTML = `
+                    ${timeStr}<br>
+                    <span style="font-size: 14px; opacity: 0.8;">(${diffDays} days ago)</span>
+                `;
+            } else {
+                document.getElementById('lastSearchDisplay').textContent = 'Never';
+            }
+            
+            document.getElementById('totalJobsDisplay').textContent = data.jobs.length;
+            document.getElementById('applyNowCount').textContent = 
+                data.jobs.filter(j => j.status === 'apply-now').length;
+            document.getElementById('appliedCount').textContent = 
+                data.jobs.filter(j => j.status === 'applied').length;
+        }
+
+        function renderSearchHistory(data) {
+            const container = document.getElementById('searchHistoryContainer');
+            
+            if (data.searchHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <h3>No Search History Yet</h3>
+                        <p>Your search history will appear here once you run your first search</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = data.searchHistory.map(search => `
+                <div class="job-detail" style="margin-bottom: 15px;">
+                    <strong>${new Date(search.timestamp).toLocaleString()}</strong>
+                    <p>Jobs Found: ${search.jobsFound} | New: ${search.newJobs} | Sources: ${search.sources.join(', ')}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderArchive(data) {
+            const container = document.getElementById('archiveContainer');
+            
+            if (data.pdfArchive.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <h3>No Archived PDFs Yet</h3>
+                        <p>Job descriptions for "Apply Now" tier jobs will be automatically saved here</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = data.pdfArchive.map(pdf => `
+                <div class="job-detail" style="margin-bottom: 15px;">
+                    <strong>${pdf.company} - ${pdf.title}</strong>
+                    <p>Saved: ${new Date(pdf.savedDate).toLocaleDateString()}</p>
+                    <button class="btn-primary" onclick="downloadPDF('${pdf.id}')">📥 Download PDF</button>
+                </div>
+            `).join('');
+        }
+
+        function saveFilters() {
+            alert('✅ Filter settings saved!');
+        }
+
+        function resetFilters() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            alert('🔄 Filters reset to defaults');
+        }
+
+        async function loadData() {
+            const data = await initStorage();
+            window.currentData = data;
+            
+            // Initialize updates array for all jobs if it doesn't exist
+            data.jobs.forEach(job => {
+                if (!job.updates) {
+                    job.updates = [];
+                }
+            });
+            
+            // Set default filter state (hide archived, show everything else)
+            filterStates = {
+                'all': 'active',
+                'apply-now': 'active',
+                'maybe': 'active',
+                'applied': 'active',
+                'probably-not': 'active',
+                'archived': 'hidden'
+            };
+            
+            // Sort by fit score by default
+            sortColumn = 'fitScore';
+            sortDirection = 'desc';
+            data.jobs.sort((a, b) => b.fitScore - a.fitScore);
+            
+            updateStats(data);
+            renderSearchHistory(data);
+            renderArchive(data);
+            renderBoardStats(data.jobs);
+            updateFilterButtons();
+            
+            // Apply default filters and render
+            applyFilters();
+        }
+
+        // Initialize on load
+        window.addEventListener('load', loadData);
+    </script>
+</body>
+</html>,

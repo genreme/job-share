@@ -1,0 +1,2974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Powered Job Application Playbook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #1a365d;
+      --navy-light: #2c5282;
+      --text: #1f2937;
+      --text-secondary: #4b5563;
+      --text-muted: #6b7280;
+      --bg: #ffffff;
+      --bg-subtle: #f9fafb;
+      --bg-page: #f3f4f6;
+      
+      /* GROUP 1: FOUNDATION - Green to Teal */
+      --foundation-primary: #10b981;
+      --foundation-secondary: #14b8a6;
+      --foundation-tertiary: #06b6d4;
+      --foundation-bg: #ecfdf5;
+      --foundation-border: #86efac;
+      
+      /* GROUP 2: APPLICATION - Yellow to Red */
+      --phase-0: #eab308;
+      --phase-0-bg: #fefce8;
+      --phase-1: #f59e0b;
+      --phase-1-bg: #fef3c7;
+      --phase-2: #f97316;
+      --phase-2-bg: #ffedd5;
+      --phase-3: #ef4444;
+      --phase-3-bg: #fee2e2;
+      --phase-4: #dc2626;
+      --phase-4-bg: #fef2f2;
+      
+      /* GROUP 3: INTERVIEW - Blue tones */
+      --interview-primary: #3b82f6;
+      --interview-secondary: #2563eb;
+      --interview-accent: #1d4ed8;
+      --interview-bg: #eff6ff;
+      --interview-border: #93c5fd;
+      
+      /* GROUP 4: POST-INTERVIEW - Indigo to Navy */
+      --post-primary: #6366f1;
+      --post-secondary: #4f46e5;
+      --post-accent: #3730a3;
+      --post-bg: #eef2ff;
+      --post-border: #c7d2fe;
+      
+      --setting-on: #059669;
+      --setting-rec: #ca8a04;
+      --setting-off: #9ca3af;
+      
+      --highlight: #fef9c3;
+      --highlight-border: #eab308;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg-page);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+    
+    /* Placeholder styling */
+    .ph {
+      color: #6b7280;
+      background: #e5e7eb;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 0.92em;
+    }
+    
+    /* Header / Title */
+    .title-card {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    
+    .title-bar {
+      height: 4px;
+      background: var(--navy);
+      border-radius: 2px;
+      margin-bottom: 20px;
+    }
+    
+    .title-badge {
+      display: inline-block;
+      background: var(--navy);
+      color: white;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      padding: 5px 12px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    
+    .title-main {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    
+    .title-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+    
+    .title-line {
+      height: 3px;
+      background: linear-gradient(90deg, 
+        var(--foundation-primary), 
+        var(--foundation-tertiary),
+        var(--phase-1), 
+        var(--phase-3), 
+        var(--interview-primary),
+        var(--interview-accent),
+        var(--post-primary),
+        var(--post-accent)
+      );
+      margin-top: 24px;
+      border-radius: 2px;
+    }
+    
+    /* Unified Section Containers */
+    .section-group {
+      background: var(--bg);
+      border-radius: 12px;
+      margin-bottom: 40px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border-left: 5px solid;
+      position: relative;
+      overflow: hidden;
+      padding-bottom: 24px;
+    }
+    
+    .section-group[data-group="foundation"] {
+      border-left-color: var(--foundation-primary);
+      background: linear-gradient(135deg, var(--foundation-bg) 0%, var(--bg) 50%);
+    }
+    
+    .section-group[data-group="application"] {
+      border-left-color: var(--phase-1);
+      background: linear-gradient(135deg, var(--phase-1-bg) 0%, var(--bg) 50%);
+    }
+    
+    .section-group[data-group="interview"] {
+      border-left-color: var(--interview-primary);
+      background: linear-gradient(135deg, var(--interview-bg) 0%, var(--bg) 50%);
+    }
+    
+    .section-group[data-group="post"] {
+      border-left-color: var(--post-primary);
+      background: linear-gradient(135deg, var(--post-bg) 0%, var(--bg) 50%);
+    }
+    
+    /* Section Headers */
+    .section-group-header {
+      padding: 24px 28px;
+      position: relative;
+    }
+    
+    .section-header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    
+    .section-header-left {
+      flex: 1;
+      padding-right: 20px;
+    }
+    
+    .section-group-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      color: white;
+    }
+    
+    .section-group[data-group="foundation"] .section-group-badge {
+      background: var(--foundation-primary);
+    }
+    
+    .section-group[data-group="application"] .section-group-badge {
+      background: var(--phase-1);
+    }
+    
+    .section-group[data-group="interview"] .section-group-badge {
+      background: var(--interview-primary);
+    }
+    
+    .section-group[data-group="post"] .section-group-badge {
+      background: var(--post-primary);
+    }
+    
+    .section-group-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0;
+    }
+    
+    .section-group-description {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin: 0;
+      padding-top: 4px;
+    }
+    
+    /* Section Controls */
+    .section-controls {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    
+    .section-control-btn {
+      background: white;
+      border: 1px solid #e5e7eb;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    
+    .section-control-btn:hover {
+      background: var(--bg-subtle);
+      border-color: #d1d5db;
+      color: var(--text);
+    }
+    
+    /* Section Content Area */
+    .section-group-content {
+      padding: 0 28px;
+    }
+    
+    /* Controls (Global) */
+    .controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    
+    .control-btn {
+      background: var(--bg);
+      border: 1px solid #e5e7eb;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .control-btn:hover {
+      background: var(--bg-subtle);
+      border-color: #d1d5db;
+      color: var(--text);
+    }
+    
+    .control-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    /* Section Cards */
+    .section-card {
+      background: transparent;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      box-shadow: none;
+      overflow: hidden;
+    }
+    
+    .section-card.intro-card {
+      padding: 0;
+    }
+    
+    .section-card.current-app-card {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      padding: 20px 24px;
+      margin: 0 0 16px 0;
+    }
+    
+    /* Phase Header */
+    .phase-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      min-height: 72px;
+      gap: 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px 12px 0 0;
+    }
+    
+    .section-card .phase-header.collapsed {
+      border-radius: 12px;
+    }
+    
+    /* Subtle gradient overlay */
+    .phase-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 100%);
+      pointer-events: none;
+    }
+    
+    .phase-header:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .phase-header:hover::before {
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.05) 100%);
+    }
+    
+    .phase-header:active {
+      transform: translateY(0px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .phase-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+    
+    .phase-number {
+      font-size: 32px;
+      font-weight: 700;
+      opacity: 0.25;
+      line-height: 1;
+      min-width: 36px;
+      flex-shrink: 0;
+    }
+    
+    .phase-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      white-space: nowrap;
+    }
+    
+    .phase-header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+    
+    .phase-meta {
+      font-size: 12px;
+      font-weight: 400;
+      opacity: 0.7;
+      margin-right: 8px;
+      line-height: 1.4;
+      max-width: 380px;
+    }
+    
+    @media (max-width: 700px) {
+      .phase-meta {
+        display: none;
+      }
+    }
+    
+    .phase-chevron {
+      width: 20px;
+      height: 20px;
+      opacity: 0.6;
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+    }
+    
+    .phase-header.collapsed .phase-chevron {
+      transform: rotate(-90deg);
+    }
+    
+    /* Phase Content */
+    .phase-content {
+      padding: 0 28px 24px;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease, opacity 0.25s ease;
+    }
+    
+    .phase-content.collapsed {
+      max-height: 0 !important;
+      padding-top: 0;
+      padding-bottom: 0;
+      opacity: 0;
+    }
+    
+    .phase-intro {
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      padding-top: 20px;
+      font-size: 14px;
+    }
+    
+    /* Section Headers */
+    h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 24px 0 12px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    h2:first-child, .phase-intro + h2 {
+      margin-top: 0;
+    }
+    
+    /* Prompt Sections */
+    .prompt-section {
+      margin: 20px 0;
+    }
+    
+    .prompt-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    
+    .prompt-id {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    
+    .prompt-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    
+    .settings {
+      font-size: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 14px;
+    }
+    
+    .setting {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .setting-label { color: var(--text-muted); }
+    .setting-on { color: var(--setting-on); font-weight: 600; }
+    .setting-rec { color: var(--setting-rec); font-weight: 600; }
+    .setting-off { color: var(--setting-off); }
+    
+    /* Prompt Box */
+    .prompt-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--navy);
+      padding: 14px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #374151;
+      white-space: pre-wrap;
+      border-radius: 0 6px 6px 0;
+      position: relative;
+    }
+    
+    .prompt-box .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-muted);
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    
+    .prompt-box:hover .copy-btn {
+      opacity: 1;
+    }
+    
+    .prompt-box .copy-btn:hover {
+      background: var(--bg-subtle);
+      color: var(--text);
+    }
+    
+    /* Export Note */
+    .export-note {
+      background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+      border-left: 4px solid var(--phase-4);
+      padding: 10px 14px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      border-radius: 0 6px 6px 0;
+    }
+    
+    .export-icon { font-size: 14px; }
+    .export-label { font-weight: 600; color: #92400e; }
+    .export-text { color: #78350f; }
+    
+    /* Prepare Box */
+    .prepare-box {
+      background: var(--bg-subtle);
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .prepare-label { font-weight: 600; color: var(--text-secondary); }
+    .prepare-items { color: var(--text-muted); }
+    
+    /* Callout */
+    .callout {
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin: 16px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .callout-icon { font-size: 16px; line-height: 1; }
+    .callout-text { font-size: 13px; }
+    .callout-text strong { color: inherit; }
+    
+    .callout.tip {
+      background: var(--phase-1-bg);
+      border-left: 4px solid var(--phase-1);
+    }
+    
+    .callout.tip .callout-text strong { color: var(--phase-1); }
+    
+    /* Upload Box - Prominent file upload section */
+    .upload-box {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 2px dashed #0891b2;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+    
+    .upload-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    
+    .upload-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+    
+    .upload-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0c4a6e;
+      margin: 0;
+    }
+    
+    .upload-description {
+      font-size: 13px;
+      color: #0369a1;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    
+    .upload-files {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .upload-files li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #0c4a6e;
+      border: 1px solid rgba(8, 145, 178, 0.2);
+    }
+    
+    .upload-files li::before {
+      content: "📄";
+      font-size: 18px;
+      line-height: 1;
+    }
+    
+    .upload-files li code {
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+      background: rgba(8, 145, 178, 0.1);
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #0c4a6e;
+    }
+    
+    /* New Block */
+    .new-block {
+      background: var(--highlight);
+      border: 1px solid var(--highlight-border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin: 16px 0;
+    }
+    
+    .new-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #a16207;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    
+    /* Two Column */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    @media (max-width: 600px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    
+    /* Lists */
+    .checklist {
+      list-style: none;
+    }
+    
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    
+    .checklist li::before {
+      content: "☐";
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    
+    ul.bullets {
+      list-style: none;
+      margin: 8px 0;
+    }
+    
+    ul.bullets li {
+      position: relative;
+      padding-left: 16px;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    
+    ul.bullets li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--navy);
+      font-weight: bold;
+    }
+    
+    /* Tables */
+    .quick-ref table, .decision-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 12px 0;
+    }
+    
+    .quick-ref th, .decision-table th {
+      background: var(--navy);
+      color: white;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    
+    .quick-ref td, .decision-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .quick-ref th:first-child { width: 140px; border-radius: 6px 0 0 0; }
+    .quick-ref th:nth-child(2) { width: 80px; text-align: center; }
+    .quick-ref th:last-child { border-radius: 0 6px 0 0; }
+    .quick-ref td:nth-child(2) { text-align: center; color: var(--text-muted); }
+    
+    .phase-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    
+    .phase-row-label {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+    
+    /* Decision Point */
+    .decision-point {
+      background: linear-gradient(135deg, #f0f4f8 0%, #e8eef4 100%);
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+    
+    .decision-point h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+    
+    .decision-point ul { list-style: none; }
+    
+    .decision-point li {
+      font-size: 14px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    
+    .score-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    
+    .score-high { background: #dcfce7; color: #166534; }
+    .score-med { background: #fef3c7; color: #92400e; }
+    .score-low { background: #fee2e2; color: #991b1b; }
+    
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    
+    /* Context Fields */
+    .context-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    
+    @media (max-width: 600px) {
+      .context-fields { grid-template-columns: 1fr; }
+    }
+    
+    .context-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .context-field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    .context-field input {
+      padding: 8px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg-subtle);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    
+    .context-field input:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+    }
+    
+    .context-field input::placeholder {
+      color: #9ca3af;
+    }
+    
+    .context-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+    
+    .clear-btn {
+      background: transparent;
+      border: 1px solid #e5e7eb;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: inherit;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    
+    .clear-btn:hover {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+    
+    .clear-btn.start-new {
+      background: #dc2626;
+      color: white;
+      border-color: #dc2626;
+    }
+    
+    .clear-btn.start-new:hover {
+      background: #b91c1c;
+      border-color: #b91c1c;
+    }
+    
+    .clear-personal:hover {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+    
+    /* Filled placeholder styling */
+    .ph.filled {
+      background: #dbeafe;
+      color: #1e40af;
+      font-weight: 500;
+    }
+
+    /* Progress indicator */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--bg-page);
+      z-index: 100;
+    }
+    
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, 
+        var(--foundation-primary), 
+        var(--foundation-tertiary),
+        var(--phase-1), 
+        var(--phase-3), 
+        var(--interview-primary),
+        var(--interview-accent),
+        var(--post-primary),
+        var(--post-accent)
+      );
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+    
+    /* Utility Section */
+    .utility-section {
+      background: var(--bg);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      overflow: hidden;
+      border: 1px dashed #d1d5db;
+    }
+    
+    .utility-header {
+      padding: 14px 24px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .utility-header:hover {
+      background: #f3f4f6;
+      color: var(--text);
+    }
+    
+    .utility-header::after {
+      content: "▼";
+      font-size: 10px;
+      opacity: 0.5;
+      transition: transform 0.2s ease;
+    }
+    
+    .utility-header.collapsed::after {
+      transform: rotate(-90deg);
+    }
+    
+    .utility-content {
+      padding: 20px 24px;
+      overflow: visible;
+      max-height: none;
+      transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.2s ease;
+    }
+    
+    .utility-content.collapsed {
+      max-height: 0 !important;
+      padding-top: 0;
+      padding-bottom: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+    
+    .utility-content p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    
+    /* Print styles */
+    @media print {
+      body { background: white; }
+      .container { max-width: 100%; padding: 0; }
+      .controls, .copy-btn, .progress-bar { display: none; }
+      .section-card { box-shadow: none; border: 1px solid #e5e7eb; }
+      .phase-content.collapsed { max-height: none !important; opacity: 1; padding: 0 28px 24px; }
+      .phase-chevron { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-bar-fill"></div></div>
+
+<div class="container">
+
+  <!-- TITLE CARD -->
+  <div class="title-card">
+    <div class="title-bar"></div>
+    <div class="title-badge">AI-POWERED</div>
+    <h1 class="title-main">Job Application Playbook</h1>
+    <p class="title-subtitle">A systematic approach for senior-level roles</p>
+    <div class="title-line"></div>
+  </div>
+
+    <!-- ========================================
+       FOUNDATION
+       ======================================== -->
+
+  <div class="section-group" data-group="foundation">
+    <div class="section-group-header">
+      <div class="section-header-top">
+        <div class="section-header-left">
+          <div class="section-group-badge">FOUNDATION</div>
+          <h2 class="section-group-title">Start Here</h2>
+        </div>
+        <div class="section-controls">
+          <button class="section-control-btn" onclick="expandSection('foundation')">Expand All</button>
+          <button class="section-control-btn" onclick="collapseSection('foundation')">Collapse All</button>
+        </div>
+      </div>
+      <p class="section-group-description">Set up your foundation — build your profile, develop reusable positioning, and create tracking systems. Complete once, use across all applications.</p>
+    </div>
+    
+    <div class="section-group-content">
+<!-- INTRO SECTION -->
+  <div class="section-card" data-phase="intro">
+    <div class="phase-header collapsed" style="background: linear-gradient(135deg, #10b981, #059669); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number" style="font-size: 20px;">📖</span>
+        <span class="phase-title">Getting Started</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">Overview, setup checklist, and tips</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed" id="intro-content">
+    <h2 style="margin-top: 20px;">What Is This?</h2>
+    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+      This playbook is a structured system for applying to senior-level roles using AI as your strategic partner. Instead of generic applications, you'll build deeply researched, highly tailored materials that demonstrate real understanding of the company and role.
+    </p>
+    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 0;">
+      The playbook is organized into four groups: <strong>Foundation</strong> (do once), <strong>Application Process</strong> (per role), <strong>Interview Preparation</strong>, and <strong>Post-Interview</strong>. Prompts are designed to be copied directly into Claude (or another AI), with placeholders <span class="ph">[LIKE THIS]</span> that you fill in.
+    </p>
+
+    <h2>Why Claude</h2>
+    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 10px;">Optimized for Claude at claude.ai, which excels at strategic analysis and maintaining context across long conversations.</p>
+    <ul class="bullets">
+      <li><strong>Opus 4.5</strong> (Pro) — Most sophisticated outputs, best for nuanced writing</li>
+      <li><strong>Sonnet 4.5</strong> (Free/Pro) — Very capable, may need more iteration</li>
+      <li><strong>Research Mode</strong> (Pro) — Significantly improves research phases</li>
+    </ul>
+    <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">Prompts work with other AI tools (ChatGPT, Gemini, Copilot), though you may need to adjust for different capabilities and context handling.</p>
+
+    <h2>Before You Start</h2>
+    <div class="two-col">
+      <ul class="checklist">
+        <li>Complete Foundation → Setup once</li>
+        <li>Start a new chat for each application</li>
+        <li>Paste your Application Profile at the start</li>
+      </ul>
+      <ul class="checklist">
+        <li>Attach your baseline resume</li>
+        <li>Paste or attach the full job description</li>
+        <li>Have the company website URL ready</li>
+      </ul>
+    </div>
+
+    <h2>How to Use This Playbook</h2>
+    <div class="two-col">
+      <div>
+        <p style="font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px;">Time Investment</p>
+        <ul class="bullets">
+          <li><strong>Foundation:</strong> 1–2 hours (complete once)</li>
+          <li><strong>Application Process:</strong> 2–3 hours per role</li>
+          <li><strong>Interview Prep:</strong> 1–2 hours per interview</li>
+          <li><strong>Post-Interview:</strong> 30–60 min as needed</li>
+        </ul>
+      </div>
+      <div>
+        <p style="font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px;">Context & Outputs</p>
+        <ul class="bullets">
+          <li>Claude retains everything in a chat—no need to re-paste</li>
+          <li>Reference outputs by ID: "Using 1A and 3A..."</li>
+          <li>Save Foundation outputs externally for reuse</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Refining Outputs</h2>
+    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">When Claude's output needs adjustment, use targeted follow-ups:</p>
+    <ul class="bullets" style="margin: 0;">
+      <li><strong>Too generic:</strong> "Make this more specific to [COMPANY'S SITUATION]"</li>
+      <li><strong>Wrong tone:</strong> "Adjust tone to be more [formal/conversational/confident]"</li>
+      <li><strong>Missing emphasis:</strong> "Emphasize my experience with [SPECIFIC SKILL] more"</li>
+      <li><strong>Too long:</strong> "Tighten this to [X words] while keeping the key points"</li>
+    </ul>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="section-card" data-phase="setup">
+    <div class="phase-header collapsed" style="background: linear-gradient(135deg, #14b8a6, #0d9488); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number" style="font-size: 20px;">⚙️</span>
+        <span class="phase-title">Setup</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">10–15 min • Build your reusable profile</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Build your professional profile once. This creates reusable content for all your applications and reduces repetitive placeholder filling.</p>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">Profile Builder</span>
+          <span class="prompt-desc">— Interactive interview to capture your background</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">I'm setting up my job application profile. Please interview me to build a reusable summary I can paste into future application chats.
+
+Ask me about (one topic at a time, conversationally):
+
+1. CURRENT/RECENT ROLE
+   - Title, company, years in role
+   - Team size and scope (budget, reports, reach)
+   - Sector/industry
+
+2. KEY ACHIEVEMENTS
+   - 3-5 major projects or accomplishments
+   - Metrics and outcomes for each
+   - What made each significant
+
+3. CAREER TRAJECTORY
+   - How I got here (brief arc)
+   - What I'm known for / my reputation
+   - Leadership philosophy in 1-2 sentences
+
+4. TARGET ROLES
+   - Role types I'm pursuing (titles, level)
+   - Company types that interest me (size, sector, stage)
+   - What I value most in a role (mission, growth, autonomy, etc.)
+
+5. KNOWN GAPS OR PIVOTS
+   - Any career transitions I'm navigating
+   - Gaps I expect to address (industry, skills, etc.)
+
+After the interview, compile everything into a structured "Application Profile" I can save and reuse, then generate it as a PDF file.
+
+Filename: Application-Profile_v1_<span class="ph">[YYYY-MM-DD]</span>.pdf
+
+Start with the first question.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">📥</span>
+          <span class="export-label">EXPORT:</span>
+          <span class="export-text">Download PDF and save to a dedicated folder for easy access across chats</span>
+        </div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">Profile Update</span>
+          <span class="prompt-desc">— Evolve your profile over time</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Here's my current Application Profile:
+<span class="ph">[PASTE EXISTING PROFILE]</span>
+
+I need to update it with:
+<span class="ph">[DESCRIBE CHANGES — e.g., "Add a new project: led website redesign that increased conversions 40%" / "Update target roles to focus more on startups" / "Refine my leadership philosophy based on interview feedback" / "Add a gap I've been asked about: limited B2B experience"]</span>
+
+Please integrate these updates and generate the revised profile as a PDF.
+
+Filename: Application-Profile_v<span class="ph">[VERSION#]</span>_<span class="ph">[YYYY-MM-DD]</span>.pdf<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">📥</span>
+          <span class="export-label">EXPORT:</span>
+          <span class="export-text">Download PDF — keep previous versions for reference</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- APPLICATION TRACKER -->
+  <div class="section-card" data-phase="tracker">
+    <div class="phase-header collapsed" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number" style="font-size: 20px;">📊</span>
+        <span class="phase-title">Application Tracker</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">15 min setup • Central hub for all applications</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Track every application in one place. Update as you progress through each opportunity.</p>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">Tracker Setup</span>
+          <span class="prompt-desc">— Create your master tracking system</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Create an application tracking system for me.
+
+For each application, track:
+- Company & Role
+- Date Applied
+- Status (Assessing / Applied / Interviewing / Offer / Rejected / Accepted / Withdrawn)
+- Priority Level (High / Medium / Low)
+- Key Dates (deadlines, interview dates, follow-ups)
+- Materials Used (resume version, cover letter, portfolio pieces)
+- Contacts (names, titles, how connected)
+- Notes & Next Actions
+
+Start with these current applications:
+<span class="ph">[LIST YOUR CURRENT APPLICATIONS, or write "I'll add applications as I go"]</span>
+
+Format as a table I can easily copy and update. Then generate as a spreadsheet.
+
+Filename: Job-Applications-Tracker_<span class="ph">[YYYY-MM-DD]</span>.xlsx
+
+Remember as 'Application Tracker'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">📥</span>
+          <span class="export-label">EXPORT:</span>
+          <span class="export-text">Download spreadsheet and update regularly</span>
+        </div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">Tracker Update</span>
+          <span class="prompt-desc">— Add or update applications</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Update my Application Tracker:
+
+<span class="ph">[DESCRIBE UPDATES — e.g., "Add: VP Creative at Acme Corp, applied 1/15, high priority" / "Update: Media Cause status to 'Rejected' with note about feedback" / "Add interview date for Berklee: 1/22 at 2pm with Jane Smith, CMO"]</span>
+
+Show the updated tracker, then regenerate the spreadsheet.
+
+Filename: Job-Applications-Tracker_<span class="ph">[YYYY-MM-DD]</span>.xlsx<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">📥</span>
+          <span class="export-label">EXPORT:</span>
+          <span class="export-text">Download updated spreadsheet</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POSITIONING FOUNDATION -->
+  <div class="section-card" data-phase="positioning-foundation">
+    <div class="phase-header collapsed" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number" style="font-size: 20px;">🎯</span>
+        <span class="phase-title">Positioning Foundation</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">30–45 min • Leadership thesis, signature stories, core positioning</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Develop reusable strategic framing. Do this once, then adapt elements to specific roles in the Interview phase.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Your full career history • Key achievements and metrics • Target role type</span>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">PF-A: Leadership Thesis</span>
+          <span class="prompt-desc">— Your point of view on how your function should operate</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Help me articulate my leadership thesis.
+
+My background: <span class="ph">[YOUR SUMMARY — e.g., "9+ years scaling creative operations, grew from IC to leading team of 10+, built systems that drove measurable outcomes"]</span>
+
+Questions to answer:
+1. What do I believe about how this function should operate?
+2. What's my leadership philosophy?
+3. What makes my approach distinctive?
+
+Format: 2-3 sentences for "What's your leadership philosophy?"
+
+Remember as 'PF-A: Leadership Thesis'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">📥</span>
+          <span class="export-label">EXPORT:</span>
+          <span class="export-text">Save externally for reuse across applications</span>
+        </div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">PF-B: Signature Stories</span>
+          <span class="prompt-desc">— Stories that illustrate key competencies</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Develop signature stories for these themes:
+1. Scaling/growth  2. Crisis leadership  3. Cross-functional influence
+4. Innovation  5. Difficult decision  6. Team development  7. Strategic pivot
+
+Prioritize 3-4 most relevant to <span class="ph">[YOUR TARGET ROLES]</span>.
+
+For each: Situation (2 sentences) → Challenge → Action → Result → Insight
+
+My key experiences to draw from: <span class="ph">[LIST 3-5 MAJOR PROJECTS]</span>
+
+Remember as 'PF-B: Signature Stories'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">📥</span>
+          <span class="export-label">EXPORT:</span>
+          <span class="export-text">Save externally for reuse across applications</span>
+        </div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">PF-C: Positioning Statements</span>
+          <span class="prompt-desc">— Elevator pitches at different lengths</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Create positioning statements:
+1. 30-second — who I am, what I do, what makes me distinctive
+2. 60-second — add one proof point and what I'm looking for
+3. 2-minute — full "tell me about yourself" with past→present→future arc
+
+Target: <span class="ph">[ROLE TYPE]</span> at <span class="ph">[COMPANY TYPE]</span>
+
+Remember as 'PF-C: Positioning Statements'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">📥</span>
+          <span class="export-label">EXPORT:</span>
+          <span class="export-text">Save externally for reuse across applications</span>
+        </div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">PF-D: Objection Handling</span>
+          <span class="prompt-desc">— Prepare for general pushback on your background</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">What objections might hiring managers have about my background?
+
+Likely concerns: <span class="ph">[LIST ANY YOU'VE NOTICED OR ANTICIPATE — e.g., "Limited B2B experience," "Never managed P&L," "Career mostly in nonprofits"]</span>
+
+For each: 1. Acknowledge — show I understand the concern
+2. Reframe — why it's an advantage or not applicable
+3. Evidence — specific proof from my experience
+
+Remember as 'PF-D: Objection Responses'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UNIVERSAL REFINEMENT -->
+  <div class="utility-section">
+    <div class="utility-header collapsed" onclick="toggleUtility(this)">
+      🔄 Universal Refinement Prompt (Use Anytime)
+    </div>
+    <div class="utility-content collapsed">
+      <p>Use this to refine ANY output from any phase. Works for resumes, cover letters, interview prep, or any other deliverable.</p>
+      <div class="prompt-box">Refine <span class="ph">[OUTPUT ID — e.g., "3B resume" or "4B cover letter" or "6B interview prep"]</span>:
+
+Changes needed:
+- <span class="ph">[SPECIFIC CHANGE 1 — e.g., "Shorten summary to 2 lines" / "Make tone more confident"]</span>
+- <span class="ph">[SPECIFIC CHANGE 2 — e.g., "Emphasize metrics more in first role"]</span>
+- <span class="ph">[SPECIFIC CHANGE 3 — e.g., "Remove jargon, use simpler language"]</span>
+
+Show only what changed, with before/after comparison.<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+    </div>
+  </div>
+
+  
+    </div>
+  </div>
+
+  <!-- ========================================
+       APPLICATION PROCESS
+       ======================================== -->
+
+  <div class="section-group" data-group="application">
+    <div class="section-group-header">
+      <div class="section-header-top">
+        <div class="section-header-left">
+          <div class="section-group-badge">APPLICATION PROCESS</div>
+          <h2 class="section-group-title">Per Role — Assessment Through Materials</h2>
+        </div>
+        <div class="section-controls">
+          <button class="section-control-btn" onclick="expandSection('application')">Expand All</button>
+          <button class="section-control-btn" onclick="collapseSection('application')">Collapse All</button>
+        </div>
+      </div>
+      <p class="section-group-description">Complete for each opportunity you're pursuing. Start fresh chat, paste your Application Profile, attach resume, and include the full job description.</p>
+    </div>
+    
+    <div class="section-group-content">
+<!-- CURRENT APPLICATION CONTEXT -->
+  <div class="section-card current-app-card">
+    <h2 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 18px;">📋</span> Current Application
+    </h2>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Fill in for each new application. Values auto-populate in prompts below.</p>
+    <div class="context-fields">
+      <div class="context-field">
+        <label>Company</label>
+        <input type="text" id="ctx-company" placeholder="e.g., Acme Corp" onchange="saveContext(); updateAllPlaceholders()">
+      </div>
+      <div class="context-field">
+        <label>Role</label>
+        <input type="text" id="ctx-role" placeholder="e.g., VP of Creative" onchange="saveContext(); updateAllPlaceholders()">
+      </div>
+      <div class="context-field">
+        <label>Company URL</label>
+        <input type="text" id="ctx-url" placeholder="e.g., https://acme.com" onchange="saveContext(); updateAllPlaceholders()">
+      </div>
+      <div class="context-field">
+        <label>Hiring Manager (Name, Title)</label>
+        <input type="text" id="ctx-hm" placeholder="e.g., Jane Smith, CMO" onchange="saveContext(); updateAllPlaceholders()">
+      </div>
+    </div>
+    <div class="context-actions" style="justify-content: space-between;">
+      <button class="clear-btn start-new" onclick="clearApplication()">Start New Application</button>
+    </div>
+  </div>
+
+  <!-- PHASE 0: ASSESSMENT -->
+  <div class="section-card" data-phase="0">
+    <div class="phase-header collapsed" style="background: var(--phase-0); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">0</span>
+        <span class="phase-title">Assessment</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">5 min • Go/no-go decision, motivation capture</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Before investing significant time, quickly assess fit and capture your authentic attraction to the role.</p>
+      
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Job description • Your Application Profile (from Setup)</span>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">0A: Fit & Motivation</span>
+          <span class="prompt-desc">— Quick assessment and attraction capture</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-on">ON</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">I'm considering applying for <span class="ph">[ROLE]</span> at <span class="ph">[COMPANY]</span>.
+
+Here's the job description: <span class="ph">[PASTE JD]</span>
+
+Here's my background: <span class="ph">[PASTE APPLICATION PROFILE or brief summary]</span>
+
+What initially attracts me to this role: <span class="ph">[2-3 specific things that stood out — e.g., "reports to CEO," "recent rebrand shows ambition," "mission aligns with my healthcare background"]</span>
+
+Please provide:
+1. Fit score (1-10) with rationale
+2. Top 3 strengths I'd bring
+3. Top 2-3 gaps or concerns to address
+4. Why this role specifically appeals to me — articulated more fully (not generic reasons)
+5. Priority level recommendation: Full process / Quick application / Skip
+
+Remember as '0A: Fit & Motivation'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="decision-point">
+        <h3>Decision Point</h3>
+        <ul>
+          <li><span class="score-badge score-high">7+</span> Proceed with full process</li>
+          <li><span class="score-badge score-med">5–6</span> Use Quick Application or address gaps first</li>
+          <li><span class="score-badge score-low">&lt;5</span> Skip unless compelling strategic reason</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 1: RESEARCH -->
+  <div class="section-card" data-phase="1">
+    <div class="phase-header collapsed" style="background: var(--phase-1); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">1</span>
+        <span class="phase-title">Research</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">15–30 min • Company intel, role analysis, stakeholder insights</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Senior roles require strategic context, not just job requirements. This research informs everything that follows.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Job description (attach PDF/paste text) • Company website URL • LinkedIn (for stakeholder research)</span>
+      </div>
+
+      <div class="upload-box">
+        <div class="upload-header">
+          <span class="upload-icon">📎</span>
+          <h4 class="upload-title">Attach Job Description</h4>
+        </div>
+        <p class="upload-description">Upload the JD as PDF or paste the full text. Claude will analyze requirements, extract keywords, and tailor all subsequent phases (research, resume, cover letter) to their specific needs.</p>
+        <ul class="upload-files">
+          <li><code>Job_Description.pdf</code> — Or paste full JD text in Phase 1A prompt</li>
+        </ul>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <span class="callout-text"><strong>Research Mode</strong> (Pro) significantly improves this phase. Enable for comprehensive company intelligence.</span>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">📄</span>
+        <span class="callout-text"><strong>Save the JD</strong> — Job postings get taken down. Save as PDF or copy to a doc before starting. Ask Claude to "generate this JD as a PDF" after pasting.</span>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">1A: Company & Role Research</span>
+          <span class="prompt-desc">— Comprehensive research in one prompt</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-on">ON</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-rec">Recommended</span></span>
+        </div>
+        <div class="prompt-box">Research <span class="ph">[COMPANY]</span> and analyze this <span class="ph">[ROLE]</span> for my application.
+
+Company website: <span class="ph">[URL]</span>
+
+Job Description (attach PDF or paste full text): <span class="ph">[ATTACH JD OR PASTE FULL TEXT HERE]</span>
+
+COMPANY RESEARCH:
+1. Recent news (6-12 months) — leadership changes, funding, strategic shifts
+2. Competitive landscape and market position
+3. Culture signals — Glassdoor themes, values, work environment
+4. Their marketing/brand work — quality assessment, positioning, notable campaigns
+5. Where does this function sit? Cost center or strategic driver?
+6. Company's biggest current challenge or opportunity?
+
+ROLE ANALYSIS:
+7. Why is this role likely open now? (growth, turnover, restructure, new initiative)
+8. What does failure look like? What are they afraid of?
+9. Reporting structure and hiring manager's probable priorities
+10. How do I differentiate from likely candidate pool?
+11. Unstated requirements — reading between the lines
+12. Red flags or concerns to explore further?
+13. Questions to ask that would uncover the real situation
+
+Remember as '1A: <span class="ph">[COMPANY]</span> Research'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">1B: Stakeholder Intelligence</span>
+          <span class="prompt-desc">— Optional: If you can identify the hiring manager</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-on">ON</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-rec">Recommended</span></span>
+        </div>
+        <div class="prompt-box">I've identified <span class="ph">[HIRING MANAGER NAME]</span> as the likely hiring manager.
+Their LinkedIn shows: <span class="ph">[BRIEF BACKGROUND]</span>
+
+What can we infer about:
+1. Their likely priorities and pain points
+2. How they think about this function's role
+3. What would impress them vs. concern them
+4. Communication style preferences
+
+Remember as '1B: <span class="ph">[HIRING MANAGER NAME]</span> Stakeholder Intel'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2: OUTREACH -->
+  <div class="section-card" data-phase="2">
+    <div class="phase-header collapsed" style="background: var(--phase-2); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">2</span>
+        <span class="phase-title">Outreach</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">Varies • Connection messages, networking strategy</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Who you contact depends on your connection type. This phase can be deferred until after applying.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Contact names/titles • Connection context • Research output (1A)</span>
+      </div>
+
+      <h2>Outreach Decision Tree</h2>
+      <table class="decision-table">
+        <thead><tr><th>Scenario</th><th>Who to Contact</th><th>Approach</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Strong referral</strong></td><td>Ask referrer to intro to HM</td><td>Warm intro > cold outreach</td></tr>
+          <tr><td><strong>Weak connection</strong></td><td>Reconnect with mutual first</td><td>Rebuild relationship before asking</td></tr>
+          <tr><td><strong>No connection, can ID HM</strong></td><td>Hiring manager via LinkedIn</td><td>Lead with insight, not ask</td></tr>
+          <tr><td><strong>No connection, can't ID HM</strong></td><td>Someone in dept or HR/TA</td><td>Informational approach</td></tr>
+        </tbody>
+      </table>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">2A: Warm Referral Message</span>
+          <span class="prompt-desc">— Leverage existing connections</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Help me draft a message to <span class="ph">[REFERRER NAME]</span> asking them to introduce me to the hiring team for this role.
+
+Context about our relationship: <span class="ph">[BRIEF CONTEXT]</span>
+
+Goals: Make it easy for them to forward/intro, give them key points to advocate for me, keep it concise.
+
+Remember as '2A: Referral Message'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">2B: Cold Outreach to HM</span>
+          <span class="prompt-desc">— Lead with insight, not ask</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-on">ON</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Help me draft a LinkedIn message to <span class="ph">[HIRING MANAGER NAME]</span> about this role.
+
+Key insights from my research (1A): <span class="ph">[KEY INSIGHTS]</span>
+
+I want to:
+1. Lead with a genuine observation (not flattery)
+2. Briefly establish credibility
+3. Express interest without being presumptuous
+4. Make a soft ask (conversation, not "give me a job")
+
+Format: Under 300 characters for connection request.
+
+Remember as '2B: Cold Outreach'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">2C: Informational Outreach</span>
+          <span class="prompt-desc">— Build relationship before asking</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Help me draft a message to <span class="ph">[NAME, TITLE]</span> at this company.
+
+Goal: Learn about their team/culture before applying. Ask 1-2 genuine questions without it feeling like a backdoor job ask.
+
+Remember as '2C: Info Outreach'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3: RESUME -->
+  <div class="section-card" data-phase="3">
+    <div class="phase-header collapsed" style="background: var(--phase-3); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">3</span>
+        <span class="phase-title">Resume</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">15–20 min • Tailored resume with automated PDF generation</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Your format stays consistent; content adapts to their language and priorities.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Baseline resume • Job description • Research output (1A, and 1B if completed)</span>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">3A: Priority & Mapping</span>
+          <span class="prompt-desc">— Identify priorities and map your experience</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Using the job description and my research:
+- 1A: <span class="ph">[COMPANY]</span> Research <span class="ph">[paste or reference if in same chat]</span>
+- 1B: <span class="ph">[HIRING MANAGER NAME]</span> Stakeholder Intel <span class="ph">[if completed — paste or reference]</span>
+
+Here's my baseline resume: <span class="ph">[PASTE RESUME — or "see attached" if already uploaded]</span>
+
+STEP 1 — IDENTIFY PRIORITIES:
+1. The 3 most critical responsibilities — what they'll judge success by
+2. Key language/terminology they use
+3. Implicit priorities — reading between the lines
+4. How the company's current situation shapes their needs
+
+STEP 2 — MAP MY EXPERIENCE:
+For each priority area:
+1. Which of my experiences directly addresses this?
+2. What metrics demonstrate my capability?
+3. What JD language should I incorporate?
+4. Gaps to address elsewhere (cover letter, interview)?
+
+Remember as '3A: <span class="ph">[COMPANY]</span> Priority Mapping'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">3B: Template Resume JSON</span>
+          <span class="prompt-desc">— Generate JSON for custom template with brand color</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-on">ON</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="upload-box">
+          <div class="upload-header">
+            <span class="upload-icon">📤</span>
+            <h4 class="upload-title">Upload Required Files</h4>
+          </div>
+          <p class="upload-description">Claude will generate customized JSON, update the template with brand colors, run the script, and present your final 2-page PDF.</p>
+          <ul class="upload-files">
+            <li><code>generate_resume_v9.py</code> — Python generator script</li>
+            <li><code>resume_data_v9.json</code> — Baseline resume data template</li>
+          </ul>
+        </div>
+        <div class="callout">
+          <strong>Fill Current Application:</strong> This prompt uses Company, Role, and URL from the "Current Application" card above. Make sure those fields are filled in—they auto-populate throughout this prompt.
+        </div>
+        <div class="prompt-box">Generate custom resume for <span class="ph">[COMPANY]</span> — <span class="ph">[ROLE]</span>.
+
+**STEP 1: Extract Brand Color**
+Visit <span class="ph">[URL]</span> and identify:
+- Primary brand color (hex code)
+- Suggest an accent color for resume (must be readable on white)
+
+**STEP 2: Generate Customized JSON**
+Using 3A Priority Mapping, create resume_data_<span class="ph">[Company]</span>_v9.json with these STRICT CHARACTER LIMITS:
+
+**INTRO PARAGRAPH:**
+- **250-400 characters MAXIMUM** (not words - characters!)
+- 3 lines max when rendered
+- Lead with strongest value proposition
+- Include 1-2 key metrics relevant to this role
+- End with organizational scale or scope
+
+**IMPACT SNAPSHOT** (4 fields, MUST be single line):
+- **65 characters MAXIMUM per field**
+- revenue_impact: Use "to" not arrows (e.g., "Led $11M to $16.7M digital | Supported $131M to $250M overall")
+- team_growth: Use "to" not arrows (e.g., "1 to 10 in-house + 25 global creators across 11 countries")
+- systems_built: Key systems with metric (e.g., "75-component design system | 250K DAM | 65% cost reduction")
+- recognition: 2-3 awards (e.g., "IDA Silver, PINE Pinnacle | Featured: NYT, PBS, Harvard")
+
+**CORE EXPERTISE** (8 tags total):
+- **First 4 tags: 100 characters combined MAXIMUM**
+- **Second 4 tags: 100 characters combined MAXIMUM**
+- Must fit on 2 lines when rendered
+- Reorder these tags to prioritize most relevant for this role:
+  Mission-Driven Brand, Creative Ops Scaling, Revenue-Focused Creative, Enterprise Design Systems, Multicultural Teams, Budget Management, Consent-First Storytelling, C-Suite Collaboration
+
+**TECHNICAL PROFICIENCY** (4 categories, MUST be single line):
+- **69 characters MAXIMUM per category**
+- Creative Systems: (e.g., "Design Systems, Component Libraries, Adobe CC, Figma, Atomic Design")
+- Operations: (e.g., "Asana, Jira, HubSpot, Agile/Scrum, Vendor & Budget/P&L Management")
+- Data & Insights: (e.g., "GA4, Hotjar, A/B Testing, User Research, WCAG 2.1 AA, SEO, Conversion")
+- DAM & AI: (e.g., "LLMs, Generative Media, AI-Assisted Dev, DAM (Canto), Automation, API")
+
+**PROFESSIONAL EXPERIENCE** (4 roles, ~20 bullets total):
+- **SENIOR DIRECTOR:** 6 bullets, can be 2 lines (200-250 chars each)
+- **DIRECTOR:** 5 bullets, mostly 1 line (150 chars each), 1-2 can be 2 lines
+- **ART DIRECTION & CREATIVE MANAGER:** 5 bullets, **100-115 chars MAXIMUM** (MUST stay 1 line)
+- **GRAPHIC DESIGNER:** 4 bullets, **100-115 chars MAXIMUM** (MUST stay 1 line)
+
+Prioritize bullets from 3A mapping. Use strong action verbs and metrics. Use "to" not arrows. Expand acronyms first use: "Digital Asset Management (DAM)", "Chief Marketing and Communications Officer".
+
+**EDUCATION:** Bachelor of Arts, Advertising
+
+**RECOGNITION** (4 items):
+- Title | Year format
+- **65 characters MAXIMUM for description** (e.g., "Best-in-class Annual Report by Printing Industries of New England")
+
+**ATS COMPLIANCE (CRITICAL):**
+- "to" not arrows (→) everywhere
+- Expand acronyms on first use
+- Straight quotes only
+- No special characters
+
+**STEP 3: CHARACTER COUNT VALIDATION** ⚠️
+BEFORE proceeding to self-assessment, COUNT CHARACTERS for each section:
+
+1. **Intro paragraph:** Count characters (target: 250-400)
+   - If OVER 400: Cut by 10-15%, remove least essential words
+   - If UNDER 250: Too short, add 1 metric or scope detail
+
+2. **Impact Snapshot fields:** Count each field (target: 65 max)
+   - If ANY field over 65 chars: Abbreviate or use shorter terms
+   - Auto-fix: "Digital Asset Management" → "DAM", "to" → "to", remove filler words
+
+3. **Core Expertise tags:** Count combined length of first 4, then second 4 (target: 100 each)
+   - If over 100 chars per group: Use shorter synonyms or reorder tags
+
+4. **Technical Proficiency:** Count each category (target: 69 max)
+   - If over 69 chars: Remove least relevant tool or abbreviate
+   - Common fixes: "and" → "&", "Management" → "Mgmt", remove "and"
+
+5. **Manager & Designer bullets:** Count each (target: 100-115 max)
+   - If over 115 chars: Cut to essential achievement + metric only
+   - Remove: qualifiers, extra adjectives, redundant phrases
+
+6. **Recognition descriptions:** Count each (target: 65 max)
+   - If over 65 chars: Use abbreviations, remove extra words
+
+**AUTO-CORRECTION RULES:**
+- If ANY section exceeds limits: FIX IT before generating JSON
+- Do NOT ask user - just correct automatically
+- Preserve meaning while meeting character limits
+- Prioritize metrics and impact over descriptive language
+
+**STEP 4: Self-Assessment Against Job Requirements**
+Before finalizing, review the generated content:
+
+1. **Job Description Alignment:**
+   - Do the prioritized bullets address their top 3 requirements from the JD?
+   - Is the Core Expertise ordering optimized for their keywords?
+   - Does the intro speak to their specific needs?
+
+2. **Content Quality Check:**
+   - Are metrics prominent in the most relevant bullets?
+   - Is language mirroring terms from the JD?
+   - Any gaps that need addressing in cover letter?
+
+3. **Suggested Adjustments:**
+   If any misalignment detected, revise before generating PDF:
+   - Reorder bullets to lead with strongest matches
+   - Swap Core Expertise tag positions
+   - Strengthen intro to address their primary need
+   - Add/emphasize specific keywords from JD
+
+**STEP 5: Create and Validate JSON**
+Create the JSON file. Final verification:
+- All character limits met (use STEP 3 validation)
+- All line constraints met
+- Bullet lengths correct per role
+- ATS compliant
+- Total content fits 2 pages
+
+**STEP 6: Update Python Template**
+Modify generate_resume_v9.py:
+- Line 39: Update --accent color to suggested hex
+- Verify it reads the new JSON filename
+
+**STEP 7: Generate PDF with Proper Naming**
+Install dependencies if needed: `pip install weasyprint --break-system-packages`
+Run: `python3 generate_resume_v9.py`
+
+**FILE NAMING CONVENTION:**
+Format: `FirstName_LastName_Resume_CompanyName_MonthYear.pdf`
+Example: `John_Ra_Resume_Anthropic_Jan2026.pdf`
+
+Present PDF with this exact naming format.
+
+Remember as '3B: <span class="ph">[COMPANY]</span> Resume Generated'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">📥</span>
+          <span class="export-label">OUTPUT:</span>
+          <span class="export-text">2-page PDF with Senior Director on page 1, ATS-optimized, custom brand color</span>
+        </div>
+        <div class="export-note">
+          <span class="export-icon">🎨</span>
+          <span class="export-label">BRAND COLOR:</span>
+          <span class="export-text">Update --accent in CSS (line 39) with suggested hex code</span>
+        </div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">3C: Refine Resume (Optional)</span>
+          <span class="prompt-desc">— Make adjustments and regenerate</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Make these adjustments to the resume:
+
+<span class="ph">[SPECIFY CHANGES - Examples:
+- "Shorten intro to 2 lines"
+- "Make first Senior Director bullet more metrics-focused"
+- "Reorder Core Expertise tags to prioritize X and Y"
+- "Tighten Director bullets to all stay 1 line"
+- "Swap position 2 and 3 to emphasize management experience"]</span>
+
+Update the JSON, regenerate PDF, and show what changed.
+
+Remember as '3C: <span class="ph">[COMPANY]</span> Resume Refined'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">🔄</span>
+          <span class="export-label">ITERATE:</span>
+          <span class="export-text">Use this prompt to refine content, try different bullet orders, or adjust emphasis</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4: COVER LETTER -->
+  <div class="section-card" data-phase="4">
+    <div class="phase-header collapsed" style="background: var(--phase-4); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">4</span>
+        <span class="phase-title">Cover Letter</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">10–12 min • Single-page cover letter with JSON-based workflow</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Single-page cover letter with optional "Key Alignment" box—a scannable highlight of your top qualifications. Use for competitive roles at larger organizations, omit for personal referrals or casual cultures.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Research (1A, 1B if completed) • Priority mapping (3A) • Fit & motivation (0A)</span>
+      </div>
+
+      <div class="upload-box">
+        <div class="upload-header">
+          <span class="upload-icon">📤</span>
+          <h4 class="upload-title">Upload Required Files</h4>
+        </div>
+        <p class="upload-description">Claude will develop strategy, write content, update the JSON, run the script, and present your final single-page PDF.</p>
+        <ul class="upload-files">
+          <li><code>generate_cover_letter.py</code> — Python generator script</li>
+          <li><code>cover_letter_data.json</code> — Baseline cover letter data template</li>
+        </ul>
+      </div>
+      <div class="callout">
+        <strong>Fill Current Application:</strong> This prompt uses Company, Role, and Hiring Manager from the "Current Application" card above. Make sure those fields are filled in—they auto-populate throughout this prompt.
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">4A: Generate Cover Letter</span>
+          <span class="prompt-desc">— Strategy, content, and PDF in one step</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Generate single-page cover letter for <span class="ph">[ROLE]</span> at <span class="ph">[COMPANY]</span>.
+
+Using my prior outputs:
+- 0A: Fit & Motivation
+- 1A: <span class="ph">[COMPANY]</span> Research
+- 1B: <span class="ph">[HIRING MANAGER NAME]</span> Stakeholder Intel <span class="ph">[if completed]</span>
+- 3A: <span class="ph">[COMPANY]</span> Priority Mapping
+
+**STEP 1: Develop Strategy**
+1. Most compelling connection between my background and their needs
+2. Key insight showing I understand their challenges  
+3. Best 2 proof points for Key Alignment box (if using)
+4. Should I use "Key Alignment" box?
+   - YES if: Competitive role, larger org, clear job requirements
+   - NO if: Personal referral, creative/casual culture, traditional format preferred
+
+**STEP 2: Write Content**
+
+RECIPIENT INFO:
+- name: <span class="ph">[HIRING MANAGER NAME]</span>
+- title: <span class="ph">[if known, else "Hiring Team"]</span>
+- company: <span class="ph">[COMPANY]</span>
+- address: <span class="ph">[City, State]</span>
+
+LETTER DETAILS:
+- subject: <span class="ph">[ROLE]</span> Position
+- salutation: Dear <span class="ph">[NAME]</span>,
+
+BODY - PARAGRAPH 1 (70-85 words):
+- State the position
+- Lead with strongest credential
+- Hook with most impressive achievement
+- NO "I am writing to apply..." or "I was excited to see..."
+
+KEY ALIGNMENT (If using - 2 items MAXIMUM):
+Each item needs:
+- title: Label (e.g., "Revenue Growth", "Team Leadership", "Systems Built")
+- description: One-line achievement with numbers (e.g., "$11M to $16.7M digital | $131M to $250M organizational")
+
+⚠️ **Use 2 items only. 3 items causes 2nd page overflow.**
+
+BODY - PARAGRAPH 2 (55-70 words):
+- Reference specific project/initiative/value from 1A research
+- Show you researched them
+- Why THIS company excites you
+
+BODY - PARAGRAPH 3 (80-95 words):
+- Expand most relevant experience with specific examples
+- Connect past achievements to their future needs
+- Show strategic thinking, not resume recap
+
+BODY - PARAGRAPH 4 (45-55 words):
+- Express enthusiasm
+- Thank them
+- Confident not presumptuous
+
+**WORD LIMITS (CRITICAL FOR SINGLE PAGE - TESTED):**
+- WITH Key Alignment (2 items): 250-270 words max (body only)
+- WITHOUT Key Alignment: 320-350 words max (body only)
+
+⚠️ **These limits are tested to prevent 2nd page overflow. Do NOT exceed them.**
+
+**STEP 3: Self-Assessment Against Job Requirements**
+Before finalizing, review the drafted content:
+
+1. **Job Description Alignment:**
+   - Does paragraph 3 address their top 2-3 requirements?
+   - Do Key Alignment items (if using) match their stated priorities?
+   - Is paragraph 2 specific enough to show real research?
+
+2. **Content Quality Check:**
+   - Tone appropriate for their culture (from 1A research)?
+   - Any clichés or generic phrasing to remove?
+   - Metrics prominent where relevant?
+
+3. **Suggested Adjustments:**
+   If any gaps detected, revise before generating PDF:
+   - Strengthen paragraph 3 with more specific examples
+   - Adjust Key Alignment items to better match JD
+   - Make paragraph 2 more company-specific
+   - Adjust tone if needed
+
+**STEP 4: Update JSON File**
+Create cover_letter_data_<span class="ph">[Company]</span>.json with all content above.
+Set "use_key_alignment": true or false based on strategy.
+
+**STEP 5: Generate PDF with Proper Naming**
+Install dependencies if needed: `pip install weasyprint --break-system-packages`
+Run: `python3 generate_cover_letter.py`
+
+**FILE NAMING CONVENTION:**
+Format: `FirstName_LastName_CoverLetter_CompanyName_MonthYear.pdf`
+Example: `John_Ra_CoverLetter_Anthropic_Jan2026.pdf`
+
+Present PDF with this exact naming format.
+
+Verify word count and single-page fit in output.
+
+Remember as '4A: <span class="ph">[COMPANY]</span> Cover Letter Generated'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">📥</span>
+          <span class="export-label">OUTPUT:</span>
+          <span class="export-text">Single-page PDF with optional Key Alignment box, matches resume styling</span>
+        </div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">4B: Refine Cover Letter (Optional)</span>
+          <span class="prompt-desc">— Make adjustments and regenerate</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Make these adjustments to the cover letter:
+
+<span class="ph">[SPECIFY CHANGES - Examples:
+- "Remove Key Alignment box (set use_key_alignment: false)"
+- "Add Key Alignment box with focus on X and Y achievements"
+- "Strengthen paragraph 3 with more specific metrics"
+- "Shorten opening to 60 words"
+- "Make tone more confident in paragraph 2"
+- "Change salutation to 'Dear Hiring Team,'"]</span>
+
+Update the JSON file, regenerate PDF, and show what changed.
+
+Remember as '4B: <span class="ph">[COMPANY]</span> Cover Letter Refined'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+        <div class="export-note">
+          <span class="export-icon">🔄</span>
+          <span class="export-label">ITERATE:</span>
+          <span class="export-text">Use this to try different approaches, adjust tone, toggle Key Alignment box, or refine content</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+    </div>
+  </div>
+
+  <!-- ========================================
+       INTERVIEW PREPARATION
+       ======================================== -->
+
+  <div class="section-group" data-group="interview">
+    <div class="section-group-header">
+      <div class="section-header-top">
+        <div class="section-header-left">
+          <div class="section-group-badge">INTERVIEW PREPARATION</div>
+          <h2 class="section-group-title">Role-Specific Positioning Through Practice</h2>
+        </div>
+        <div class="section-controls">
+          <button class="section-control-btn" onclick="expandSection('interview')">Expand All</button>
+          <button class="section-control-btn" onclick="collapseSection('interview')">Collapse All</button>
+        </div>
+      </div>
+      <p class="section-group-description">Once you're invited to interview, adapt your foundation positioning to this specific opportunity and prepare thoroughly for each conversation.</p>
+    </div>
+    
+    <div class="section-group-content">
+<!-- PHASE 5: ROLE-SPECIFIC POSITIONING -->
+  <div class="section-card" data-phase="5">
+    <div class="phase-header collapsed" style="background: var(--interview-primary); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">5</span>
+        <span class="phase-title">Role-Specific Positioning</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">20–30 min • Adapt your foundation to this role and hiring manager</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Take your reusable positioning from Foundation and customize it for this specific opportunity.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Positioning Foundation (PF-A through PF-D) • Research outputs (1A, 1B) • Priority mapping (3A)</span>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">5A: Adapt Your Pitch</span>
+          <span class="prompt-desc">— Customize foundation positioning for this role</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Using my Positioning Foundation:
+- Leadership Thesis (PF-A): <span class="ph">[PASTE FROM FOUNDATION]</span>
+- Signature Stories (PF-B): <span class="ph">[PASTE FROM FOUNDATION]</span>
+- Core Positioning (PF-C): <span class="ph">[PASTE FROM FOUNDATION]</span>
+
+And my research:
+- Company Research (1A)
+- Stakeholder Intel (1B)
+- Priority Mapping (3A)
+
+Help me adapt my positioning specifically for <span class="ph">[COMPANY]</span> and <span class="ph">[HIRING MANAGER NAME]</span>:
+
+1. Which signature stories are most relevant?
+2. How should I adjust my leadership thesis for their context?
+3. What aspects of my background should I emphasize vs. downplay?
+4. What objections are likely *in this specific case*?
+5. Customized 90-second pitch for this interview
+
+Remember as '5A: <span class="ph">[COMPANY]</span> Positioning Adaptation'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">5B: Talking Points</span>
+          <span class="prompt-desc">— Role-specific conversation anchors</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Create role-specific talking points for <span class="ph">[ROLE]</span> at <span class="ph">[COMPANY]</span>:
+
+1. Why this company specifically (using 0A motivation + 1A research)
+2. Why this role fits my trajectory
+3. What I'd focus on in first 90 days
+4. How my background addresses their specific challenges
+5. Questions that show strategic thinking about their situation
+
+Remember as '5B: <span class="ph">[COMPANY]</span> Talking Points'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 6: INTERVIEW -->
+  <div class="section-card" data-phase="6">
+    <div class="phase-header collapsed" style="background: var(--interview-secondary); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">6</span>
+        <span class="phase-title">Interview Prep</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">Varies • Interviewer research, predicted questions, prepared answers</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Thorough prep separates good from great. This phase scales to your situation: full interview process or single-round prep, known interviewers or general preparation.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Prior phase outputs • Interviewer names/titles • Interview format • LinkedIn profiles if available</span>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">6A: Interviewer Research</span>
+          <span class="prompt-desc">— Deep dive on specific interviewer (repeat for each)</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-on">ON</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-rec">Recommended</span></span>
+        </div>
+        <div class="prompt-box">I have an interview with <span class="ph">[NAME]</span>, <span class="ph">[TITLE]</span>.
+
+<span class="ph">[OPTIONAL: I've attached their LinkedIn profile / Here's what I know: ...]</span>
+
+Research this person and tell me:
+1. Their background — career path, tenure at company, areas of expertise
+2. Likely priorities — what they probably care about in this hire
+3. Interview style signals — based on their role and background
+4. Connection points — anything in common or relevant to highlight
+5. Questions they're likely to ask — given their perspective
+6. Questions I should ask them — specific to their role/expertise
+
+Remember as '6A: <span class="ph">[NAME]</span> Research'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">6B: Interview Prep</span>
+          <span class="prompt-desc">— Predicted questions, answers, and questions to ask</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-on">ON</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Using the JD, prior research (1A), and typical senior interviews, prepare me for <span class="ph">[FULL PROCESS / THIS ROUND ONLY]</span>:
+
+PART 1 — PREDICT QUESTIONS:
+1. Screening/HR questions (3-5 most likely)
+2. Hiring manager questions (3-5 most likely)
+3. "Gotcha" or stress-test questions (2-3 most likely)
+4. Company-specific questions based on their current situation (2-3)
+<span class="ph">[IF KNOWN INTERVIEWERS: Add interviewer-specific questions from 6A research]</span>
+
+PART 2 — DEVELOP ANSWERS:
+For the 5-7 most critical questions:
+1. What they're really assessing
+2. Key points to hit (2-3 essential messages)
+3. Which of my experiences/stories applies
+4. Potential follow-ups they might probe
+
+PART 3 — QUESTIONS I SHOULD ASK:
+1. Strategic thinking questions (2-3) — show I think at leadership level
+2. Research-informed questions (2-3) — reference 1A insights
+3. Culture/success metrics questions (2-3)
+<span class="ph">[IF SPECIFIC INTERVIEWER: Add role-specific questions from 6A]</span>
+
+Remember as '6B: <span class="ph">[COMPANY]</span> Interview Prep'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <h2>Practical Prep Checklist</h2>
+      <div class="two-col">
+        <ul class="checklist">
+          <li>Complete 6A research for each known interviewer</li>
+          <li>Run 6B for comprehensive prep</li>
+        </ul>
+        <ul class="checklist">
+          <li>Practice signature stories (PF-B) aloud</li>
+          <li>Practice 90-second background (5A)</li>
+        </ul>
+      </div>
+
+      <div class="prompt-section" style="margin-top: 20px;">
+        <div class="prompt-header">
+          <span class="prompt-id">6C: Post-Interview</span>
+          <span class="prompt-desc">— Follow up effectively</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">I just finished interviewing with <span class="ph">[NAME(S)]</span>.
+
+Key discussion points: <span class="ph">[WHAT WE DISCUSSED]</span>
+
+Help me with:
+1. Thank-you email — reference specific conversation topics, reinforce my fit
+2. Follow-up materials — anything I should send to strengthen my case?
+3. Self-assessment — how did it go, what would I do differently?
+4. Next round prep — based on this conversation, what topics are likely to come up?
+
+Remember as '6C: Post-Interview <span class="ph">[ROUND/NAME]</span>'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 6.5: ASSIGNMENTS & WORK SAMPLES -->
+  <div class="section-card" data-phase="6.5">
+    <div class="phase-header collapsed" style="background: var(--interview-accent); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">6.5</span>
+        <span class="phase-title">Assignments & Work Samples</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">Varies • Take-home assignments, portfolio selection, case prep</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Many senior roles include assignments or portfolio reviews. Decode what they're really evaluating and show strategic thinking.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Assignment brief • Your portfolio/past work • Research outputs (1A) • Priority mapping (3A)</span>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">6.5A: Assignment Strategy</span>
+          <span class="prompt-desc">— Decode and approach take-home work</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">I've been given a take-home assignment for <span class="ph">[COMPANY]</span>:
+
+<span class="ph">[PASTE ASSIGNMENT BRIEF]</span>
+
+Time allotted: <span class="ph">[X hours/days]</span>
+
+Help me:
+1. Decode what they're really evaluating (beyond the stated task)
+2. Identify the 3 critical elements to nail
+3. Suggest approach and structure
+4. Red flags to avoid
+5. How to show senior-level thinking (not just execution)
+6. Time allocation across components
+
+Remember as '6.5A: <span class="ph">[COMPANY]</span> Assignment Strategy'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">6.5B: Portfolio Selection</span>
+          <span class="prompt-desc">— For creative/design roles: choose best work samples</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">For <span class="ph">[ROLE]</span> at <span class="ph">[COMPANY]</span>, help me select work samples.
+
+My portfolio includes: <span class="ph">[LIST 8-10 PROJECTS WITH BRIEF DESCRIPTIONS]</span>
+
+Their priorities (from 3A): <span class="ph">[KEY PRIORITIES]</span>
+
+Which 3-4 pieces should I highlight and why?
+How should I contextualize each (1-2 sentences)?
+What order tells the best story?
+What questions might they ask about each piece?
+
+Remember as '6.5B: <span class="ph">[COMPANY]</span> Portfolio Selection'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">6.5C: Case Presentation Prep</span>
+          <span class="prompt-desc">— Structure your presentation or case study</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">I need to present <span class="ph">[ASSIGNMENT / CASE STUDY / PORTFOLIO]</span> to <span class="ph">[COMPANY]</span>.
+
+Presentation format: <span class="ph">[TIME LIMIT, AUDIENCE, FORMAT — e.g., "30 min to C-suite, slides + Q&A"]</span>
+
+Help me:
+1. Structure the presentation flow
+2. Key messages for each section
+3. How to balance detail vs. strategic framing
+4. Anticipated questions and how to handle
+5. Opening and closing that land
+
+Remember as '6.5C: <span class="ph">[COMPANY]</span> Case Presentation'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+    </div>
+  </div>
+
+  
+    </div>
+  </div>
+
+  <!-- ========================================
+       POST-INTERVIEW
+       ======================================== -->
+
+  <div class="section-group" data-group="post">
+    <div class="section-group-header">
+      <div class="section-header-top">
+        <div class="section-header-left">
+          <div class="section-group-badge">POST-INTERVIEW</div>
+          <h2 class="section-group-title">References Through Offer Decision</h2>
+        </div>
+        <div class="section-controls">
+          <button class="section-control-btn" onclick="expandSection('post')">Expand All</button>
+          <button class="section-control-btn" onclick="collapseSection('post')">Collapse All</button>
+        </div>
+      </div>
+      <p class="section-group-description">You're past the interviews—now prepare references, negotiate compensation, and make the final decision with confidence.</p>
+    </div>
+    
+    <div class="section-group-content">
+<!-- PHASE 7: REFERENCES -->
+  <div class="section-card" data-phase="7">
+    <div class="phase-header collapsed" style="background: var(--post-primary); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">7</span>
+        <span class="phase-title">References</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">15–20 min • Select and brief references strategically</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Strong references can close the deal. Choose wisely and brief them thoroughly.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">List of potential references • Their relationships to you • Role requirements (from 3A)</span>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">7A: Reference Selection</span>
+          <span class="prompt-desc">— Choose the strongest slate</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">I'm preparing references for <span class="ph">[COMPANY]</span> <span class="ph">[ROLE]</span>.
+
+Potential references:
+1. <span class="ph">[NAME, RELATIONSHIP, CONTEXT — e.g., "Jane Smith, my direct manager for 3 years at Acme"]</span>
+2. <span class="ph">[NAME, RELATIONSHIP, CONTEXT]</span>
+3. <span class="ph">[NAME, RELATIONSHIP, CONTEXT]</span>
+4. <span class="ph">[NAME, RELATIONSHIP, CONTEXT — add more as needed]</span>
+
+Based on role requirements (3A) and likely questions:
+- Which 3 references create the strongest slate?
+- What will each likely be asked?
+- What talking points should I brief them on?
+- Any gaps in coverage I should address?
+
+Remember as '7A: Reference Strategy'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">7B: Reference Brief</span>
+          <span class="prompt-desc">— Prepare each reference for the call</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Help me write a brief for <span class="ph">[REFERENCE NAME]</span> about this opportunity:
+
+Company: <span class="ph">[COMPANY]</span>
+Role: <span class="ph">[ROLE]</span>
+Key things I want them to emphasize: <span class="ph">[LIST 2-3 — e.g., "My ability to scale operations," "Crisis leadership example," "Cross-functional collaboration"]</span>
+Likely questions they'll get (from 7A): <span class="ph">[LIST]</span>
+
+Draft:
+1. Email to brief them (concise, makes it easy for them)
+2. One-page context doc they can reference during the call
+
+Remember as '7B: Reference Brief - <span class="ph">[NAME]</span>'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 8: NEGOTIATION -->
+  <div class="section-card" data-phase="8">
+    <div class="phase-header collapsed" style="background: var(--post-secondary); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">8</span>
+        <span class="phase-title">Negotiation</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">30–45 min • Analyze offer and prepare negotiation strategy</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">Understand your leverage, know the market, and negotiate confidently.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Offer details (comp, benefits, etc.) • Your priorities • Market research if available</span>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">8A: Offer Analysis</span>
+          <span class="prompt-desc">— Break down total compensation and market comparison</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-on">ON</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-rec">Recommended</span></span>
+        </div>
+        <div class="prompt-box">I received an offer from <span class="ph">[COMPANY]</span>:
+
+Base: <span class="ph">[AMOUNT]</span>
+Bonus/Commission: <span class="ph">[STRUCTURE — e.g., "15% annual bonus, target-based"]</span>
+Equity: <span class="ph">[DETAILS if any — e.g., "50K stock options, 4-year vest" or "N/A"]</span>
+Benefits: <span class="ph">[KEY BENEFITS — e.g., "Standard health/dental, 4 weeks PTO, 401k match"]</span>
+Other: <span class="ph">[RELOCATION, SIGNING BONUS, etc. or "None"]</span>
+
+Research market rate for <span class="ph">[ROLE]</span> in <span class="ph">[LOCATION]</span> at <span class="ph">[COMPANY TYPE/SIZE]</span>.
+
+Provide:
+1. Total comp analysis (break down the full package value)
+2. Market comparison (where does this sit vs. typical range?)
+3. What's notably strong vs. weak in this package
+4. Leverage points for negotiation
+5. Non-salary items to consider (title, scope, flexibility, growth, etc.)
+
+Remember as '8A: <span class="ph">[COMPANY]</span> Offer Analysis'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">8B: Negotiation Strategy</span>
+          <span class="prompt-desc">— Plan your approach and framing</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Based on my offer analysis (8A) and what I know about <span class="ph">[COMPANY]</span>, develop negotiation approach:
+
+My priorities: <span class="ph">[RANK YOUR TOP 3 — e.g., "1. Base salary, 2. Equity, 3. Title" or "1. Flexibility, 2. Scope, 3. Comp"]</span>
+My leverage: <span class="ph">[WHAT GIVES YOU NEGOTIATING POWER — e.g., "Competing offers," "Unique fit for their needs," "They've been searching 6+ months," "Strong references"]</span>
+
+Help me:
+1. What to ask for (realistic targets based on 8A)
+2. How to frame the conversation (collaborative, not adversarial)
+3. Script for the negotiation call/email
+4. Fallback positions (if they can't move on X, what about Y?)
+5. Red lines (what would make me walk away)
+
+Remember as '8B: <span class="ph">[COMPANY]</span> Negotiation Strategy'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <span class="callout-text"><strong>Timing matters:</strong> Negotiate after receiving the written offer but before formally accepting. Most companies expect negotiation and respect candidates who advocate for themselves professionally.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 9: OFFER EVALUATION -->
+  <div class="section-card" data-phase="9">
+    <div class="phase-header collapsed" style="background: var(--post-accent); color: white;" onclick="togglePhase(this)">
+      <div class="phase-header-left">
+        <span class="phase-number">9</span>
+        <span class="phase-title">Offer Evaluation</span>
+      </div>
+      <div class="phase-header-right">
+        <span class="phase-meta">20–30 min • Make the decision with clarity and confidence</span>
+        <svg class="phase-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="phase-content collapsed">
+      <p class="phase-intro">You have the offer(s). Now make a decision that aligns with your goals and values.</p>
+
+      <div class="prepare-box">
+        <span class="prepare-label">Prepare:</span>
+        <span class="prepare-items">Final offer details • Your priorities (from Setup) • All research and interview notes</span>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">9A: Decision Framework</span>
+          <span class="prompt-desc">— Systematic evaluation of single offer</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">Help me evaluate this offer systematically.
+
+OFFER DETAILS:
+Company: <span class="ph">[COMPANY]</span>
+Role: <span class="ph">[ROLE]</span>
+Compensation: <span class="ph">[REFERENCE 8A or summarize]</span>
+
+EVALUATION CRITERIA (help me weight each):
+- Compensation & financial growth potential
+- Mission alignment & meaningful work
+- Role scope, autonomy, impact
+- Growth trajectory & learning
+- Culture & work environment
+- Stability & risk factors
+- Life factors (commute, flexibility, work-life balance, etc.)
+
+My priorities from Setup: <span class="ph">[RANK YOUR TOP 3 — e.g., "1. Mission-driven work, 2. Growth potential, 3. Work-life balance"]</span>
+
+Create:
+1. Weighted scorecard based on my priorities
+2. Best-case / worst-case scenarios (6 months, 2 years out)
+3. "Regret minimization" analysis — which decision would I regret less?
+4. Key questions I should still ask before deciding
+
+Remember as '9A: <span class="ph">[COMPANY]</span> Offer Evaluation'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="prompt-id">9B: Multiple Offer Comparison</span>
+          <span class="prompt-desc">— Compare 2+ offers side by side</span>
+        </div>
+        <div class="settings">
+          <span class="setting"><span class="setting-label">Web Search:</span> <span class="setting-off">OFF</span></span>
+          <span class="setting"><span class="setting-label">Research:</span> <span class="setting-off">OFF</span></span>
+        </div>
+        <div class="prompt-box">I'm comparing offers from:
+
+1. <span class="ph">[COMPANY A]</span>
+   Role: <span class="ph">[ROLE]</span>
+   Compensation: <span class="ph">[SUMMARY]</span>
+   Key pros/cons: <span class="ph">[BRIEF NOTES]</span>
+
+2. <span class="ph">[COMPANY B]</span>
+   Role: <span class="ph">[ROLE]</span>
+   Compensation: <span class="ph">[SUMMARY]</span>
+   Key pros/cons: <span class="ph">[BRIEF NOTES]</span>
+
+<span class="ph">[ADD COMPANY C, D, etc. if needed]</span>
+
+Using my decision framework (9A), create comprehensive comparison:
+- Side-by-side scorecard
+- Detailed pros/cons for each
+- Different scenarios (if I prioritize X vs. Y, which wins?)
+- Questions to ask each company before deciding
+- Recommendation with rationale
+
+Remember as '9B: Offer Comparison'<button class="copy-btn" onclick="copyPrompt(this)">Copy</button></div>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">🎯</span>
+        <span class="callout-text"><strong>Trust the process:</strong> You've done extensive research, had thoughtful conversations, and gathered data. Your gut reaction combined with this structured analysis will lead you to the right decision.</span>
+      </div>
+    </div>
+  </div>
+
+  
+    </div>
+  </div>
+
+  <div class="footer">
+    Made by John Ra with Claude
+  </div>
+
+</div>
+
+<script>
+  // Toggle individual phase
+  function togglePhase(header) {
+    header.classList.toggle('collapsed');
+    const content = header.nextElementSibling;
+    content.classList.toggle('collapsed');
+    
+    if (!content.classList.contains('collapsed')) {
+      content.style.maxHeight = content.scrollHeight + 'px';
+    }
+  }
+
+  // Toggle utility section
+  function toggleUtility(header) {
+    header.classList.toggle('collapsed');
+    const content = header.nextElementSibling;
+    content.classList.toggle('collapsed');
+    
+    if (!content.classList.contains('collapsed')) {
+      // Use 'none' to allow full expansion
+      content.style.maxHeight = 'none';
+    } else {
+      content.style.maxHeight = '0px';
+    }
+  }
+
+  // Expand all phases in a section
+  function expandSection(groupId) {
+    const group = document.querySelector(`.section-group[data-group="${groupId}"]`);
+    group.querySelectorAll('.phase-header').forEach(header => {
+      header.classList.remove('collapsed');
+    });
+    group.querySelectorAll('.phase-content').forEach(content => {
+      content.classList.remove('collapsed');
+      content.style.maxHeight = content.scrollHeight + 'px';
+    });
+  }
+
+  // Collapse all phases in a section
+  function collapseSection(groupId) {
+    const group = document.querySelector(`.section-group[data-group="${groupId}"]`);
+    group.querySelectorAll('.phase-header').forEach(header => {
+      header.classList.add('collapsed');
+    });
+    group.querySelectorAll('.phase-content').forEach(content => {
+      content.classList.add('collapsed');
+    });
+  }
+
+  // Expand all phases
+  function expandAll() {
+    document.querySelectorAll('.phase-header').forEach(header => {
+      header.classList.remove('collapsed');
+    });
+    document.querySelectorAll('.phase-content').forEach(content => {
+      content.classList.remove('collapsed');
+      content.style.maxHeight = content.scrollHeight + 'px';
+    });
+  }
+
+  // Collapse all phases
+  function collapseAll() {
+    document.querySelectorAll('.phase-header').forEach(header => {
+      header.classList.add('collapsed');
+    });
+    document.querySelectorAll('.phase-content').forEach(content => {
+      content.classList.add('collapsed');
+    });
+  }
+
+  // Save context to localStorage
+  function saveContext() {
+    const context = {
+      // Application fields only
+      company: document.getElementById('ctx-company')?.value || '',
+      role: document.getElementById('ctx-role')?.value || '',
+      url: document.getElementById('ctx-url')?.value || '',
+      hm: document.getElementById('ctx-hm')?.value || ''
+    };
+    localStorage.setItem('playbook-context', JSON.stringify(context));
+  }
+  
+  // Load context from localStorage
+  function loadContext() {
+    const saved = localStorage.getItem('playbook-context');
+    if (saved) {
+      const context = JSON.parse(saved);
+      // Application fields only
+      const companyEl = document.getElementById('ctx-company');
+      const roleEl = document.getElementById('ctx-role');
+      const urlEl = document.getElementById('ctx-url');
+      const hmEl = document.getElementById('ctx-hm');
+      
+      if (companyEl) companyEl.value = context.company || '';
+      if (roleEl) roleEl.value = context.role || '';
+      if (urlEl) urlEl.value = context.url || '';
+      if (hmEl) hmEl.value = context.hm || '';
+    }
+  }
+  
+  // Clear application fields
+  function clearApplication() {
+    document.getElementById('ctx-company').value = '';
+    document.getElementById('ctx-role').value = '';
+    document.getElementById('ctx-url').value = '';
+    document.getElementById('ctx-hm').value = '';
+    saveContext();
+    updateAllPlaceholders();
+  }
+  
+  // Update all placeholders in prompts with filled values
+  function updateAllPlaceholders() {
+    const company = document.getElementById('ctx-company')?.value || '';
+    const role = document.getElementById('ctx-role')?.value || '';
+    const url = document.getElementById('ctx-url')?.value || '';
+    const hm = document.getElementById('ctx-hm')?.value || '';
+    
+    document.querySelectorAll('.ph').forEach(ph => {
+      const originalText = ph.getAttribute('data-original') || ph.textContent;
+      ph.setAttribute('data-original', originalText);
+      
+      let newText = originalText;
+      let hasReplacement = false;
+      
+      // Replace each placeholder type
+      if (company && newText.includes('[COMPANY]')) {
+        newText = newText.replace(/\[COMPANY\]/g, company);
+        hasReplacement = true;
+      }
+      if (role && newText.includes('[ROLE]')) {
+        newText = newText.replace(/\[ROLE\]/g, role);
+        hasReplacement = true;
+      }
+      if (url && newText.includes('[URL]')) {
+        newText = newText.replace(/\[URL\]/g, url);
+        hasReplacement = true;
+      }
+      if (hm && (newText.includes('[HIRING MANAGER NAME]') || newText.includes('[NAME]'))) {
+        newText = newText.replace(/\[HIRING MANAGER NAME\]/g, hm);
+        newText = newText.replace(/\[NAME\]/g, hm);
+        hasReplacement = true;
+      }
+      // Handle company in filenames
+      if (company && newText.includes('_Company')) {
+        newText = newText.replace(/_Company/g, '_' + company.replace(/ /g, ''));
+        hasReplacement = true;
+      }
+      
+      ph.textContent = newText;
+      if (hasReplacement && newText !== originalText) {
+        ph.classList.add('filled');
+      } else {
+        ph.classList.remove('filled');
+      }
+    });
+  }
+  
+  // Copy prompt text with filled values
+  function copyPrompt(btn) {
+    const box = btn.parentElement;
+    // Get text content, which will have the filled values
+    let text = '';
+    box.childNodes.forEach(node => {
+      if (node === btn) return;
+      if (node.nodeType === Node.TEXT_NODE) {
+        text += node.textContent;
+      } else if (node.classList && node.classList.contains('ph')) {
+        // Use the displayed text (which may be filled)
+        text += node.textContent;
+      } else if (node.textContent) {
+        text += node.textContent;
+      }
+    });
+    text = text.replace('Copy', '').trim();
+    
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 1500);
+    });
+  }
+
+  // Initialize - start with everything collapsed
+  document.addEventListener('DOMContentLoaded', () => {
+    // Load saved context
+    loadContext();
+    
+    // Update placeholders with saved values
+    setTimeout(updateAllPlaceholders, 100);
+    
+    // Collapse all phases on load
+    document.querySelectorAll('.phase-header').forEach(header => {
+      header.classList.add('collapsed');
+    });
+    document.querySelectorAll('.phase-content').forEach(content => {
+      content.classList.add('collapsed');
+      content.style.maxHeight = '0px';
+    });
+    
+    // Collapse utility section on load
+    document.querySelectorAll('.utility-content').forEach(content => {
+      content.classList.add('collapsed');
+      content.style.maxHeight = '0px';
+    });
+  });
+
+  // Progress bar on scroll
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.querySelector('.progress-bar-fill').style.width = progress + '%';
+  });
+</script>
+
+</body>
+</html>
