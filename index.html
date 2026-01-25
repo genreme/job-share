@@ -551,6 +551,9 @@
                         📥 Import Data
                         <input type="file" accept=".json" onchange="importData(event)" style="display: none;">
                     </label>
+                    <button class="copy-btn" onclick="importFromExtension()" id="extensionImportBtn" style="background: #6366f1; color: white; display: none;">
+                        🔗 Import from Extension (<span id="pendingJobCount">0</span>)
+                    </button>
                 </div>
             </div>
             
@@ -4273,8 +4276,130 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         `;
         document.head.appendChild(style);
 
+        // ============================================
+        // CHROME EXTENSION INTEGRATION
+        // ============================================
+        const EXTENSION_STORAGE_KEY = 'jobSearchExtension_pendingJobs';
+
+        // Check for pending jobs from URL hash (from extension)
+        async function checkExtensionJobs() {
+            // Check URL hash for import data
+            const hash = window.location.hash;
+            if (hash.startsWith('#import=')) {
+                try {
+                    const encoded = hash.substring(8); // Remove '#import='
+                    const decoded = decodeURIComponent(atob(encoded));
+                    const pending = JSON.parse(decoded);
+
+                    if (pending && pending.length > 0) {
+                        // Clear the hash to prevent re-import on refresh
+                        history.replaceState(null, '', window.location.pathname);
+
+                        // Import the jobs
+                        await importJobsArray(pending);
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Error decoding extension jobs from URL:', e);
+                }
+                // Clear invalid hash
+                history.replaceState(null, '', window.location.pathname);
+            }
+
+            // Also check localStorage as fallback
+            try {
+                const stored = localStorage.getItem(EXTENSION_STORAGE_KEY);
+                if (stored) {
+                    const pending = JSON.parse(stored);
+                    if (pending && pending.length > 0) {
+                        document.getElementById('extensionImportBtn').style.display = 'inline-flex';
+                        document.getElementById('pendingJobCount').textContent = pending.length;
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error('Error checking localStorage for extension jobs:', e);
+            }
+
+            document.getElementById('extensionImportBtn').style.display = 'none';
+        }
+
+        // Import an array of jobs (used by both URL hash and localStorage import)
+        async function importJobsArray(pending) {
+            if (!pending || pending.length === 0) {
+                showToast('No jobs to import', 'error');
+                return;
+            }
+
+            const data = window.currentData;
+            let added = 0;
+            let skipped = 0;
+
+            // Get max ID from current jobs
+            const maxId = Math.max(0, ...data.jobs.map(j => j.id));
+            let nextId = maxId + 1;
+
+            pending.forEach(job => {
+                // Check for duplicates by URL
+                const exists = data.jobs.some(j =>
+                    j.url && job.url && j.url.split('?')[0] === job.url.split('?')[0]
+                );
+
+                if (exists) {
+                    skipped++;
+                    return;
+                }
+
+                // Assign proper ID and add to jobs
+                const newJob = {
+                    ...job,
+                    id: nextId++,
+                    updates: job.updates || [],
+                    found: job.found || new Date().toISOString().split('T')[0],
+                    posted: job.posted || new Date().toISOString().split('T')[0]
+                };
+                data.jobs.push(newJob);
+                added++;
+            });
+
+            // Save updated data
+            await saveData(data);
+
+            if (added > 0) {
+                showToast(`Imported ${added} job${added > 1 ? 's' : ''} from LinkedIn${skipped > 0 ? ` (${skipped} duplicates skipped)` : ''}`);
+                await loadData();
+            } else if (skipped > 0) {
+                showToast(`All ${skipped} jobs already exist in dashboard`, 'error');
+            }
+        }
+
+        // Import jobs from localStorage (manual button click)
+        async function importFromExtension() {
+            try {
+                const stored = localStorage.getItem(EXTENSION_STORAGE_KEY);
+                if (!stored) {
+                    showToast('No pending jobs from extension', 'error');
+                    return;
+                }
+
+                const pending = JSON.parse(stored);
+                await importJobsArray(pending);
+
+                // Clear extension pending jobs
+                localStorage.removeItem(EXTENSION_STORAGE_KEY);
+                document.getElementById('extensionImportBtn').style.display = 'none';
+
+            } catch (e) {
+                console.error('Extension import error:', e);
+                showToast('Import failed: ' + e.message, 'error');
+            }
+        }
+
         // Initialize on load
-        window.addEventListener('load', loadData);
+        window.addEventListener('load', async () => {
+            await loadData();
+            await checkExtensionJobs();
+        });
     </script>
 </body>
 </html>,
