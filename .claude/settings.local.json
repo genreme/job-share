@@ -6,7 +6,8 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: Job Search Command Center foundation\n\n- Dashboard HTML \\(3,058 lines, 36 jobs tracked\\)\n- Playbook HTML \\(application workflow guide\\)\n- Strategy documentation \\(fit scores, networking, salary\\)\n- Playbook guide \\(resume/cover letter framework\\)\n- Troubleshooting docs \\(status check, save update fixes\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(ls:*)",
       "Bash(xcode-select:*)",
-      "Bash(git --version:*)"
+      "Bash(git --version:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

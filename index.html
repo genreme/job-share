@@ -580,7 +580,7 @@
             <button class="tab" onclick="switchTab('filters')">⚙️ Filter Controls</button>
             <button class="tab" onclick="switchTab('history')">📅 Search History</button>
             <button class="tab" onclick="switchTab('analytics')">📈 Analytics</button>
-            <button class="tab" onclick="switchTab('archive')">📚 PDF Archive</button>
+            <button class="tab" onclick="switchTab('archive')">📁 Documents</button>
         </div>
 
         <div id="pipeline" class="tab-content active">
@@ -1076,9 +1076,61 @@ HELP ME:
         </div>
 
         <div id="archive" class="tab-content">
-            <h2 style="margin-bottom: 20px;">📚 PDF Archive</h2>
-            <p style="color: #6c757d; margin-bottom: 20px;">All "Apply Now" job descriptions are automatically saved here for keyword analysis</p>
-            <div id="archiveContainer"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h2>📁 Documents</h2>
+                    <p style="color: #6c757d; margin-top: 5px;">Upload PDFs, link existing files, and track documents per job</p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span id="storageUsage" style="color: #6c757d; font-size: 13px;"></span>
+                    <label class="copy-btn" style="cursor: pointer; margin: 0;">
+                        📤 Upload File
+                        <input type="file" id="globalFileUpload" accept=".pdf,.doc,.docx,.txt,.md" style="display: none;" onchange="handleGlobalUpload(event)">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Document Type Filters -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button class="filter-btn active" onclick="filterDocuments('all')">All Documents</button>
+                <button class="filter-btn" onclick="filterDocuments('resume')">📄 Resumes</button>
+                <button class="filter-btn" onclick="filterDocuments('cover_letter')">✉️ Cover Letters</button>
+                <button class="filter-btn" onclick="filterDocuments('job_description')">📋 Job Descriptions</button>
+                <button class="filter-btn" onclick="filterDocuments('research')">🔍 Research</button>
+                <button class="filter-btn" onclick="filterDocuments('general')">📎 Other</button>
+            </div>
+
+            <!-- Existing Files Reference Section -->
+            <div style="background: #f0f9ff; border: 2px dashed #3b82f6; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="color: #1e40af; margin-bottom: 10px;">📂 Your Resume/Cover Letter Library</h3>
+                <p style="color: #6c757d; font-size: 13px; margin-bottom: 15px;">
+                    85 application PDFs in <code>/Users/genre/Claude/resume/</code>
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;" id="existingFilesPreview">
+                    <div style="background: white; padding: 10px; border-radius: 6px; font-size: 12px;">
+                        <strong>Resume Generator:</strong><br>
+                        <code style="color: #6c757d;">resume generator - claude/</code>
+                    </div>
+                    <div style="background: white; padding: 10px; border-radius: 6px; font-size: 12px;">
+                        <strong>Cover Letter Generator:</strong><br>
+                        <code style="color: #6c757d;">cover letter generator - claude/</code>
+                    </div>
+                </div>
+                <button onclick="scanExistingFiles()" class="copy-btn" style="margin-top: 15px; background: #3b82f6;">
+                    🔄 Scan & Link Existing PDFs
+                </button>
+            </div>
+
+            <!-- Documents Grid -->
+            <div id="documentsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                <!-- Documents will be rendered here -->
+            </div>
+
+            <div id="noDocuments" style="display: none; text-align: center; padding: 40px; color: #6c757d;">
+                <div style="font-size: 48px; margin-bottom: 15px;">📄</div>
+                <h3>No Documents Yet</h3>
+                <p>Upload a file or link documents to jobs to get started</p>
+            </div>
         </div>
     </div>
 
@@ -1182,6 +1234,212 @@ HELP ME:
                 }
             }
         };
+
+        // ============================================
+        // INDEXEDDB DOCUMENT STORAGE
+        // ============================================
+        const DocStore = {
+            dbName: 'JobSearchDocuments',
+            dbVersion: 1,
+            db: null,
+
+            async init() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.dbVersion);
+
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        this.db = request.result;
+                        resolve(this.db);
+                    };
+
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+
+                        // Documents store - for uploaded files
+                        if (!db.objectStoreNames.contains('documents')) {
+                            const docStore = db.createObjectStore('documents', { keyPath: 'id', autoIncrement: true });
+                            docStore.createIndex('jobId', 'jobId', { unique: false });
+                            docStore.createIndex('type', 'type', { unique: false });
+                            docStore.createIndex('name', 'name', { unique: false });
+                        }
+
+                        // File references store - for existing files on disk
+                        if (!db.objectStoreNames.contains('fileRefs')) {
+                            const refStore = db.createObjectStore('fileRefs', { keyPath: 'id', autoIncrement: true });
+                            refStore.createIndex('jobId', 'jobId', { unique: false });
+                            refStore.createIndex('type', 'type', { unique: false });
+                        }
+                    };
+                });
+            },
+
+            // Save uploaded document (stores actual file data)
+            async saveDocument(jobId, file, type = 'general') {
+                if (!this.db) await this.init();
+
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const tx = this.db.transaction(['documents'], 'readwrite');
+                        const store = tx.objectStore('documents');
+
+                        const doc = {
+                            jobId: jobId,
+                            name: file.name,
+                            type: type, // 'resume', 'cover_letter', 'job_description', 'research', 'general'
+                            mimeType: file.type,
+                            size: file.size,
+                            data: reader.result,
+                            uploadedAt: new Date().toISOString()
+                        };
+
+                        const request = store.add(doc);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    };
+                    reader.onerror = () => reject(reader.error);
+                    reader.readAsDataURL(file);
+                });
+            },
+
+            // Save file reference (stores path only, not file data)
+            async saveFileRef(jobId, path, name, type = 'general') {
+                if (!this.db) await this.init();
+
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(['fileRefs'], 'readwrite');
+                    const store = tx.objectStore('fileRefs');
+
+                    const ref = {
+                        jobId: jobId,
+                        path: path,
+                        name: name,
+                        type: type,
+                        addedAt: new Date().toISOString()
+                    };
+
+                    const request = store.add(ref);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            },
+
+            // Get all documents for a job
+            async getDocumentsForJob(jobId) {
+                if (!this.db) await this.init();
+
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(['documents', 'fileRefs'], 'readonly');
+
+                    const docs = [];
+                    const refs = [];
+
+                    const docStore = tx.objectStore('documents');
+                    const docIndex = docStore.index('jobId');
+                    const docRequest = docIndex.getAll(jobId);
+
+                    docRequest.onsuccess = () => {
+                        docs.push(...docRequest.result);
+                    };
+
+                    const refStore = tx.objectStore('fileRefs');
+                    const refIndex = refStore.index('jobId');
+                    const refRequest = refIndex.getAll(jobId);
+
+                    refRequest.onsuccess = () => {
+                        refs.push(...refRequest.result);
+                    };
+
+                    tx.oncomplete = () => {
+                        resolve({
+                            documents: docs,
+                            fileRefs: refs
+                        });
+                    };
+
+                    tx.onerror = () => reject(tx.error);
+                });
+            },
+
+            // Get all documents (for Documents tab)
+            async getAllDocuments() {
+                if (!this.db) await this.init();
+
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(['documents', 'fileRefs'], 'readonly');
+
+                    const docs = [];
+                    const refs = [];
+
+                    const docRequest = tx.objectStore('documents').getAll();
+                    docRequest.onsuccess = () => docs.push(...docRequest.result);
+
+                    const refRequest = tx.objectStore('fileRefs').getAll();
+                    refRequest.onsuccess = () => refs.push(...refRequest.result);
+
+                    tx.oncomplete = () => resolve({ documents: docs, fileRefs: refs });
+                    tx.onerror = () => reject(tx.error);
+                });
+            },
+
+            // Delete a document
+            async deleteDocument(id) {
+                if (!this.db) await this.init();
+
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(['documents'], 'readwrite');
+                    const request = tx.objectStore('documents').delete(id);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            },
+
+            // Delete a file reference
+            async deleteFileRef(id) {
+                if (!this.db) await this.init();
+
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(['fileRefs'], 'readwrite');
+                    const request = tx.objectStore('fileRefs').delete(id);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            },
+
+            // Get storage usage
+            async getStorageUsage() {
+                if (!this.db) await this.init();
+
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(['documents'], 'readonly');
+                    const request = tx.objectStore('documents').getAll();
+
+                    request.onsuccess = () => {
+                        const docs = request.result;
+                        const totalSize = docs.reduce((sum, doc) => sum + (doc.size || 0), 0);
+                        resolve({
+                            count: docs.length,
+                            totalSize: totalSize,
+                            formattedSize: formatFileSize(totalSize)
+                        });
+                    };
+                    request.onerror = () => reject(request.error);
+                });
+            }
+        };
+
+        // Format file size helper
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Initialize DocStore on page load
+        DocStore.init().catch(err => console.error('Failed to init DocStore:', err));
 
         // ============================================
         // SECURITY UTILITIES
@@ -2444,6 +2702,12 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     renderBoardStats(data.jobs);
                 });
             }
+
+            // Render documents when archive/documents tab is shown
+            if (tabName === 'archive') {
+                renderDocuments();
+                updateStorageUsage();
+            }
         }
 
         // Playbook section toggle
@@ -2472,6 +2736,262 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     button.style.background = '';
                 }, 2000);
             });
+        }
+
+        // ============================================
+        // DOCUMENT MANAGEMENT FUNCTIONS
+        // ============================================
+        let currentDocFilter = 'all';
+
+        // Handle global file upload (from Documents tab)
+        async function handleGlobalUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Ask which job to link to (or none)
+            const jobId = await promptJobSelection(file.name);
+
+            try {
+                const docId = await DocStore.saveDocument(jobId, file, detectDocType(file.name));
+                await renderDocuments();
+                updateStorageUsage();
+                showNotification(`✓ Uploaded: ${file.name}`);
+            } catch (err) {
+                console.error('Upload failed:', err);
+                alert('Failed to upload file: ' + err.message);
+            }
+
+            event.target.value = ''; // Reset input
+        }
+
+        // Handle file upload for specific job
+        async function handleJobUpload(event, jobId, docType) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                await DocStore.saveDocument(jobId, file, docType);
+                await renderDocuments();
+                updateStorageUsage();
+                showNotification(`✓ Uploaded: ${file.name}`);
+                // Refresh job modal if open
+                if (document.getElementById('jobModal').style.display === 'block') {
+                    const data = await initStorage();
+                    const job = data.jobs.find(j => j.id === jobId);
+                    if (job) openJobModal(job);
+                }
+            } catch (err) {
+                console.error('Upload failed:', err);
+                alert('Failed to upload file: ' + err.message);
+            }
+
+            event.target.value = '';
+        }
+
+        // Detect document type from filename
+        function detectDocType(filename) {
+            const lower = filename.toLowerCase();
+            if (lower.includes('resume') || lower.includes('cv')) return 'resume';
+            if (lower.includes('cover') || lower.includes('letter')) return 'cover_letter';
+            if (lower.includes('jd') || lower.includes('job') || lower.includes('description')) return 'job_description';
+            if (lower.includes('research') || lower.includes('notes') || lower.includes('prep')) return 'research';
+            return 'general';
+        }
+
+        // Prompt user to select a job to link document to
+        async function promptJobSelection(filename) {
+            const data = await initStorage();
+            const jobs = data.jobs.filter(j => j.status !== 'archived');
+
+            return new Promise((resolve) => {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.display = 'block';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 500px;">
+                        <h2>Link Document to Job</h2>
+                        <p style="color: #6c757d; margin: 10px 0;">Uploading: <strong>${escapeHtml(filename)}</strong></p>
+                        <p style="margin-bottom: 15px;">Select a job to link this document to, or choose "No Link" to upload without linking:</p>
+                        <select id="jobSelectForDoc" style="width: 100%; padding: 10px; border: 2px solid #e0e4e8; border-radius: 6px; margin-bottom: 15px;">
+                            <option value="">-- No Link (General Document) --</option>
+                            ${jobs.map(j => `<option value="${j.id}">${escapeHtml(j.company)} - ${escapeHtml(j.title)}</option>`).join('')}
+                        </select>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button onclick="this.closest('.modal').remove(); window._docResolve(null);" style="padding: 10px 20px; border: 2px solid #e0e4e8; background: white; border-radius: 6px; cursor: pointer;">Cancel</button>
+                            <button onclick="const v = document.getElementById('jobSelectForDoc').value; this.closest('.modal').remove(); window._docResolve(v ? parseInt(v) : null);" class="btn-primary">Upload</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                window._docResolve = resolve;
+            });
+        }
+
+        // Render documents in the Documents tab
+        async function renderDocuments() {
+            const container = document.getElementById('documentsContainer');
+            const noDocsMsg = document.getElementById('noDocuments');
+            const data = await initStorage();
+
+            try {
+                const { documents, fileRefs } = await DocStore.getAllDocuments();
+                const allDocs = [
+                    ...documents.map(d => ({ ...d, source: 'uploaded' })),
+                    ...fileRefs.map(r => ({ ...r, source: 'reference' }))
+                ];
+
+                // Filter by type
+                const filtered = currentDocFilter === 'all'
+                    ? allDocs
+                    : allDocs.filter(d => d.type === currentDocFilter);
+
+                if (filtered.length === 0) {
+                    container.innerHTML = '';
+                    noDocsMsg.style.display = 'block';
+                    return;
+                }
+
+                noDocsMsg.style.display = 'none';
+
+                container.innerHTML = filtered.map(doc => {
+                    const job = doc.jobId ? data.jobs.find(j => j.id === doc.jobId) : null;
+                    const typeColors = {
+                        resume: '#10b981',
+                        cover_letter: '#3b82f6',
+                        job_description: '#f59e0b',
+                        research: '#8b5cf6',
+                        general: '#6c757d'
+                    };
+                    const typeLabels = {
+                        resume: '📄 Resume',
+                        cover_letter: '✉️ Cover Letter',
+                        job_description: '📋 Job Description',
+                        research: '🔍 Research',
+                        general: '📎 Document'
+                    };
+
+                    return `
+                        <div class="doc-card" style="background: white; border: 1px solid #e0e4e8; border-radius: 8px; padding: 15px; border-left: 4px solid ${typeColors[doc.type] || '#6c757d'};">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <span style="background: ${typeColors[doc.type] || '#6c757d'}; color: white; font-size: 11px; padding: 3px 8px; border-radius: 4px;">
+                                    ${typeLabels[doc.type] || 'Document'}
+                                </span>
+                                <button onclick="deleteDocument(${doc.id}, '${doc.source}')" style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 16px;" title="Delete">🗑️</button>
+                            </div>
+                            <h4 style="margin: 0 0 8px 0; font-size: 14px; word-break: break-word;">${escapeHtml(doc.name)}</h4>
+                            ${job ? `<p style="color: #667eea; font-size: 12px; margin: 0 0 8px 0;">🔗 ${escapeHtml(job.company)}</p>` : ''}
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #6c757d;">
+                                <span>${doc.source === 'uploaded' ? formatFileSize(doc.size || 0) : 'File Reference'}</span>
+                                <span>${new Date(doc.uploadedAt || doc.addedAt).toLocaleDateString()}</span>
+                            </div>
+                            ${doc.source === 'uploaded' ? `
+                                <button onclick="viewDocument(${doc.id})" style="margin-top: 10px; width: 100%; padding: 8px; background: #f7f9fc; border: 1px solid #e0e4e8; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                                    👁️ View
+                                </button>
+                            ` : `
+                                <div style="margin-top: 10px; padding: 8px; background: #f7f9fc; border-radius: 4px; font-size: 11px; color: #6c757d; word-break: break-all;">
+                                    ${escapeHtml(doc.path)}
+                                </div>
+                            `}
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error('Failed to render documents:', err);
+                container.innerHTML = '<p style="color: #dc2626;">Error loading documents</p>';
+            }
+        }
+
+        // Filter documents by type
+        function filterDocuments(type) {
+            currentDocFilter = type;
+            document.querySelectorAll('#archive .filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase().includes(type) || (type === 'all' && btn.textContent.includes('All')));
+            });
+            renderDocuments();
+        }
+
+        // View uploaded document
+        async function viewDocument(docId) {
+            try {
+                const { documents } = await DocStore.getAllDocuments();
+                const doc = documents.find(d => d.id === docId);
+                if (!doc) {
+                    alert('Document not found');
+                    return;
+                }
+
+                // Open in new tab
+                const newWindow = window.open();
+                if (doc.mimeType === 'application/pdf') {
+                    newWindow.document.write(`
+                        <html>
+                        <head><title>${escapeHtml(doc.name)}</title></head>
+                        <body style="margin:0;">
+                            <embed src="${doc.data}" type="application/pdf" width="100%" height="100%" style="position:absolute;top:0;left:0;right:0;bottom:0;">
+                        </body>
+                        </html>
+                    `);
+                } else {
+                    newWindow.document.write(`
+                        <html>
+                        <head><title>${escapeHtml(doc.name)}</title></head>
+                        <body>
+                            <h1>${escapeHtml(doc.name)}</h1>
+                            <p>File type: ${doc.mimeType}</p>
+                            <a href="${doc.data}" download="${escapeHtml(doc.name)}">Download File</a>
+                        </body>
+                        </html>
+                    `);
+                }
+            } catch (err) {
+                console.error('Failed to view document:', err);
+                alert('Failed to open document');
+            }
+        }
+
+        // Delete document
+        async function deleteDocument(id, source) {
+            if (!confirm('Delete this document?')) return;
+
+            try {
+                if (source === 'uploaded') {
+                    await DocStore.deleteDocument(id);
+                } else {
+                    await DocStore.deleteFileRef(id);
+                }
+                await renderDocuments();
+                updateStorageUsage();
+                showNotification('Document deleted');
+            } catch (err) {
+                console.error('Failed to delete:', err);
+                alert('Failed to delete document');
+            }
+        }
+
+        // Update storage usage display
+        async function updateStorageUsage() {
+            try {
+                const usage = await DocStore.getStorageUsage();
+                document.getElementById('storageUsage').textContent = `${usage.count} files (${usage.formattedSize})`;
+            } catch (err) {
+                console.error('Failed to get storage usage:', err);
+            }
+        }
+
+        // Show notification toast
+        function showNotification(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10000; animation: slideIn 0.3s ease;';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Scan existing files (placeholder - would need server component for actual file access)
+        function scanExistingFiles() {
+            alert('To link existing files from your computer:\\n\\n1. Open the job you want to link a file to\\n2. Use the "Add Document" button in the job modal\\n3. Select the file from your computer\\n\\nNote: For security, browsers cannot directly scan local folders. Files must be manually selected.');
         }
 
         // Render jobs table
@@ -2981,10 +3501,10 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                                 <div>
                                     <strong style="color: #667eea;">${update.type}</strong>
                                     <span style="color: #6c757d; font-size: 12px; margin-left: 10px;">
-                                        ${new Date(update.timestamp).toLocaleString('en-US', { 
+                                        ${new Date(update.timestamp).toLocaleString('en-US', {
                                             timeZone: 'America/New_York',
-                                            month: 'short', 
-                                            day: 'numeric', 
+                                            month: 'short',
+                                            day: 'numeric',
                                             year: 'numeric',
                                             hour: 'numeric',
                                             minute: '2-digit',
@@ -2998,7 +3518,31 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     `).join('')}
                 </div>
                 ` : ''}
-                
+
+                <!-- DOCUMENTS SECTION -->
+                <div style="margin-top: 20px; background: #f0f9ff; padding: 15px; border-radius: 8px; border: 1px solid #bfdbfe;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="margin: 0;">📁 Documents</h4>
+                        <div style="display: flex; gap: 8px;">
+                            <label style="padding: 6px 12px; background: #3b82f6; color: white; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                                📄 Add Resume
+                                <input type="file" accept=".pdf,.doc,.docx" style="display: none;" onchange="handleJobUpload(event, ${job.id}, 'resume')">
+                            </label>
+                            <label style="padding: 6px 12px; background: #10b981; color: white; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                                ✉️ Add Cover Letter
+                                <input type="file" accept=".pdf,.doc,.docx" style="display: none;" onchange="handleJobUpload(event, ${job.id}, 'cover_letter')">
+                            </label>
+                            <label style="padding: 6px 12px; background: #f59e0b; color: white; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                                📋 Add JD
+                                <input type="file" accept=".pdf,.doc,.docx,.txt" style="display: none;" onchange="handleJobUpload(event, ${job.id}, 'job_description')">
+                            </label>
+                        </div>
+                    </div>
+                    <div id="jobDocsContainer-${job.id}" style="min-height: 40px;">
+                        <p style="color: #6c757d; font-size: 13px; margin: 0;">Loading documents...</p>
+                    </div>
+                </div>
+
                 <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
                     <button class="btn-primary" onclick="window.open('${job.url}', '_blank')" style="background: #28a745;">View Job</button>
                     <button class="btn-primary" onclick="updateJobStatus(${job.id}, 'applied')">Applied</button>
@@ -3007,8 +3551,56 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     <button class="btn-primary" onclick="updateJobStatus(${job.id}, 'archived')" style="background: #6c757d;">Archive</button>
                 </div>
             `;
-            
+
             modal.classList.add('active');
+
+            // Load documents for this job
+            loadJobDocuments(job.id);
+        }
+
+        // Load and render documents for a specific job in the modal
+        async function loadJobDocuments(jobId) {
+            const container = document.getElementById(`jobDocsContainer-${jobId}`);
+            if (!container) return;
+
+            try {
+                const { documents, fileRefs } = await DocStore.getDocumentsForJob(jobId);
+                const allDocs = [
+                    ...documents.map(d => ({ ...d, source: 'uploaded' })),
+                    ...fileRefs.map(r => ({ ...r, source: 'reference' }))
+                ];
+
+                if (allDocs.length === 0) {
+                    container.innerHTML = '<p style="color: #6c757d; font-size: 13px; margin: 0;">No documents attached yet. Use the buttons above to add files.</p>';
+                    return;
+                }
+
+                const typeLabels = {
+                    resume: '📄',
+                    cover_letter: '✉️',
+                    job_description: '📋',
+                    research: '🔍',
+                    general: '📎'
+                };
+
+                container.innerHTML = `
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        ${allDocs.map(doc => `
+                            <div style="display: flex; align-items: center; gap: 6px; background: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e0e4e8; font-size: 12px;">
+                                <span>${typeLabels[doc.type] || '📎'}</span>
+                                <span style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(doc.name)}</span>
+                                ${doc.source === 'uploaded' ? `
+                                    <button onclick="viewDocument(${doc.id})" style="background: none; border: none; cursor: pointer; color: #3b82f6;" title="View">👁️</button>
+                                ` : ''}
+                                <button onclick="deleteDocument(${doc.id}, '${doc.source}'); loadJobDocuments(${jobId});" style="background: none; border: none; cursor: pointer; color: #dc2626;" title="Remove">×</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (err) {
+                console.error('Failed to load job documents:', err);
+                container.innerHTML = '<p style="color: #dc2626; font-size: 13px; margin: 0;">Error loading documents</p>';
+            }
         }
 
         function closeModal() {
