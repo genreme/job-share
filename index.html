@@ -698,6 +698,9 @@
                     ⭐ Default View
                     <span class="tooltiptext">Sort by fit score, hide archived jobs</span>
                 </button>
+                <button class="filter-btn" onclick="forceRenderAllJobs()" style="background: #ef4444; color: white;">
+                    🔧 Debug: Force Show
+                </button>
                 <button class="filter-btn active tooltip" onclick="filterByStatus('apply-now')">
                     🔴 Apply Now
                     <span class="tooltiptext">Click once: hide | Click twice: show only | Click three: show all</span>
@@ -1441,7 +1444,7 @@ HELP ME:
 
     <!-- Version Footer -->
     <div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 11px;">
-        Job Search Command Center · v2.3 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v2.4 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -4496,15 +4499,26 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             if (sortColumn === 'fitScore') {
                 data.jobs.sort((a, b) => sortDirection === 'desc' ? b.fitScore - a.fitScore : a.fitScore - b.fitScore);
             }
-            
+
             updateStats(data);
             renderSearchHistory(data);
             renderArchive(data);
             renderBoardStats(data.jobs);
             updateFilterButtons();
-            
+
             // Apply default filters and render
+            console.log('[JSCC] About to call applyFilters...');
             applyFilters();
+            console.log('[JSCC] loadData complete');
+        }
+
+        // Force render jobs on load - fallback if filters fail
+        function forceRenderAllJobs() {
+            if (window.currentData && window.currentData.jobs) {
+                const nonArchived = window.currentData.jobs.filter(j => j.status !== 'archived');
+                console.log('[JSCC] Force rendering', nonArchived.length, 'non-archived jobs');
+                renderJobs(nonArchived);
+            }
         }
 
         // ============================================
@@ -5355,19 +5369,30 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             await loadData();
             await checkExtensionJobs();
 
-            // Load Supabase script dynamically
+            // Load Supabase script dynamically - try multiple CDNs
             const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+            script.src = 'https://unpkg.com/@supabase/supabase-js@2';
             script.onload = () => {
-                console.log('Supabase script loaded');
+                console.log('[JSCC] Supabase script loaded from unpkg');
                 initSupabase();
             };
             script.onerror = (err) => {
-                console.error('Failed to load Supabase script:', err);
-                const pendingList = document.getElementById('pendingList');
-                if (pendingList) {
-                    pendingList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">❌ Could not load database library. Check your internet connection.</p>';
-                }
+                console.error('[JSCC] Failed to load Supabase from unpkg, trying jsdelivr...');
+                // Try jsdelivr as fallback
+                const script2 = document.createElement('script');
+                script2.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+                script2.onload = () => {
+                    console.log('[JSCC] Supabase script loaded from jsdelivr');
+                    initSupabase();
+                };
+                script2.onerror = (err2) => {
+                    console.error('[JSCC] All CDNs failed to load Supabase');
+                    const pendingList = document.getElementById('pendingList');
+                    if (pendingList) {
+                        pendingList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">❌ Could not load database library. Check your internet connection or try refreshing.</p>';
+                    }
+                };
+                document.head.appendChild(script2);
             };
             document.head.appendChild(script);
         });
