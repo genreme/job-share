@@ -634,22 +634,11 @@
                     <button class="copy-btn" onclick="checkAllJobStatus()" style="background: #0891b2; color: white;">
                         📊 Check All Status
                     </button>
-                    <a href="#" onclick="showCommandModal(); return false;" style="color: white; text-decoration: none; font-size: 12px; opacity: 0.8;">Search Prompt</a>
-                    <button class="copy-btn" onclick="exportData()" style="background: #28a745; color: white;">
-                        💾 Export Data
-                    </button>
-                    <label class="copy-btn" style="background: #17a2b8; color: white; cursor: pointer;">
-                        📥 Import Data
-                        <input type="file" accept=".json" onchange="importData(event)" style="display: none;">
-                    </label>
-                    <button class="copy-btn" onclick="importFromExtension()" id="extensionImportBtn" style="background: #6366f1; color: white; display: none;">
-                        🔗 Import from Extension (<span id="pendingJobCount">0</span>)
-                    </button>
                     <button class="copy-btn" onclick="showQuickAddModal()" style="background: #ec4899; color: white;">
                         ➕ Quick Add Job
                     </button>
-                    <button class="copy-btn" onclick="exportShareableSnapshot()" style="background: #8b5cf6; color: white;">
-                        📤 Share Status
+                    <button class="copy-btn" onclick="importFromExtension()" id="extensionImportBtn" style="background: #6366f1; color: white; display: none;">
+                        🔗 Import from Extension (<span id="pendingJobCount">0</span>)
                     </button>
                 </div>
             </div>
@@ -697,9 +686,6 @@
                 <button class="filter-btn tooltip" onclick="setDefaultView()" style="background: #667eea; color: white; font-weight: 600;">
                     ⭐ Default View
                     <span class="tooltiptext">Sort by fit score, hide archived jobs</span>
-                </button>
-                <button class="filter-btn" onclick="forceRenderAllJobs()" style="background: #ef4444; color: white;">
-                    🔧 Debug: Force Show
                 </button>
                 <button class="filter-btn active tooltip" onclick="filterByStatus('apply-now')">
                     🔴 Apply Now
@@ -1518,8 +1504,21 @@ https://www.linkedin.com/jobs/view/789"></textarea>
     </div>
 
     <!-- Version Footer -->
-    <div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 11px;">
-        Job Search Command Center · v2.9 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+    <div style="text-align: center; padding: 15px 10px; color: #94a3b8; font-size: 11px; border-top: 1px solid #e5e7eb; margin-top: 20px;">
+        <div style="margin-bottom: 8px;">
+            <button onclick="exportData()" style="background: none; border: 1px solid #d1d5db; color: #6b7280; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; margin: 0 3px;">
+                💾 Export
+            </button>
+            <label style="background: none; border: 1px solid #d1d5db; color: #6b7280; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; margin: 0 3px; display: inline-block;">
+                📥 Import
+                <input type="file" accept=".json" onchange="importData(event)" style="display: none;">
+            </label>
+            <button onclick="exportShareableSnapshot()" style="background: none; border: 1px solid #d1d5db; color: #6b7280; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; margin: 0 3px;">
+                📤 Share Status
+            </button>
+            <a href="#" onclick="showCommandModal(); return false;" style="color: #6b7280; margin-left: 10px;">Search Prompt</a>
+        </div>
+        Job Search Command Center · v3.0 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -5259,15 +5258,46 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             const errors = statusCheckResults.filter(r => r.status === 'error');
             const active = statusCheckResults.filter(r => r.status === 'active');
 
+            // Separate closed jobs: applied (in progress) vs not applied
+            const closedApplied = closed.filter(r => r.job.status === 'applied' || r.job.appliedDate);
+            const closedNotApplied = closed.filter(r => r.job.status !== 'applied' && !r.job.appliedDate);
+
             let listHtml = '';
 
-            if (closed.length > 0) {
-                listHtml += `<h4 style="color: #dc2626; margin: 15px 0 10px;">❌ Closed Jobs (${closed.length})</h4>`;
-                listHtml += closed.map(r => `
+            if (closedApplied.length > 0) {
+                listHtml += `<h4 style="color: #d97706; margin: 15px 0 10px;">⏳ Closed But Applied (${closedApplied.length}) - Application may still be in progress</h4>`;
+                listHtml += closedApplied.map((r, i) => `
+                    <div style="border: 1px solid #fde68a; background: #fffbeb; border-radius: 6px; padding: 10px; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600;">${escapeHtml(r.job.title)}</div>
+                                <div style="color: #667eea; font-size: 13px;">${escapeHtml(r.job.company)}</div>
+                                <div style="font-size: 11px; color: #d97706;">Applied ${r.job.appliedDate || ''} - Posting closed but app may be in review</div>
+                            </div>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; cursor: pointer;">
+                                <input type="checkbox" class="archive-checkbox" data-job-id="${r.job.id}">
+                                Archive anyway
+                            </label>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (closedNotApplied.length > 0) {
+                listHtml += `<h4 style="color: #dc2626; margin: 15px 0 10px;">❌ Closed Jobs (${closedNotApplied.length}) - Safe to archive</h4>`;
+                listHtml += closedNotApplied.map(r => `
                     <div style="border: 1px solid #fecaca; background: #fef2f2; border-radius: 6px; padding: 10px; margin-bottom: 8px;">
-                        <div style="font-weight: 600;">${escapeHtml(r.job.title)}</div>
-                        <div style="color: #667eea; font-size: 13px;">${escapeHtml(r.job.company)}</div>
-                        <div style="font-size: 11px; color: #dc2626;">HTTP ${r.httpStatus || 'N/A'}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600;">${escapeHtml(r.job.title)}</div>
+                                <div style="color: #667eea; font-size: 13px;">${escapeHtml(r.job.company)}</div>
+                                <div style="font-size: 11px; color: #dc2626;">HTTP ${r.httpStatus || 'N/A'}</div>
+                            </div>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; cursor: pointer;">
+                                <input type="checkbox" class="archive-checkbox" data-job-id="${r.job.id}" checked>
+                                Archive
+                            </label>
+                        </div>
                     </div>
                 `).join('');
             }
@@ -5306,20 +5336,25 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         }
 
         async function archiveClosedJobs() {
-            const closed = statusCheckResults.filter(r => r.status === 'closed');
-            if (closed.length === 0) return;
+            // Get only checked jobs
+            const checkboxes = document.querySelectorAll('.archive-checkbox:checked');
+            if (checkboxes.length === 0) {
+                showToast('No jobs selected to archive', 'error');
+                return;
+            }
 
             const data = window.currentData;
             let archivedCount = 0;
 
-            closed.forEach(r => {
-                const job = data.jobs.find(j => j.id === r.job.id);
+            checkboxes.forEach(cb => {
+                const jobId = parseInt(cb.dataset.jobId);
+                const job = data.jobs.find(j => j.id === jobId);
                 if (job && job.status !== 'archived') {
                     job.status = 'archived';
                     job.updates = job.updates || [];
                     job.updates.push({
                         date: new Date().toISOString(),
-                        text: 'Auto-archived: job posting no longer available'
+                        text: 'Archived: job posting no longer available'
                     });
                     archivedCount++;
                 }

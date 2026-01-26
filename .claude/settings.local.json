@@ -11,7 +11,13 @@
       "Bash(python3:*)",
       "Bash(git push:*)",
       "Bash(git remote set-url:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(node --version:*)",
+      "Bash(npm:*)",
+      "Bash(brew:*)",
+      "Bash(wrangler --version:*)",
+      "Bash(wrangler login:*)",
+      "Bash(wrangler deploy:*)"
     ]
   }
 }
