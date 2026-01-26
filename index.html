@@ -4285,11 +4285,15 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         async function checkExtensionJobs() {
             // Check URL hash for import data
             const hash = window.location.hash;
+            console.log('JSCC Dashboard: Checking for extension jobs, hash:', hash);
+
             if (hash.startsWith('#import=')) {
                 try {
                     const encoded = hash.substring(8); // Remove '#import='
+                    console.log('JSCC Dashboard: Found import hash, decoding...');
                     const decoded = decodeURIComponent(atob(encoded));
                     const pending = JSON.parse(decoded);
+                    console.log('JSCC Dashboard: Decoded jobs:', pending);
 
                     if (pending && pending.length > 0) {
                         // Clear the hash to prevent re-import on refresh
@@ -4300,7 +4304,7 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                         return;
                     }
                 } catch (e) {
-                    console.error('Error decoding extension jobs from URL:', e);
+                    console.error('JSCC Dashboard: Error decoding extension jobs from URL:', e);
                 }
                 // Clear invalid hash
                 history.replaceState(null, '', window.location.pathname);
@@ -4326,26 +4330,38 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
         // Import an array of jobs (used by both URL hash and localStorage import)
         async function importJobsArray(pending) {
+            console.log('JSCC Dashboard: importJobsArray called with', pending);
+
             if (!pending || pending.length === 0) {
                 showToast('No jobs to import', 'error');
                 return;
             }
 
             const data = window.currentData;
+            if (!data) {
+                console.error('JSCC Dashboard: No current data available!');
+                showToast('Dashboard data not loaded. Please refresh.', 'error');
+                return;
+            }
+            console.log('JSCC Dashboard: Current data has', data.jobs.length, 'jobs');
             let added = 0;
             let skipped = 0;
 
             // Get max ID from current jobs
             const maxId = Math.max(0, ...data.jobs.map(j => j.id));
             let nextId = maxId + 1;
+            console.log('JSCC Dashboard: Max ID is', maxId, ', next ID will be', nextId);
 
-            pending.forEach(job => {
+            pending.forEach((job, index) => {
+                console.log(`JSCC Dashboard: Processing job ${index + 1}:`, job.title, '@', job.company);
+
                 // Check for duplicates by URL
                 const exists = data.jobs.some(j =>
                     j.url && job.url && j.url.split('?')[0] === job.url.split('?')[0]
                 );
 
                 if (exists) {
+                    console.log('JSCC Dashboard: Job already exists (duplicate URL), skipping');
                     skipped++;
                     return;
                 }
@@ -4358,16 +4374,23 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     found: job.found || new Date().toISOString().split('T')[0],
                     posted: job.posted || new Date().toISOString().split('T')[0]
                 };
+                console.log('JSCC Dashboard: Adding new job with ID', newJob.id);
                 data.jobs.push(newJob);
                 added++;
             });
 
+            console.log('JSCC Dashboard: Import complete. Added:', added, 'Skipped:', skipped);
+
             // Save updated data
+            console.log('JSCC Dashboard: Saving data...');
             await saveData(data);
+            console.log('JSCC Dashboard: Data saved!');
 
             if (added > 0) {
                 showToast(`Imported ${added} job${added > 1 ? 's' : ''} from LinkedIn${skipped > 0 ? ` (${skipped} duplicates skipped)` : ''}`);
+                console.log('JSCC Dashboard: Reloading data...');
                 await loadData();
+                console.log('JSCC Dashboard: Reload complete!');
             } else if (skipped > 0) {
                 showToast(`All ${skipped} jobs already exist in dashboard`, 'error');
             }
