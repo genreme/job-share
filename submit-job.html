@@ -348,8 +348,12 @@
 
                 <div id="scoringReasons" style="display: none; margin-top: 15px; padding: 12px; background: white; border-radius: 8px; text-align: left;"></div>
 
+                <div id="linkedInFetched" style="display: none; margin-top: 12px; padding: 10px; background: #d1fae5; border-radius: 8px; font-size: 12px; color: #065f46;">
+                    ✅ Auto-fetched from LinkedIn! Review the details above if needed.
+                </div>
+
                 <div id="limitedInfo" style="display: none; margin-top: 12px; padding: 10px; background: #fef3c7; border-radius: 8px; font-size: 12px; color: #92400e;">
-                    ⚠️ Limited info from URL. Add the job title & company above for a more accurate score!
+                    ⚠️ Couldn't auto-fetch job info. Add the job title & company above for a more accurate score!
                 </div>
 
                 <div class="job-preview" id="jobPreview" style="display: none;">
@@ -645,6 +649,74 @@
                 .join(' ');
         }
 
+        // Fetch LinkedIn job metadata using multiple approaches
+        async function fetchLinkedInMetadata(url) {
+            const result = { title: '', company: '', location: '' };
+
+            try {
+                // Approach 1: Try allorigins.win CORS proxy to fetch Open Graph metadata
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                console.log('[JSCC] Fetching via proxy:', proxyUrl);
+
+                const response = await fetch(proxyUrl, { timeout: 8000 });
+                if (!response.ok) throw new Error('Proxy failed');
+
+                const data = await response.json();
+                const html = data.contents;
+
+                if (html) {
+                    // Extract Open Graph title (usually "Job Title at Company")
+                    const ogTitleMatch = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]+)"/i) ||
+                                        html.match(/<meta[^>]*content="([^"]+)"[^>]*property="og:title"/i);
+                    if (ogTitleMatch) {
+                        const ogTitle = ogTitleMatch[1];
+                        console.log('[JSCC] Found og:title:', ogTitle);
+
+                        // LinkedIn format: "Job Title at Company | LinkedIn" or "Job Title - Company | LinkedIn"
+                        const titleMatch = ogTitle.match(/^(.+?)\s+(?:at|-)\s+(.+?)\s*(?:\||$)/i);
+                        if (titleMatch) {
+                            result.title = titleMatch[1].trim();
+                            result.company = titleMatch[2].trim().replace(/\s*\|\s*LinkedIn.*$/i, '');
+                        } else {
+                            // Fallback: just use the whole title minus LinkedIn
+                            result.title = ogTitle.replace(/\s*\|\s*LinkedIn.*$/i, '').trim();
+                        }
+                    }
+
+                    // Extract description for location hints
+                    const ogDescMatch = html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]+)"/i) ||
+                                       html.match(/<meta[^>]*content="([^"]+)"[^>]*property="og:description"/i);
+                    if (ogDescMatch) {
+                        const desc = ogDescMatch[1];
+                        console.log('[JSCC] Found og:description:', desc.substring(0, 100));
+
+                        // Look for location patterns in description
+                        const locMatch = desc.match(/(?:in|location:|based in)\s+([A-Z][a-z]+(?:,\s*[A-Z]{2})?)/i) ||
+                                        desc.match(/(Remote|Hybrid|On-site)/i) ||
+                                        desc.match(/([A-Z][a-z]+,\s*[A-Z]{2})/);
+                        if (locMatch) {
+                            result.location = locMatch[1];
+                        }
+                    }
+
+                    // Try to find company from LinkedIn company link in HTML
+                    if (!result.company) {
+                        const companyMatch = html.match(/linkedin\.com\/company\/([^"\/]+)/i);
+                        if (companyMatch) {
+                            result.company = formatCompanyName(companyMatch[1]);
+                        }
+                    }
+                }
+
+            } catch (err) {
+                console.log('[JSCC] Metadata fetch failed:', err.message);
+                // Silent fail - we'll fall back to manual entry
+            }
+
+            console.log('[JSCC] LinkedIn metadata result:', result);
+            return result;
+        }
+
         async function checkAndSubmit() {
             console.log('[JSCC] checkAndSubmit called');
 
@@ -686,6 +758,33 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span>Checking...';
 
+            // For LinkedIn URLs, try to fetch metadata if no manual input provided
+            let fetchedFromLinkedIn = false;
+            if (cleanUrl.includes('linkedin.com/jobs') && !manualTitle && !manualCompany) {
+                btn.innerHTML = '<span class="loading"></span>Fetching job info...';
+                try {
+                    const linkedInData = await fetchLinkedInMetadata(cleanUrl);
+                    if (linkedInData.title) {
+                        titleInput.value = linkedInData.title;
+                        fetchedFromLinkedIn = true;
+                    }
+                    if (linkedInData.company) {
+                        companyInput.value = linkedInData.company;
+                        fetchedFromLinkedIn = true;
+                    }
+                    if (linkedInData.location) {
+                        locationInput.value = linkedInData.location;
+                    }
+                } catch (e) {
+                    console.log('[JSCC] LinkedIn fetch error:', e);
+                }
+            }
+
+            // Re-read inputs after potential LinkedIn fetch
+            const finalTitle = titleInput.value.trim();
+            const finalCompany = companyInput.value.trim();
+            const finalLocation = locationInput.value.trim();
+
             try {
                 // Check if already submitted
                 console.log('[JSCC] Checking for existing...');
@@ -706,13 +805,13 @@
                     return;
                 }
 
-                // Parse URL for basic info, then merge with manual input
+                // Parse URL for basic info, then merge with manual/fetched input
                 const job = parseJobUrl(cleanUrl);
 
-                // Override with manual input (user-provided is more accurate)
-                if (manualTitle) job.title = manualTitle;
-                if (manualCompany) job.company = manualCompany;
-                if (manualLocation) job.location = manualLocation;
+                // Override with manual input or fetched LinkedIn data
+                if (finalTitle) job.title = finalTitle;
+                if (finalCompany) job.company = finalCompany;
+                if (finalLocation) job.location = finalLocation;
 
                 console.log('[JSCC] Parsed job:', job);
 
@@ -740,8 +839,10 @@
                     document.getElementById('jobPreview').style.display = 'block';
                 }
 
-                // Show note about limited URL info only if user didn't provide details
-                if (!job.company && !job.title && !manualTitle && !manualCompany) {
+                // Show feedback about data source
+                if (fetchedFromLinkedIn && (job.title || job.company)) {
+                    document.getElementById('linkedInFetched').style.display = 'block';
+                } else if (!job.company && !job.title) {
                     document.getElementById('limitedInfo').style.display = 'block';
                 }
 
@@ -820,6 +921,9 @@
             document.querySelectorAll('.result').forEach(r => r.classList.remove('show'));
 
             document.getElementById('jobUrl').value = '';
+            document.getElementById('jobTitle').value = '';
+            document.getElementById('jobCompany').value = '';
+            document.getElementById('jobLocation').value = '';
             document.getElementById('yourName').value = '';
 
             const btn = document.getElementById('checkBtn');
@@ -828,6 +932,8 @@
             btn.onclick = checkAndSubmit;
 
             document.getElementById('debugInfo').style.display = 'none';
+            document.getElementById('linkedInFetched').style.display = 'none';
+            document.getElementById('limitedInfo').style.display = 'none';
         }
 
         // Auto-paste from clipboard on focus (mobile friendly)
