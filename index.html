@@ -1441,7 +1441,7 @@ HELP ME:
 
     <!-- Version Footer -->
     <div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 11px;">
-        Job Search Command Center · v2.1 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v2.2 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -4469,19 +4469,29 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                 }
             });
             
-            // Try to restore saved filter state, otherwise use defaults
-            if (!loadFilterState()) {
-                // Set default filter state (hide archived, show everything else)
-                filterStates = {
-                    'all': 'active',
-                    'apply-now': 'active',
-                    'maybe': 'active',
-                    'applied': 'active',
-                    'probably-not': 'active',
-                    'archived': 'hidden'
-                };
-                sortColumn = 'fitScore';
-                sortDirection = 'desc';
+            // ALWAYS set default filter state on load (hide archived, show everything else)
+            // This ensures jobs are always visible on first load
+            filterStates = {
+                'all': 'active',
+                'apply-now': 'active',
+                'maybe': 'active',
+                'applied': 'active',
+                'probably-not': 'active',
+                'archived': 'hidden'
+            };
+            sortColumn = 'fitScore';
+            sortDirection = 'desc';
+
+            // Try to restore saved sort preferences (but NOT filter visibility)
+            try {
+                const saved = localStorage.getItem('jscc-filter-state');
+                if (saved) {
+                    const state = JSON.parse(saved);
+                    if (state.sortColumn) sortColumn = state.sortColumn;
+                    if (state.sortDirection) sortDirection = state.sortDirection;
+                }
+            } catch (e) {
+                console.warn('Could not load sort preferences:', e);
             }
 
             // Sort jobs according to current sort settings
@@ -5336,7 +5346,17 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             // Load Supabase script dynamically
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-            script.onload = initSupabase;
+            script.onload = () => {
+                console.log('Supabase script loaded');
+                initSupabase();
+            };
+            script.onerror = (err) => {
+                console.error('Failed to load Supabase script:', err);
+                const pendingList = document.getElementById('pendingList');
+                if (pendingList) {
+                    pendingList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">❌ Could not load database library. Check your internet connection.</p>';
+                }
+            };
             document.head.appendChild(script);
         });
     </script>

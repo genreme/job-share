@@ -399,7 +399,7 @@
         </div>
 
         <div class="footer">
-            Job Search Command Center · v1.6 · <a href="https://genreme.github.io/job-share/index.html" target="_blank" style="color: #667eea;">View John's Dashboard</a>
+            Job Search Command Center · v1.7 · <a href="https://genreme.github.io/job-share/index.html" target="_blank" style="color: #667eea;">View John's Dashboard</a>
         </div>
     </div>
 
@@ -658,56 +658,97 @@
                 .join(' ');
         }
 
-        // Enrich job data using Google search to find more details
-        async function enrichJobData(title, company) {
+        // Enrich job data using multiple sources
+        async function enrichJobData(title, company, url) {
             const result = { location: '', salary: '', industry: '', description: '', applyUrl: '' };
 
             try {
-                // Search for the job posting to get more details
-                const searchQuery = `"${title}" "${company}" job`;
-                const searchUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(
-                    `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`
-                )}`;
+                console.log('[JSCC] Enriching job data for:', title, 'at', company);
 
-                console.log('[JSCC] Enrichment search:', searchQuery);
+                // First, try to detect industry from company name itself
+                const companyLower = (company || '').toLowerCase();
+                const titleLower = (title || '').toLowerCase();
 
-                const response = await fetch(searchUrl, { timeout: 5000 });
-                if (!response.ok) throw new Error('Search failed');
-
-                const data = await response.json();
-                const html = data.contents || '';
-
-                // Look for location patterns in search results
-                const locationPatterns = [
-                    /(?:location|based in|located in)[:\s]+([A-Z][a-z]+(?:,\s*[A-Z]{2})?)/gi,
-                    /(Boston|New York|San Francisco|Chicago|Los Angeles|Seattle|Austin|Remote|Hybrid)[,\s]/gi,
-                    /([A-Z][a-z]+,\s*(?:MA|NY|CA|IL|TX|WA|FL|PA|OH|GA|NC|NJ|VA|CO|AZ|TN|OR|MI|IN|MO|MD|WI|MN|SC))/g
-                ];
-
-                for (const pattern of locationPatterns) {
-                    const match = html.match(pattern);
-                    if (match && match[0]) {
-                        result.location = match[0].replace(/location|based in|located in/gi, '').trim();
-                        break;
-                    }
-                }
-
-                // Look for salary patterns
-                const salaryMatch = html.match(/\$[\d,]+(?:K|k)?(?:\s*[-–]\s*\$[\d,]+(?:K|k)?)?(?:\s*(?:\/|per)\s*(?:yr|year|annually))?/i);
-                if (salaryMatch) {
-                    result.salary = salaryMatch[0];
-                }
-
-                // Detect industry from search results
-                const lowerHtml = html.toLowerCase();
-                if (lowerHtml.includes('nonprofit') || lowerHtml.includes('non-profit') || lowerHtml.includes('501(c)') || lowerHtml.includes('foundation')) {
+                // Industry detection from company/title keywords
+                if (companyLower.includes('foundation') || companyLower.includes('nonprofit') ||
+                    companyLower.includes('charity') || companyLower.includes('association') ||
+                    titleLower.includes('nonprofit') || titleLower.includes('mission')) {
                     result.industry = 'nonprofit';
-                } else if (lowerHtml.includes('healthcare') || lowerHtml.includes('hospital') || lowerHtml.includes('medical') || lowerHtml.includes('health system')) {
+                } else if (companyLower.includes('health') || companyLower.includes('hospital') ||
+                    companyLower.includes('medical') || companyLower.includes('clinic') ||
+                    companyLower.includes('pharma')) {
                     result.industry = 'healthcare';
-                } else if (lowerHtml.includes('university') || lowerHtml.includes('college') || lowerHtml.includes('education') || lowerHtml.includes('school')) {
+                } else if (companyLower.includes('university') || companyLower.includes('college') ||
+                    companyLower.includes('school') || companyLower.includes('academy') ||
+                    companyLower.includes('learning') || companyLower.includes('education')) {
                     result.industry = 'education';
-                } else if (lowerHtml.includes('museum') || lowerHtml.includes('arts') || lowerHtml.includes('cultural')) {
+                } else if (companyLower.includes('museum') || companyLower.includes('gallery') ||
+                    companyLower.includes('arts') || companyLower.includes('theater') ||
+                    companyLower.includes('orchestra') || companyLower.includes('symphony')) {
                     result.industry = 'arts';
+                } else if (companyLower.includes('agency') || companyLower.includes('studio') ||
+                    companyLower.includes('creative') || companyLower.includes('design')) {
+                    result.industry = 'agency';
+                }
+
+                // Try to fetch the company's careers page or job listing for more details
+                if (url && !url.includes('linkedin.com')) {
+                    try {
+                        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                        const response = await fetch(proxyUrl, { timeout: 8000 });
+                        if (response.ok) {
+                            const data = await response.json();
+                            const html = data.contents || '';
+
+                            // Extract location from job page
+                            if (!result.location) {
+                                const locPatterns = [
+                                    /location[:\s]*([A-Z][a-z]+(?:,\s*[A-Z]{2})?)/i,
+                                    /(Remote|Hybrid|On-site|Onsite)/i,
+                                    /(?:based in|located in|location:)\s*([A-Z][a-z]+(?:,\s*[A-Z]{2})?)/i,
+                                    /(Boston|New York|NYC|San Francisco|SF|Chicago|Los Angeles|LA|Seattle|Austin|Denver|Atlanta|Miami|Portland|Philadelphia)/i
+                                ];
+                                for (const pattern of locPatterns) {
+                                    const match = html.match(pattern);
+                                    if (match) {
+                                        result.location = match[1] || match[0];
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // Extract salary from job page
+                            if (!result.salary) {
+                                const salaryPatterns = [
+                                    /\$\s*[\d,]+(?:K|k)?\s*[-–to]+\s*\$?\s*[\d,]+(?:K|k)?/i,
+                                    /salary[:\s]*\$[\d,]+/i,
+                                    /compensation[:\s]*\$[\d,]+/i,
+                                    /\$[\d]{2,3}(?:,\d{3})*(?:\s*[-–]\s*\$[\d]{2,3}(?:,\d{3})*)?/
+                                ];
+                                for (const pattern of salaryPatterns) {
+                                    const match = html.match(pattern);
+                                    if (match) {
+                                        result.salary = match[0].replace(/salary|compensation/gi, '').trim();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // Check for industry keywords in page content
+                            if (!result.industry) {
+                                const lowerHtml = html.toLowerCase();
+                                if (lowerHtml.includes('nonprofit') || lowerHtml.includes('non-profit') || lowerHtml.includes('501(c)') || lowerHtml.includes('mission-driven')) {
+                                    result.industry = 'nonprofit';
+                                } else if (lowerHtml.includes('healthcare') || lowerHtml.includes('patient') || lowerHtml.includes('clinical')) {
+                                    result.industry = 'healthcare';
+                                } else if (lowerHtml.includes('students') || lowerHtml.includes('curriculum') || lowerHtml.includes('educational')) {
+                                    result.industry = 'education';
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.log('[JSCC] Direct URL fetch failed:', e.message);
+                    }
                 }
 
                 console.log('[JSCC] Enrichment result:', result);
@@ -868,10 +909,11 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span>Checking...';
 
-            // For LinkedIn URLs, try to fetch metadata if no manual input provided
+            // Try to fetch metadata from the URL
             let fetchedFromLinkedIn = false;
             let enrichedData = null;
 
+            // For LinkedIn URLs, try to fetch metadata
             if (cleanUrl.includes('linkedin.com/jobs') && !manualTitle && !manualCompany) {
                 btn.innerHTML = '<span class="loading"></span>Fetching job info...';
                 try {
@@ -887,17 +929,6 @@
                     if (linkedInData.location) {
                         locationInput.value = linkedInData.location;
                     }
-
-                    // If we got title and company, try Google enrichment for more details
-                    if (linkedInData.title && linkedInData.company) {
-                        btn.innerHTML = '<span class="loading"></span>Enriching data...';
-                        enrichedData = await enrichJobData(linkedInData.title, linkedInData.company);
-                        if (enrichedData) {
-                            if (enrichedData.location && !locationInput.value) {
-                                locationInput.value = enrichedData.location;
-                            }
-                        }
-                    }
                 } catch (e) {
                     console.log('[JSCC] LinkedIn fetch error:', e);
                 }
@@ -906,9 +937,64 @@
                 if (!titleInput.value || !companyInput.value) {
                     document.getElementById('manualFields').style.display = 'block';
                 }
-            } else if (!cleanUrl.includes('linkedin.com')) {
-                // For non-LinkedIn URLs, always show manual fields initially hidden
-                // They'll show if URL parsing doesn't get enough
+            } else if (!cleanUrl.includes('linkedin.com') && !manualTitle && !manualCompany) {
+                // For non-LinkedIn URLs, try to extract metadata from the page
+                btn.innerHTML = '<span class="loading"></span>Fetching job info...';
+                try {
+                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(cleanUrl)}`;
+                    const response = await fetch(proxyUrl, { timeout: 8000 });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const html = data.contents || '';
+
+                        // Try to extract title from page
+                        const titleMatch = html.match(/<title>([^<]+)<\/title>/i) ||
+                                          html.match(/<h1[^>]*>([^<]+)<\/h1>/i) ||
+                                          html.match(/property="og:title"[^>]*content="([^"]+)"/i);
+                        if (titleMatch && !titleInput.value) {
+                            let pageTitle = titleMatch[1].trim();
+                            // Clean up common suffixes
+                            pageTitle = pageTitle.replace(/\s*[-|].*careers.*$/i, '')
+                                                 .replace(/\s*[-|].*jobs.*$/i, '')
+                                                 .replace(/\s*[-|].*greenhouse.*$/i, '')
+                                                 .replace(/\s*[-|].*lever.*$/i, '')
+                                                 .trim();
+                            if (pageTitle.length > 5 && pageTitle.length < 100) {
+                                titleInput.value = pageTitle;
+                            }
+                        }
+
+                        // Try to extract company from URL or page
+                        if (!companyInput.value) {
+                            // Try from URL patterns
+                            const urlCompany = cleanUrl.match(/(?:greenhouse\.io|lever\.co|jobs\.lever\.co|boards\.greenhouse\.io)\/([^\/]+)/i) ||
+                                              cleanUrl.match(/([^\/]+)\.(?:com|org|io)\/(?:careers|jobs)/i);
+                            if (urlCompany) {
+                                companyInput.value = formatCompanyName(urlCompany[1]);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.log('[JSCC] URL fetch error:', e);
+                }
+
+                // Show manual fields if still missing data
+                if (!titleInput.value || !companyInput.value) {
+                    document.getElementById('manualFields').style.display = 'block';
+                }
+            }
+
+            // Always try enrichment to get industry/location/salary
+            const currentTitle = titleInput.value.trim();
+            const currentCompany = companyInput.value.trim();
+            if (currentTitle || currentCompany || cleanUrl) {
+                btn.innerHTML = '<span class="loading"></span>Analyzing job...';
+                enrichedData = await enrichJobData(currentTitle, currentCompany, cleanUrl);
+                if (enrichedData) {
+                    if (enrichedData.location && !locationInput.value) {
+                        locationInput.value = enrichedData.location;
+                    }
+                }
             }
 
             // Re-read inputs after potential LinkedIn fetch
