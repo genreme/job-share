@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Search Command Center - John Ra</title>
+    <!-- Load Supabase in head for Safari compatibility -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -1444,7 +1446,7 @@ HELP ME:
 
     <!-- Version Footer -->
     <div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 11px;">
-        Job Search Command Center · v2.4 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v2.5 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -4510,6 +4512,15 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             console.log('[JSCC] About to call applyFilters...');
             applyFilters();
             console.log('[JSCC] loadData complete');
+
+            // Safari fallback: if no jobs rendered after 500ms, force render
+            setTimeout(() => {
+                const container = document.getElementById('jobsContainer');
+                if (container && (!container.innerHTML || container.innerHTML.includes('No Jobs Found'))) {
+                    console.log('[JSCC] Safari fallback: forcing job render');
+                    forceRenderAllJobs();
+                }
+            }, 500);
         }
 
         // Force render jobs on load - fallback if filters fail
@@ -5366,35 +5377,22 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
         // Initialize on load
         window.addEventListener('load', async () => {
+            console.log('[JSCC] Page load event fired');
             await loadData();
             await checkExtensionJobs();
 
-            // Load Supabase script dynamically - try multiple CDNs
-            const script = document.createElement('script');
-            script.src = 'https://unpkg.com/@supabase/supabase-js@2';
-            script.onload = () => {
-                console.log('[JSCC] Supabase script loaded from unpkg');
+            // Initialize Supabase (script is loaded in <head>)
+            console.log('[JSCC] Checking for Supabase library...');
+            if (typeof window.supabase !== 'undefined') {
+                console.log('[JSCC] Supabase library found, initializing...');
                 initSupabase();
-            };
-            script.onerror = (err) => {
-                console.error('[JSCC] Failed to load Supabase from unpkg, trying jsdelivr...');
-                // Try jsdelivr as fallback
-                const script2 = document.createElement('script');
-                script2.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-                script2.onload = () => {
-                    console.log('[JSCC] Supabase script loaded from jsdelivr');
-                    initSupabase();
-                };
-                script2.onerror = (err2) => {
-                    console.error('[JSCC] All CDNs failed to load Supabase');
-                    const pendingList = document.getElementById('pendingList');
-                    if (pendingList) {
-                        pendingList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">❌ Could not load database library. Check your internet connection or try refreshing.</p>';
-                    }
-                };
-                document.head.appendChild(script2);
-            };
-            document.head.appendChild(script);
+            } else {
+                console.error('[JSCC] Supabase library not loaded');
+                const pendingList = document.getElementById('pendingList');
+                if (pendingList) {
+                    pendingList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">❌ Database library not loaded. Try refreshing or use Chrome.</p>';
+                }
+            }
         });
     </script>
 </body>
