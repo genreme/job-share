@@ -1415,6 +1415,11 @@ HELP ME:
         </div>
     </div>
 
+    <!-- Version Footer -->
+    <div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 11px;">
+        Job Search Command Center · v2.0 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+    </div>
+
     <script>
         // ============================================
         // STORAGE POLYFILL - localStorage wrapper
@@ -4993,9 +4998,13 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
         // Load inbox submissions
         async function loadInbox() {
-            if (!supabaseClient) return;
+            if (!supabaseClient) {
+                console.log('loadInbox: supabaseClient not ready');
+                return;
+            }
 
             try {
+                console.log('loadInbox: Fetching pending submissions...');
                 // Get pending submissions
                 const { data: pending, error } = await supabaseClient
                     .from('job_submissions')
@@ -5003,8 +5012,12 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     .eq('status', 'pending')
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
+                if (error) {
+                    console.error('loadInbox error:', error);
+                    throw error;
+                }
 
+                console.log('loadInbox: Found', pending?.length || 0, 'pending submissions:', pending);
                 renderPendingSubmissions(pending || []);
                 updateInboxBadge(pending?.length || 0);
 
@@ -5016,6 +5029,7 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     .order('reviewed_at', { ascending: false })
                     .limit(10);
 
+                console.log('loadInbox: Found', recent?.length || 0, 'recent activities');
                 renderRecentActivity(recent || []);
 
                 // Update the share link
