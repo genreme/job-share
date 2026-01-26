@@ -307,25 +307,31 @@
                     <div class="hint">Works with LinkedIn, Lever, Greenhouse, or any job posting</div>
                 </div>
 
-                <div class="form-group">
-                    <label>Job Title <span style="color: #9ca3af;">(helps with scoring)</span></label>
-                    <input type="text" id="jobTitle"
-                        placeholder="e.g., Creative Director, VP Design"
-                        autocomplete="off">
-                </div>
+                <div id="manualFields" style="display: none; border-top: 1px solid #e5e7eb; margin-top: 15px; padding-top: 15px;">
+                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">
+                        ℹ️ Auto-fetch didn't get everything. Add details for better scoring:
+                    </div>
 
-                <div class="form-group">
-                    <label>Company <span style="color: #9ca3af;">(helps with scoring)</span></label>
-                    <input type="text" id="jobCompany"
-                        placeholder="e.g., Boston Children's Hospital"
-                        autocomplete="off">
-                </div>
+                    <div class="form-group">
+                        <label>Job Title</label>
+                        <input type="text" id="jobTitle"
+                            placeholder="e.g., Creative Director, VP Design"
+                            autocomplete="off">
+                    </div>
 
-                <div class="form-group">
-                    <label>Location <span style="color: #9ca3af;">(optional)</span></label>
-                    <input type="text" id="jobLocation"
-                        placeholder="e.g., Boston, MA or Remote"
-                        autocomplete="off">
+                    <div class="form-group">
+                        <label>Company</label>
+                        <input type="text" id="jobCompany"
+                            placeholder="e.g., Boston Children's Hospital"
+                            autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="jobLocation"
+                            placeholder="e.g., Boston, MA or Remote"
+                            autocomplete="off">
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -390,7 +396,7 @@
         </div>
 
         <div class="footer">
-            Job Search Command Center
+            Job Search Command Center · v1.4
         </div>
     </div>
 
@@ -649,6 +655,67 @@
                 .join(' ');
         }
 
+        // Enrich job data using Google search to find more details
+        async function enrichJobData(title, company) {
+            const result = { location: '', salary: '', industry: '', description: '', applyUrl: '' };
+
+            try {
+                // Search for the job posting to get more details
+                const searchQuery = `"${title}" "${company}" job`;
+                const searchUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(
+                    `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`
+                )}`;
+
+                console.log('[JSCC] Enrichment search:', searchQuery);
+
+                const response = await fetch(searchUrl, { timeout: 5000 });
+                if (!response.ok) throw new Error('Search failed');
+
+                const data = await response.json();
+                const html = data.contents || '';
+
+                // Look for location patterns in search results
+                const locationPatterns = [
+                    /(?:location|based in|located in)[:\s]+([A-Z][a-z]+(?:,\s*[A-Z]{2})?)/gi,
+                    /(Boston|New York|San Francisco|Chicago|Los Angeles|Seattle|Austin|Remote|Hybrid)[,\s]/gi,
+                    /([A-Z][a-z]+,\s*(?:MA|NY|CA|IL|TX|WA|FL|PA|OH|GA|NC|NJ|VA|CO|AZ|TN|OR|MI|IN|MO|MD|WI|MN|SC))/g
+                ];
+
+                for (const pattern of locationPatterns) {
+                    const match = html.match(pattern);
+                    if (match && match[0]) {
+                        result.location = match[0].replace(/location|based in|located in/gi, '').trim();
+                        break;
+                    }
+                }
+
+                // Look for salary patterns
+                const salaryMatch = html.match(/\$[\d,]+(?:K|k)?(?:\s*[-–]\s*\$[\d,]+(?:K|k)?)?(?:\s*(?:\/|per)\s*(?:yr|year|annually))?/i);
+                if (salaryMatch) {
+                    result.salary = salaryMatch[0];
+                }
+
+                // Detect industry from search results
+                const lowerHtml = html.toLowerCase();
+                if (lowerHtml.includes('nonprofit') || lowerHtml.includes('non-profit') || lowerHtml.includes('501(c)') || lowerHtml.includes('foundation')) {
+                    result.industry = 'nonprofit';
+                } else if (lowerHtml.includes('healthcare') || lowerHtml.includes('hospital') || lowerHtml.includes('medical') || lowerHtml.includes('health system')) {
+                    result.industry = 'healthcare';
+                } else if (lowerHtml.includes('university') || lowerHtml.includes('college') || lowerHtml.includes('education') || lowerHtml.includes('school')) {
+                    result.industry = 'education';
+                } else if (lowerHtml.includes('museum') || lowerHtml.includes('arts') || lowerHtml.includes('cultural')) {
+                    result.industry = 'arts';
+                }
+
+                console.log('[JSCC] Enrichment result:', result);
+
+            } catch (err) {
+                console.log('[JSCC] Enrichment failed:', err.message);
+            }
+
+            return result;
+        }
+
         // Fetch LinkedIn job metadata using multiple approaches
         async function fetchLinkedInMetadata(url) {
             const result = { title: '', company: '', location: '' };
@@ -760,6 +827,8 @@
 
             // For LinkedIn URLs, try to fetch metadata if no manual input provided
             let fetchedFromLinkedIn = false;
+            let enrichedData = null;
+
             if (cleanUrl.includes('linkedin.com/jobs') && !manualTitle && !manualCompany) {
                 btn.innerHTML = '<span class="loading"></span>Fetching job info...';
                 try {
@@ -775,9 +844,28 @@
                     if (linkedInData.location) {
                         locationInput.value = linkedInData.location;
                     }
+
+                    // If we got title and company, try Google enrichment for more details
+                    if (linkedInData.title && linkedInData.company) {
+                        btn.innerHTML = '<span class="loading"></span>Enriching data...';
+                        enrichedData = await enrichJobData(linkedInData.title, linkedInData.company);
+                        if (enrichedData) {
+                            if (enrichedData.location && !locationInput.value) {
+                                locationInput.value = enrichedData.location;
+                            }
+                        }
+                    }
                 } catch (e) {
                     console.log('[JSCC] LinkedIn fetch error:', e);
                 }
+
+                // Show manual fields if we didn't get enough data
+                if (!titleInput.value || !companyInput.value) {
+                    document.getElementById('manualFields').style.display = 'block';
+                }
+            } else if (!cleanUrl.includes('linkedin.com')) {
+                // For non-LinkedIn URLs, always show manual fields initially hidden
+                // They'll show if URL parsing doesn't get enough
             }
 
             // Re-read inputs after potential LinkedIn fetch
@@ -812,6 +900,13 @@
                 if (finalTitle) job.title = finalTitle;
                 if (finalCompany) job.company = finalCompany;
                 if (finalLocation) job.location = finalLocation;
+
+                // Merge enriched data if available
+                if (enrichedData) {
+                    if (enrichedData.industry && !job.industry) job.industry = enrichedData.industry;
+                    if (enrichedData.salary && !job.salary) job.salary = enrichedData.salary;
+                    if (enrichedData.location && !job.location) job.location = enrichedData.location;
+                }
 
                 console.log('[JSCC] Parsed job:', job);
 
@@ -934,6 +1029,9 @@
             document.getElementById('debugInfo').style.display = 'none';
             document.getElementById('linkedInFetched').style.display = 'none';
             document.getElementById('limitedInfo').style.display = 'none';
+            document.getElementById('manualFields').style.display = 'none';
+            document.getElementById('scoringReasons').style.display = 'none';
+            document.getElementById('jobPreview').style.display = 'none';
         }
 
         // Auto-paste from clipboard on focus (mobile friendly)
