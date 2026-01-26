@@ -1518,7 +1518,7 @@ https://www.linkedin.com/jobs/view/789"></textarea>
             </button>
             <a href="#" onclick="showCommandModal(); return false;" style="color: #6b7280; margin-left: 10px;">Search Prompt</a>
         </div>
-        Job Search Command Center · v3.0 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v3.1 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -1881,13 +1881,20 @@ Run comprehensive job search with these parameters:
 
 **SCAN TARGET:** 100+ jobs, identify top 10-15 best fits for deep research
 
-**OUTPUT:** Update dashboard with:
-- Top 10-15 red tier (Apply Now) with full details
-- For each job, list all connections found (name, role, connection type)
-- Track which job board(s) each job was found on (multiple boards can credit same job)
-- Questionable jobs (❓) in compact format for quick sorting
-- All jobs organized by fit score
-- Flag any international opportunities (Asia, high-happiness countries) if 85+ fit score
+**OUTPUT FORMAT:** Provide a list of job URLs only (one per line), organized by fit tier:
+
+🎯 HIGH FIT (Apply Now candidates):
+[URLs here]
+
+🤔 MAYBE (Worth reviewing):
+[URLs here]
+
+I will paste these URLs into my Job Validator to get automated fit scores, duplicate checking, and status verification. The validator will handle:
+- Checking if jobs are still active
+- Extracting job details
+- Calculating fit scores
+- Finding company careers pages
+- Detecting duplicates
 
 **LEARNING:** Ask about any low-scored jobs I end up applying to - may reveal hidden preferences or connections to adjust scoring.
 
@@ -5783,6 +5790,9 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                             </div>
                         </div>
                         <div class="submission-actions">
+                            <button class="btn-analyze" onclick="analyzeSubmission('${sub.id}', '${escapeHtml(sub.url)}')" id="analyze-${sub.id}" style="background: #059669; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;">
+                                🔍 Analyze
+                            </button>
                             <button class="btn-accept" onclick="acceptSubmission('${sub.id}')">
                                 ✓ Add to Tracker
                             </button>
@@ -5790,6 +5800,7 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                                 ✗ Skip
                             </button>
                         </div>
+                        <div id="analysis-${sub.id}" style="display: none; margin-top: 10px; padding: 10px; background: #f0fdf4; border-radius: 6px; font-size: 12px;"></div>
                     </div>
                 `;
             }).join('');
@@ -5832,6 +5843,92 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                 badge.style.display = 'inline';
             } else {
                 badge.style.display = 'none';
+            }
+        }
+
+        // Analyze a submission using the validator worker
+        async function analyzeSubmission(id, url) {
+            const btn = document.getElementById(`analyze-${id}`);
+            const resultDiv = document.getElementById(`analysis-${id}`);
+
+            if (!url) {
+                showToast('No URL to analyze', 'error');
+                return;
+            }
+
+            btn.textContent = '⏳ Analyzing...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${JOB_VALIDATOR_URL}/validate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: url,
+                        existingJobs: window.currentData?.jobs?.map(j => ({
+                            id: j.id, title: j.title, company: j.company, url: j.url
+                        })) || []
+                    })
+                });
+
+                if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+                const result = await response.json();
+
+                // Display analysis
+                const statusIcon = result.status === 'active' ? '✅' : result.status === 'closed' ? '❌' : '⚠️';
+                const fitColor = result.fitScore >= 75 ? '#059669' : result.fitScore >= 55 ? '#d97706' : '#dc2626';
+
+                let analysisHtml = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span><strong>Full Analysis:</strong></span>
+                        <span style="font-size: 18px; font-weight: 700; color: ${fitColor};">${result.fitScore}/100</span>
+                    </div>
+                    <div style="margin-bottom: 5px;">${statusIcon} <strong>Status:</strong> ${result.status.toUpperCase()}</div>
+                `;
+
+                if (result.fitBreakdown) {
+                    analysisHtml += `<div style="margin-bottom: 5px;">📊 <strong>Breakdown:</strong> Role +${result.fitBreakdown.role || 0}, Industry +${result.fitBreakdown.industry || 0}, Location +${result.fitBreakdown.location || 0}, Salary +${result.fitBreakdown.salary || 0}</div>`;
+                }
+
+                if (result.isDuplicate) {
+                    analysisHtml += `<div style="color: #dc2626;">🔄 <strong>Duplicate:</strong> Already in your tracker</div>`;
+                }
+
+                if (result.originalPosting) {
+                    analysisHtml += `<div>🏢 <a href="${escapeHtml(result.originalPosting)}" target="_blank" style="color: #667eea;">Company careers page</a></div>`;
+                }
+
+                if (result.warnings && result.warnings.length > 0) {
+                    analysisHtml += `<div style="color: #d97706; margin-top: 5px;">⚠️ ${result.warnings.join(', ')}</div>`;
+                }
+
+                resultDiv.innerHTML = analysisHtml;
+                resultDiv.style.display = 'block';
+
+                // Update Supabase with new score if significantly different
+                if (supabaseClient && Math.abs((result.fitScore || 0) - 50) > 5) {
+                    await supabaseClient
+                        .from('job_submissions')
+                        .update({
+                            fit_score: result.fitScore,
+                            title: result.title || undefined,
+                            company: result.company || undefined,
+                            location: result.location || undefined,
+                            salary: result.salary || undefined
+                        })
+                        .eq('id', id);
+                }
+
+                btn.textContent = '✓ Analyzed';
+                btn.style.background = '#6b7280';
+
+            } catch (error) {
+                console.error('Analysis error:', error);
+                resultDiv.innerHTML = `<div style="color: #dc2626;">❌ Analysis failed: ${error.message}</div>`;
+                resultDiv.style.display = 'block';
+                btn.textContent = '🔍 Retry';
+                btn.disabled = false;
             }
         }
 
