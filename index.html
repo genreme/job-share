@@ -628,13 +628,13 @@
             <div class="header-top">
                 <h1>🎯 Job Search Command Center</h1>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <a href="#" onclick="showCommandModal(); return false;" style="color: white; text-decoration: none; font-size: 12px; opacity: 0.8;">View Search Command</a>
-                    <button class="copy-btn" onclick="copySearchCommand()">
-                        📋 Copy Search Command
+                    <button class="copy-btn" onclick="showValidateModal()" style="background: #059669; color: white;">
+                        🔍 Validate Jobs
                     </button>
-                    <button class="copy-btn" onclick="copyStatusCheckCommand()">
-                        📊 Check Job Status
+                    <button class="copy-btn" onclick="checkAllJobStatus()" style="background: #0891b2; color: white;">
+                        📊 Check All Status
                     </button>
+                    <a href="#" onclick="showCommandModal(); return false;" style="color: white; text-decoration: none; font-size: 12px; opacity: 0.8;">Search Prompt</a>
                     <button class="copy-btn" onclick="exportData()" style="background: #28a745; color: white;">
                         💾 Export Data
                     </button>
@@ -1442,9 +1442,84 @@ HELP ME:
         </div>
     </div>
 
+    <!-- Validate Jobs Modal -->
+    <div id="validateModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <span class="close-modal" onclick="closeValidateModal()">&times;</span>
+            <h2 style="color: #059669;">🔍 Validate Job URLs</h2>
+            <p style="color: #6b7280; margin: 10px 0 20px;">Paste job URLs to check if they're active, calculate fit scores, find duplicates, and locate company careers pages.</p>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Paste Job URLs (one per line)</label>
+                <textarea id="validateUrls"
+                    style="width: 100%; padding: 12px; border: 2px solid #e0e4e8; border-radius: 6px; font-size: 13px; min-height: 120px; font-family: monospace;"
+                    placeholder="https://company.lever.co/job/123
+https://boards.greenhouse.io/company/jobs/456
+https://www.linkedin.com/jobs/view/789"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn-primary" onclick="runValidation()" id="runValidateBtn" style="flex: 1; background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+                    🔍 Validate URLs
+                </button>
+                <button class="btn-primary" onclick="clearValidation()" style="background: #6c757d;">Clear</button>
+            </div>
+
+            <div id="validateProgress" style="display: none; margin-bottom: 20px;">
+                <div style="background: #e5e7eb; border-radius: 4px; height: 8px; overflow: hidden;">
+                    <div id="validateProgressBar" style="background: linear-gradient(90deg, #059669, #10b981); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                </div>
+                <p id="validateProgressText" style="font-size: 12px; color: #6b7280; margin-top: 5px;">Validating...</p>
+            </div>
+
+            <div id="validateResults" style="display: none;">
+                <h3 style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e5e7eb;">Results</h3>
+
+                <div id="validateSummary" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;"></div>
+
+                <div id="validateResultsList" style="max-height: 400px; overflow-y: auto;"></div>
+
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button class="btn-primary" onclick="addValidatedJobs()" id="addValidatedBtn" style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        ➕ Add High-Fit Jobs to Tracker
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Check Results Modal -->
+    <div id="statusCheckModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close-modal" onclick="closeStatusCheckModal()">&times;</span>
+            <h2 style="color: #0891b2;">📊 Job Status Check</h2>
+            <p style="color: #6b7280; margin: 10px 0 20px;">Checking if your tracked jobs are still active...</p>
+
+            <div id="statusCheckProgress" style="margin-bottom: 20px;">
+                <div style="background: #e5e7eb; border-radius: 4px; height: 8px; overflow: hidden;">
+                    <div id="statusCheckProgressBar" style="background: linear-gradient(90deg, #0891b2, #06b6d4); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                </div>
+                <p id="statusCheckProgressText" style="font-size: 12px; color: #6b7280; margin-top: 5px;">Starting...</p>
+            </div>
+
+            <div id="statusCheckResults" style="display: none;">
+                <div id="statusCheckSummary" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;"></div>
+
+                <div id="statusCheckList" style="max-height: 400px; overflow-y: auto;"></div>
+
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button class="btn-primary" onclick="archiveClosedJobs()" id="archiveClosedBtn" style="flex: 1; background: #dc2626; display: none;">
+                        🗑️ Archive Closed Jobs
+                    </button>
+                    <button class="btn-primary" onclick="closeStatusCheckModal()" style="flex: 1; background: #6c757d;">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Version Footer -->
     <div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 11px;">
-        Job Search Command Center · v2.8 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v2.9 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -4850,6 +4925,411 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             } catch (e) {
                 console.error('Quick add error:', e);
                 showToast('Failed to add job: ' + e.message, 'error');
+            }
+        }
+
+        // ============================================
+        // JOB VALIDATION (Cloudflare Worker Integration)
+        // ============================================
+
+        // Worker URL - update after deployment
+        const JOB_VALIDATOR_URL = 'https://job-validator.genreme.workers.dev';
+
+        let validationResults = [];
+        let statusCheckResults = [];
+
+        function showValidateModal() {
+            document.getElementById('validateModal').classList.add('active');
+            document.getElementById('validateUrls').value = '';
+            document.getElementById('validateResults').style.display = 'none';
+            document.getElementById('validateProgress').style.display = 'none';
+        }
+
+        function closeValidateModal() {
+            document.getElementById('validateModal').classList.remove('active');
+        }
+
+        function clearValidation() {
+            document.getElementById('validateUrls').value = '';
+            document.getElementById('validateResults').style.display = 'none';
+            document.getElementById('validateProgress').style.display = 'none';
+            validationResults = [];
+        }
+
+        async function runValidation() {
+            const urlText = document.getElementById('validateUrls').value.trim();
+            if (!urlText) {
+                showToast('Please enter at least one URL', 'error');
+                return;
+            }
+
+            const urls = urlText.split('\n')
+                .map(u => u.trim())
+                .filter(u => u && (u.startsWith('http://') || u.startsWith('https://')));
+
+            if (urls.length === 0) {
+                showToast('No valid URLs found', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('runValidateBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Validating...';
+
+            document.getElementById('validateProgress').style.display = 'block';
+            document.getElementById('validateResults').style.display = 'none';
+
+            const progressBar = document.getElementById('validateProgressBar');
+            const progressText = document.getElementById('validateProgressText');
+
+            try {
+                // Get existing jobs for duplicate check
+                const existingJobs = window.currentData?.jobs?.map(j => ({
+                    id: j.id,
+                    title: j.title,
+                    company: j.company,
+                    url: j.url
+                })) || [];
+
+                progressText.textContent = `Validating ${urls.length} URLs...`;
+                progressBar.style.width = '10%';
+
+                const response = await fetch(`${JOB_VALIDATOR_URL}/batch`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ urls, existingJobs })
+                });
+
+                progressBar.style.width = '90%';
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                validationResults = data.results;
+
+                progressBar.style.width = '100%';
+                progressText.textContent = 'Complete!';
+
+                setTimeout(() => {
+                    document.getElementById('validateProgress').style.display = 'none';
+                    displayValidationResults(data);
+                }, 500);
+
+            } catch (error) {
+                console.error('Validation error:', error);
+                showToast(`Validation failed: ${error.message}`, 'error');
+                progressText.textContent = `Error: ${error.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔍 Validate URLs';
+            }
+        }
+
+        function displayValidationResults(data) {
+            const { results, summary } = data;
+
+            // Summary cards
+            const summaryHtml = `
+                <div style="background: #d1fae5; padding: 12px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #059669;">${summary.active}</div>
+                    <div style="font-size: 11px; color: #047857;">Active</div>
+                </div>
+                <div style="background: #fee2e2; padding: 12px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #dc2626;">${summary.closed}</div>
+                    <div style="font-size: 11px; color: #991b1b;">Closed</div>
+                </div>
+                <div style="background: #dbeafe; padding: 12px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #2563eb;">${summary.highFit}</div>
+                    <div style="font-size: 11px; color: #1d4ed8;">High Fit (75+)</div>
+                </div>
+                <div style="background: #fef3c7; padding: 12px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #d97706;">${summary.duplicates}</div>
+                    <div style="font-size: 11px; color: #92400e;">Duplicates</div>
+                </div>
+            `;
+            document.getElementById('validateSummary').innerHTML = summaryHtml;
+
+            // Results list
+            const listHtml = results.map((r, i) => {
+                const statusColor = r.status === 'active' ? '#059669' : r.status === 'closed' ? '#dc2626' : '#6b7280';
+                const statusIcon = r.status === 'active' ? '✅' : r.status === 'closed' ? '❌' : '⚠️';
+                const fitColor = r.fitScore >= 75 ? '#059669' : r.fitScore >= 55 ? '#d97706' : '#dc2626';
+
+                return `
+                    <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 10px; ${r.isDuplicate ? 'opacity: 0.6;' : ''}">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 14px;">${escapeHtml(r.title || 'Unknown Title')}</div>
+                                <div style="color: #667eea; font-size: 13px;">${escapeHtml(r.company || 'Unknown Company')}</div>
+                                <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                                    ${r.location ? `📍 ${escapeHtml(r.location)}` : ''}
+                                    ${r.salary && r.salary !== 'Not listed' ? ` · 💰 ${escapeHtml(r.salary)}` : ''}
+                                </div>
+                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">
+                                    ${escapeHtml(r.source)} · <a href="${escapeHtml(r.url)}" target="_blank" style="color: #3b82f6;">View posting</a>
+                                    ${r.originalPosting ? ` · <a href="${escapeHtml(r.originalPosting)}" target="_blank" style="color: #8b5cf6;">Company careers</a>` : ''}
+                                </div>
+                                ${r.warnings.length > 0 ? `<div style="font-size: 11px; color: #d97706; margin-top: 4px;">⚠️ ${r.warnings.join(', ')}</div>` : ''}
+                                ${r.isDuplicate ? `<div style="font-size: 11px; color: #dc2626; margin-top: 4px;">🔄 Duplicate of existing job</div>` : ''}
+                            </div>
+                            <div style="text-align: center; margin-left: 15px;">
+                                <div style="font-size: 11px; color: ${statusColor}; font-weight: 600;">${statusIcon} ${r.status.toUpperCase()}</div>
+                                <div style="font-size: 28px; font-weight: 700; color: ${fitColor}; margin: 5px 0;">${r.fitScore}</div>
+                                <div style="font-size: 10px; color: #6b7280;">fit score</div>
+                                ${!r.isDuplicate && r.status === 'active' && r.fitScore >= 55 ? `
+                                    <label style="display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 11px; cursor: pointer;">
+                                        <input type="checkbox" class="validate-add-checkbox" data-index="${i}" ${r.fitScore >= 75 ? 'checked' : ''}>
+                                        Add
+                                    </label>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('validateResultsList').innerHTML = listHtml;
+
+            // Show/hide add button based on results
+            const addableCount = results.filter(r => r.status === 'active' && !r.isDuplicate && r.fitScore >= 55).length;
+            document.getElementById('addValidatedBtn').style.display = addableCount > 0 ? 'block' : 'none';
+
+            document.getElementById('validateResults').style.display = 'block';
+        }
+
+        async function addValidatedJobs() {
+            const checkboxes = document.querySelectorAll('.validate-add-checkbox:checked');
+            if (checkboxes.length === 0) {
+                showToast('No jobs selected', 'error');
+                return;
+            }
+
+            const data = window.currentData;
+            const maxId = Math.max(0, ...data.jobs.map(j => j.id));
+            let addedCount = 0;
+
+            checkboxes.forEach((cb, i) => {
+                const idx = parseInt(cb.dataset.index);
+                const r = validationResults[idx];
+
+                if (r && r.status === 'active' && !r.isDuplicate) {
+                    const newJob = {
+                        id: maxId + addedCount + 1,
+                        title: r.title || 'Unknown Title',
+                        company: r.company || 'Unknown Company',
+                        industry: detectIndustry(r.description || ''),
+                        location: r.location || 'Not specified',
+                        salary: r.salary || 'Not listed',
+                        fitScore: r.fitScore,
+                        status: r.fitScore >= 75 ? 'apply-now' : 'maybe',
+                        posted: new Date().toISOString().split('T')[0],
+                        found: new Date().toISOString().split('T')[0],
+                        applied: null,
+                        followup: null,
+                        url: r.url,
+                        symbols: [],
+                        connections: [],
+                        sources: [r.source],
+                        notes: `Auto-validated. Fit breakdown: Role ${r.fitBreakdown?.role || 0}, Industry ${r.fitBreakdown?.industry || 0}, Location ${r.fitBreakdown?.location || 0}, Salary ${r.fitBreakdown?.salary || 0}`,
+                        updates: [{
+                            date: new Date().toISOString(),
+                            text: 'Added via batch validation'
+                        }]
+                    };
+
+                    data.jobs.push(newJob);
+                    addedCount++;
+                }
+            });
+
+            if (addedCount > 0) {
+                await saveData(data);
+                await loadData();
+                closeValidateModal();
+                showToast(`Added ${addedCount} job${addedCount > 1 ? 's' : ''} to tracker`);
+            }
+        }
+
+        function detectIndustry(text) {
+            const lower = text.toLowerCase();
+            if (lower.includes('nonprofit') || lower.includes('non-profit') || lower.includes('501(c)')) return 'Nonprofit';
+            if (lower.includes('healthcare') || lower.includes('health') || lower.includes('hospital') || lower.includes('medical')) return 'Healthcare';
+            if (lower.includes('education') || lower.includes('university') || lower.includes('school')) return 'Education';
+            if (lower.includes('agency') || lower.includes('marketing agency') || lower.includes('creative agency')) return 'Agency';
+            return 'Unknown';
+        }
+
+        // ============================================
+        // STATUS CHECK (All Tracked Jobs)
+        // ============================================
+
+        function closeStatusCheckModal() {
+            document.getElementById('statusCheckModal').classList.remove('active');
+        }
+
+        async function checkAllJobStatus() {
+            const data = window.currentData;
+            if (!data || !data.jobs || data.jobs.length === 0) {
+                showToast('No jobs to check', 'error');
+                return;
+            }
+
+            // Get jobs with URLs that aren't archived
+            const jobsToCheck = data.jobs.filter(j => j.url && j.status !== 'archived');
+
+            if (jobsToCheck.length === 0) {
+                showToast('No jobs with URLs to check', 'error');
+                return;
+            }
+
+            document.getElementById('statusCheckModal').classList.add('active');
+            document.getElementById('statusCheckResults').style.display = 'none';
+            document.getElementById('statusCheckProgress').style.display = 'block';
+
+            const progressBar = document.getElementById('statusCheckProgressBar');
+            const progressText = document.getElementById('statusCheckProgressText');
+
+            progressBar.style.width = '10%';
+            progressText.textContent = `Checking ${jobsToCheck.length} jobs...`;
+
+            try {
+                const urls = jobsToCheck.map(j => j.url);
+
+                const response = await fetch(`${JOB_VALIDATOR_URL}/status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ urls })
+                });
+
+                progressBar.style.width = '90%';
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                // Map results back to jobs
+                statusCheckResults = jobsToCheck.map(job => {
+                    const urlResult = result.results.find(r => r.url === job.url);
+                    return {
+                        job,
+                        status: urlResult?.status || 'error',
+                        httpStatus: urlResult?.httpStatus
+                    };
+                });
+
+                progressBar.style.width = '100%';
+                progressText.textContent = 'Complete!';
+
+                setTimeout(() => {
+                    document.getElementById('statusCheckProgress').style.display = 'none';
+                    displayStatusCheckResults(result.summary);
+                }, 500);
+
+            } catch (error) {
+                console.error('Status check error:', error);
+                progressText.textContent = `Error: ${error.message}`;
+                showToast(`Status check failed: ${error.message}`, 'error');
+            }
+        }
+
+        function displayStatusCheckResults(summary) {
+            // Summary cards
+            const summaryHtml = `
+                <div style="background: #d1fae5; padding: 12px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #059669;">${summary.active}</div>
+                    <div style="font-size: 11px; color: #047857;">Still Active</div>
+                </div>
+                <div style="background: #fee2e2; padding: 12px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #dc2626;">${summary.closed}</div>
+                    <div style="font-size: 11px; color: #991b1b;">Closed/Removed</div>
+                </div>
+                <div style="background: #fef3c7; padding: 12px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #d97706;">${summary.errors}</div>
+                    <div style="font-size: 11px; color: #92400e;">Errors</div>
+                </div>
+            `;
+            document.getElementById('statusCheckSummary').innerHTML = summaryHtml;
+
+            // Group by status
+            const closed = statusCheckResults.filter(r => r.status === 'closed');
+            const errors = statusCheckResults.filter(r => r.status === 'error');
+            const active = statusCheckResults.filter(r => r.status === 'active');
+
+            let listHtml = '';
+
+            if (closed.length > 0) {
+                listHtml += `<h4 style="color: #dc2626; margin: 15px 0 10px;">❌ Closed Jobs (${closed.length})</h4>`;
+                listHtml += closed.map(r => `
+                    <div style="border: 1px solid #fecaca; background: #fef2f2; border-radius: 6px; padding: 10px; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">${escapeHtml(r.job.title)}</div>
+                        <div style="color: #667eea; font-size: 13px;">${escapeHtml(r.job.company)}</div>
+                        <div style="font-size: 11px; color: #dc2626;">HTTP ${r.httpStatus || 'N/A'}</div>
+                    </div>
+                `).join('');
+            }
+
+            if (errors.length > 0) {
+                listHtml += `<h4 style="color: #d97706; margin: 15px 0 10px;">⚠️ Could Not Check (${errors.length})</h4>`;
+                listHtml += errors.map(r => `
+                    <div style="border: 1px solid #fde68a; background: #fffbeb; border-radius: 6px; padding: 10px; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">${escapeHtml(r.job.title)}</div>
+                        <div style="color: #667eea; font-size: 13px;">${escapeHtml(r.job.company)}</div>
+                    </div>
+                `).join('');
+            }
+
+            if (active.length > 0 && (closed.length > 0 || errors.length > 0)) {
+                listHtml += `<h4 style="color: #059669; margin: 15px 0 10px;">✅ Still Active (${active.length})</h4>`;
+                listHtml += `<p style="font-size: 12px; color: #6b7280;">${active.map(r => r.job.company).slice(0, 5).join(', ')}${active.length > 5 ? ` and ${active.length - 5} more...` : ''}</p>`;
+            }
+
+            if (closed.length === 0 && errors.length === 0) {
+                listHtml = `
+                    <div style="text-align: center; padding: 30px;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
+                        <div style="font-size: 18px; font-weight: 600; color: #059669;">All jobs are still active!</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 5px;">No closed postings found.</div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('statusCheckList').innerHTML = listHtml;
+
+            // Show archive button if there are closed jobs
+            document.getElementById('archiveClosedBtn').style.display = closed.length > 0 ? 'block' : 'none';
+
+            document.getElementById('statusCheckResults').style.display = 'block';
+        }
+
+        async function archiveClosedJobs() {
+            const closed = statusCheckResults.filter(r => r.status === 'closed');
+            if (closed.length === 0) return;
+
+            const data = window.currentData;
+            let archivedCount = 0;
+
+            closed.forEach(r => {
+                const job = data.jobs.find(j => j.id === r.job.id);
+                if (job && job.status !== 'archived') {
+                    job.status = 'archived';
+                    job.updates = job.updates || [];
+                    job.updates.push({
+                        date: new Date().toISOString(),
+                        text: 'Auto-archived: job posting no longer available'
+                    });
+                    archivedCount++;
+                }
+            });
+
+            if (archivedCount > 0) {
+                await saveData(data);
+                await loadData();
+                closeStatusCheckModal();
+                showToast(`Archived ${archivedCount} closed job${archivedCount > 1 ? 's' : ''}`);
             }
         }
 

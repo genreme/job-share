@@ -1,0 +1,12 @@
+# Cloudflare Worker configuration for Job Validator
+# Deploy with: wrangler deploy
+
+name = "job-validator"
+main = "job-validator.js"
+compatibility_date = "2024-01-01"
+
+# Free tier limits: 100,000 requests/day, 10ms CPU time
+# This is plenty for job search validation
+
+[vars]
+ENVIRONMENT = "production"
