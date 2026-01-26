@@ -349,8 +349,12 @@
             <!-- Fit Score Result -->
             <div id="fitResult" class="fit-score-display">
                 <div class="fit-score-number" id="fitScoreNumber">--</div>
-                <div class="fit-score-label">Fit Score</div>
+                <div class="fit-score-label">Quick Score</div>
                 <div class="fit-category" id="fitCategory">Checking...</div>
+
+                <div style="margin-top: 8px; padding: 8px 12px; background: rgba(255,255,255,0.2); border-radius: 6px; font-size: 11px; color: rgba(255,255,255,0.9);">
+                    ℹ️ This is a preliminary estimate based on keywords.<br>John will do a full analysis when he reviews.
+                </div>
 
                 <div id="scoringReasons" style="display: none; margin-top: 15px; padding: 12px; background: white; border-radius: 8px; text-align: left;"></div>
 
@@ -373,7 +377,7 @@
             <div id="successResult" class="result">
                 <div class="result-icon">🎉</div>
                 <h2>Sent to John!</h2>
-                <p>Saved to his job tracker database. He'll see this in his Inbox and can accept or review it. Thanks for thinking of him!</p>
+                <p>Saved to his job tracker. He'll do a full analysis and either add it to his list or skip if it's not a match. Thanks for thinking of him!</p>
                 <p id="submissionId" style="font-size: 11px; color: #9ca3af; margin-top: 10px;"></p>
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <button class="btn btn-secondary" onclick="resetForm()">Submit Another Job</button>
@@ -399,7 +403,7 @@
         </div>
 
         <div class="footer">
-            Job Search Command Center · v1.7 · <a href="https://genreme.github.io/job-share/index.html" target="_blank" style="color: #667eea;">View John's Dashboard</a>
+            Job Search Command Center · v1.8 · <a href="https://genreme.github.io/job-share/index.html" target="_blank" style="color: #667eea;">View John's Dashboard</a>
         </div>
     </div>
 
