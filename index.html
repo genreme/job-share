@@ -1444,7 +1444,7 @@ HELP ME:
 
     <!-- Version Footer -->
     <div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 11px;">
-        Job Search Command Center · v2.7 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v2.8 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -3107,6 +3107,10 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         async function renderDocuments() {
             const container = document.getElementById('documentsContainer');
             const noDocsMsg = document.getElementById('noDocuments');
+            if (!container || !noDocsMsg) {
+                console.log('[JSCC] documentsContainer or noDocuments not found, skipping renderDocuments');
+                return;
+            }
             const data = await initStorage();
 
             try {
@@ -3391,8 +3395,11 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     <p style="margin: 4px 0;"><strong>❌ Dropped Boards:</strong> JazzHR (no searchable database), BambooHR (not a job board), iCIMS (poor URL access).</p>
                 </div>
             `;
-            
-            document.getElementById('boardStats').innerHTML = html;
+
+            const boardStatsEl = document.getElementById('boardStats');
+            if (boardStatsEl) {
+                boardStatsEl.innerHTML = html;
+            }
         }
 
         // Sorting state
@@ -4422,7 +4429,11 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
         function renderSearchHistory(data) {
             const container = document.getElementById('searchHistoryContainer');
-            
+            if (!container) {
+                console.log('[JSCC] searchHistoryContainer not found, skipping');
+                return;
+            }
+
             if (data.searchHistory.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -4444,7 +4455,11 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
         function renderArchive(data) {
             const container = document.getElementById('archiveContainer');
-            
+            if (!container) {
+                console.log('[JSCC] archiveContainer not found, skipping renderArchive');
+                return;
+            }
+
             if (data.pdfArchive.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -5199,6 +5214,10 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         function renderPendingSubmissions(submissions) {
             const container = document.getElementById('pendingList');
             const noSubmissions = document.getElementById('noPending');
+            if (!container || !noSubmissions) {
+                console.log('[JSCC] pendingList or noPending not found, skipping renderPendingSubmissions');
+                return;
+            }
 
             if (!submissions || submissions.length === 0) {
                 container.innerHTML = '';
@@ -5263,6 +5282,10 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
         function renderRecentActivity(submissions) {
             const container = document.getElementById('recentActivity');
+            if (!container) {
+                console.log('[JSCC] recentActivity not found, skipping');
+                return;
+            }
 
             if (!submissions || submissions.length === 0) {
                 container.innerHTML = '<p style="color: #9ca3af;">No recent activity</p>';
@@ -5288,6 +5311,7 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
         function updateInboxBadge(count) {
             const badge = document.getElementById('inboxBadge');
+            if (!badge) return;
             if (count > 0) {
                 badge.textContent = count;
                 badge.style.display = 'inline';
