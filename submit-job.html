@@ -308,7 +308,28 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Your Name (optional)</label>
+                    <label>Job Title <span style="color: #9ca3af;">(helps with scoring)</span></label>
+                    <input type="text" id="jobTitle"
+                        placeholder="e.g., Creative Director, VP Design"
+                        autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label>Company <span style="color: #9ca3af;">(helps with scoring)</span></label>
+                    <input type="text" id="jobCompany"
+                        placeholder="e.g., Boston Children's Hospital"
+                        autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label>Location <span style="color: #9ca3af;">(optional)</span></label>
+                    <input type="text" id="jobLocation"
+                        placeholder="e.g., Boston, MA or Remote"
+                        autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label>Your Name <span style="color: #9ca3af;">(optional)</span></label>
                     <input type="text" id="yourName" placeholder="So John knows who to thank!">
                 </div>
 
@@ -328,7 +349,7 @@
                 <div id="scoringReasons" style="display: none; margin-top: 15px; padding: 12px; background: white; border-radius: 8px; text-align: left;"></div>
 
                 <div id="limitedInfo" style="display: none; margin-top: 12px; padding: 10px; background: #fef3c7; border-radius: 8px; font-size: 12px; color: #92400e;">
-                    ⚠️ Limited info from URL. Score is approximate - John will review the full posting.
+                    ⚠️ Limited info from URL. Add the job title & company above for a more accurate score!
                 </div>
 
                 <div class="job-preview" id="jobPreview" style="display: none;">
@@ -527,35 +548,117 @@
                 industry: ''
             };
 
+            const lowerUrl = url.toLowerCase();
+
             // LinkedIn job ID extraction
-            if (url.includes('linkedin.com/jobs')) {
+            if (lowerUrl.includes('linkedin.com/jobs')) {
                 job.source = 'LinkedIn';
             }
 
-            // Lever URLs often have company name
-            const leverMatch = url.match(/jobs\.lever\.co\/([^\/]+)/);
+            // Lever URLs: jobs.lever.co/company-name
+            const leverMatch = url.match(/jobs\.lever\.co\/([^\/]+)/i);
             if (leverMatch) {
-                job.company = leverMatch[1].replace(/-/g, ' ');
+                job.company = formatCompanyName(leverMatch[1]);
                 job.source = 'Lever';
             }
 
-            // Greenhouse URLs often have company name
-            const greenhouseMatch = url.match(/boards\.greenhouse\.io\/([^\/]+)/);
+            // Greenhouse URLs: boards.greenhouse.io/company-name or company.greenhouse.io
+            const greenhouseMatch = url.match(/boards\.greenhouse\.io\/([^\/]+)/i) ||
+                                   url.match(/([^\.]+)\.greenhouse\.io/i);
             if (greenhouseMatch) {
-                job.company = greenhouseMatch[1].replace(/-/g, ' ');
+                job.company = formatCompanyName(greenhouseMatch[1]);
                 job.source = 'Greenhouse';
             }
 
+            // Workday URLs: company.wd5.myworkdayjobs.com
+            const workdayMatch = url.match(/([^\.]+)\.wd\d*\.myworkdayjobs\.com/i);
+            if (workdayMatch) {
+                job.company = formatCompanyName(workdayMatch[1]);
+                job.source = 'Workday';
+            }
+
+            // iCIMS URLs: careers-company.icims.com
+            const icimsMatch = url.match(/careers-?([^\.]+)\.icims\.com/i);
+            if (icimsMatch) {
+                job.company = formatCompanyName(icimsMatch[1]);
+                job.source = 'iCIMS';
+            }
+
+            // Jobvite URLs: jobs.jobvite.com/company
+            const jobviteMatch = url.match(/jobs\.jobvite\.com\/([^\/]+)/i);
+            if (jobviteMatch) {
+                job.company = formatCompanyName(jobviteMatch[1]);
+                job.source = 'Jobvite';
+            }
+
+            // SmartRecruiters URLs: jobs.smartrecruiters.com/Company
+            const smartMatch = url.match(/jobs\.smartrecruiters\.com\/([^\/]+)/i);
+            if (smartMatch) {
+                job.company = formatCompanyName(smartMatch[1]);
+                job.source = 'SmartRecruiters';
+            }
+
+            // BambooHR URLs: company.bamboohr.com
+            const bambooMatch = url.match(/([^\.]+)\.bamboohr\.com/i);
+            if (bambooMatch) {
+                job.company = formatCompanyName(bambooMatch[1]);
+                job.source = 'BambooHR';
+            }
+
+            // Ashby URLs: jobs.ashbyhq.com/company
+            const ashbyMatch = url.match(/jobs\.ashbyhq\.com\/([^\/]+)/i);
+            if (ashbyMatch) {
+                job.company = formatCompanyName(ashbyMatch[1]);
+                job.source = 'Ashby';
+            }
+
+            // Generic career page detection: company.com/careers or careers.company.com
+            if (!job.company) {
+                const careerMatch = url.match(/(?:careers?\.|jobs?\.)([^\.]+)\./i) ||
+                                   url.match(/([^\.\/]+)\.(?:com|org|edu|io)\/(?:careers?|jobs?)/i);
+                if (careerMatch) {
+                    job.company = formatCompanyName(careerMatch[1]);
+                    job.source = 'Company Site';
+                }
+            }
+
+            // Detect industry from URL keywords
+            if (lowerUrl.includes('hospital') || lowerUrl.includes('health') || lowerUrl.includes('medical')) {
+                job.industry = 'healthcare';
+            } else if (lowerUrl.includes('university') || lowerUrl.includes('college') || lowerUrl.includes('.edu')) {
+                job.industry = 'education';
+            } else if (lowerUrl.includes('foundation') || lowerUrl.includes('nonprofit')) {
+                job.industry = 'nonprofit';
+            }
+
             return job;
+        }
+
+        // Format company name from URL slug
+        function formatCompanyName(slug) {
+            if (!slug) return '';
+            return slug
+                .replace(/-/g, ' ')
+                .replace(/_/g, ' ')
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
         }
 
         async function checkAndSubmit() {
             console.log('[JSCC] checkAndSubmit called');
 
             const urlInput = document.getElementById('jobUrl');
+            const titleInput = document.getElementById('jobTitle');
+            const companyInput = document.getElementById('jobCompany');
+            const locationInput = document.getElementById('jobLocation');
             const nameInput = document.getElementById('yourName');
             const btn = document.getElementById('checkBtn');
+
             const url = urlInput.value.trim();
+            const manualTitle = titleInput.value.trim();
+            const manualCompany = companyInput.value.trim();
+            const manualLocation = locationInput.value.trim();
             const submittedBy = nameInput.value.trim() || 'A friend';
 
             // Ensure Supabase is ready
@@ -603,8 +706,14 @@
                     return;
                 }
 
-                // Parse URL for basic info
+                // Parse URL for basic info, then merge with manual input
                 const job = parseJobUrl(cleanUrl);
+
+                // Override with manual input (user-provided is more accurate)
+                if (manualTitle) job.title = manualTitle;
+                if (manualCompany) job.company = manualCompany;
+                if (manualLocation) job.location = manualLocation;
+
                 console.log('[JSCC] Parsed job:', job);
 
                 // Calculate fit score
@@ -631,8 +740,8 @@
                     document.getElementById('jobPreview').style.display = 'block';
                 }
 
-                // Show note about limited URL info
-                if (!job.company && !job.title) {
+                // Show note about limited URL info only if user didn't provide details
+                if (!job.company && !job.title && !manualTitle && !manualCompany) {
                     document.getElementById('limitedInfo').style.display = 'block';
                 }
 
