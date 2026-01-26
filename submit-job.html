@@ -339,6 +339,14 @@
                     <input type="text" id="yourName" placeholder="So John knows who to thank!">
                 </div>
 
+                <div class="form-group">
+                    <label>Notes for John <span style="color: #9ca3af;">(optional)</span></label>
+                    <textarea id="submitterNotes"
+                        placeholder="Any connections you have? Important context? e.g., 'I know the hiring manager' or 'They're expanding the team'"
+                        style="width: 100%; padding: 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 14px; font-family: inherit; min-height: 80px; resize: vertical;"></textarea>
+                    <div class="hint">Share connections, insider info, or why you think this would be a good fit</div>
+                </div>
+
                 <button class="btn btn-primary" id="checkBtn" onclick="checkAndSubmit()">
                     Check Fit & Submit
                 </button>
@@ -403,7 +411,7 @@
         </div>
 
         <div class="footer">
-            Job Search Command Center · v1.8 · <a href="https://genreme.github.io/job-share/index.html" target="_blank" style="color: #667eea;">View John's Dashboard</a>
+            Job Search Command Center · v1.9 · <a href="https://genreme.github.io/job-share/index.html" target="_blank" style="color: #667eea;">View John's Dashboard</a>
         </div>
     </div>
 
@@ -887,6 +895,7 @@
             const manualCompany = companyInput.value.trim();
             const manualLocation = locationInput.value.trim();
             const submittedBy = nameInput.value.trim() || 'A friend';
+            const submitterNotes = document.getElementById('submitterNotes').value.trim();
 
             // Ensure Supabase is ready
             if (!db) {
@@ -1097,7 +1106,8 @@
                                 industry: job.industry || null,
                                 fit_score: fitScore,
                                 fit_category: fitInfo.category,
-                                submitted_by: submittedBy
+                                submitted_by: submittedBy,
+                                notes: submitterNotes || null
                             })
                             .select();
 
@@ -1153,6 +1163,7 @@
             document.getElementById('jobCompany').value = '';
             document.getElementById('jobLocation').value = '';
             document.getElementById('yourName').value = '';
+            document.getElementById('submitterNotes').value = '';
 
             const btn = document.getElementById('checkBtn');
             btn.innerHTML = 'Check Fit & Submit';

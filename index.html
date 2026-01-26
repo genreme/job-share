@@ -1520,7 +1520,7 @@ https://www.linkedin.com/jobs/view/789"></textarea>
                 📤 Share Status
             </button>
         </div>
-        Job Search Command Center · v3.2 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v3.3 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -5039,39 +5039,74 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             `;
             document.getElementById('validateSummary').innerHTML = summaryHtml;
 
-            // Results list
+            // Results list with inline edit capability
             const listHtml = results.map((r, i) => {
                 const statusColor = r.status === 'active' ? '#059669' : r.status === 'closed' ? '#dc2626' : '#6b7280';
                 const statusIcon = r.status === 'active' ? '✅' : r.status === 'closed' ? '❌' : '⚠️';
                 const fitColor = r.fitScore >= 75 ? '#059669' : r.fitScore >= 55 ? '#d97706' : '#dc2626';
+                const canAdd = !r.isDuplicate && r.status === 'active';
 
                 return `
-                    <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 10px; ${r.isDuplicate ? 'opacity: 0.6;' : ''}">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; font-size: 14px;">${escapeHtml(r.title || 'Unknown Title')}</div>
-                                <div style="color: #667eea; font-size: 13px;">${escapeHtml(r.company || 'Unknown Company')}</div>
-                                <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
-                                    ${r.location ? `📍 ${escapeHtml(r.location)}` : ''}
-                                    ${r.salary && r.salary !== 'Not listed' ? ` · 💰 ${escapeHtml(r.salary)}` : ''}
+                    <div class="validation-result-card" data-index="${i}" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 10px; ${r.isDuplicate ? 'opacity: 0.6;' : ''}">
+                        <!-- Display View -->
+                        <div class="result-display" id="result-display-${i}">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; font-size: 14px;" id="display-title-${i}">${escapeHtml(r.title || 'Unknown Title')}</div>
+                                    <div style="color: #667eea; font-size: 13px;" id="display-company-${i}">${escapeHtml(r.company || 'Unknown Company')}</div>
+                                    <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                                        <span id="display-location-${i}">${r.location ? `📍 ${escapeHtml(r.location)}` : ''}</span>
+                                        <span id="display-salary-${i}">${r.salary && r.salary !== 'Not listed' ? ` · 💰 ${escapeHtml(r.salary)}` : ''}</span>
+                                    </div>
+                                    <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">
+                                        ${escapeHtml(r.source)} · <a href="${escapeHtml(r.url)}" target="_blank" style="color: #3b82f6;">View posting</a>
+                                        ${r.originalPosting ? ` · <a href="${escapeHtml(r.originalPosting)}" target="_blank" style="color: #8b5cf6;">Company careers</a>` : ''}
+                                    </div>
+                                    ${r.warnings.length > 0 ? `<div style="font-size: 11px; color: #d97706; margin-top: 4px;">⚠️ ${r.warnings.join(', ')}</div>` : ''}
+                                    ${r.isDuplicate ? `<div style="font-size: 11px; color: #dc2626; margin-top: 4px;">🔄 Duplicate of existing job</div>` : ''}
+                                    ${canAdd ? `<button onclick="toggleEditResult(${i})" style="margin-top: 8px; background: none; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px; font-size: 11px; color: #6b7280; cursor: pointer;">✏️ Edit details</button>` : ''}
                                 </div>
-                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">
-                                    ${escapeHtml(r.source)} · <a href="${escapeHtml(r.url)}" target="_blank" style="color: #3b82f6;">View posting</a>
-                                    ${r.originalPosting ? ` · <a href="${escapeHtml(r.originalPosting)}" target="_blank" style="color: #8b5cf6;">Company careers</a>` : ''}
+                                <div style="text-align: center; margin-left: 15px;">
+                                    <div style="font-size: 11px; color: ${statusColor}; font-weight: 600;">${statusIcon} ${r.status.toUpperCase()}</div>
+                                    <div style="font-size: 28px; font-weight: 700; color: ${fitColor}; margin: 5px 0;">${r.fitScore}</div>
+                                    <div style="font-size: 10px; color: #6b7280;">fit score</div>
+                                    ${canAdd ? `
+                                        <label style="display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 11px; cursor: pointer;">
+                                            <input type="checkbox" class="validate-add-checkbox" data-index="${i}" ${r.fitScore >= 75 ? 'checked' : ''}>
+                                            Add
+                                        </label>
+                                    ` : ''}
                                 </div>
-                                ${r.warnings.length > 0 ? `<div style="font-size: 11px; color: #d97706; margin-top: 4px;">⚠️ ${r.warnings.join(', ')}</div>` : ''}
-                                ${r.isDuplicate ? `<div style="font-size: 11px; color: #dc2626; margin-top: 4px;">🔄 Duplicate of existing job</div>` : ''}
                             </div>
-                            <div style="text-align: center; margin-left: 15px;">
-                                <div style="font-size: 11px; color: ${statusColor}; font-weight: 600;">${statusIcon} ${r.status.toUpperCase()}</div>
-                                <div style="font-size: 28px; font-weight: 700; color: ${fitColor}; margin: 5px 0;">${r.fitScore}</div>
-                                <div style="font-size: 10px; color: #6b7280;">fit score</div>
-                                ${!r.isDuplicate && r.status === 'active' && r.fitScore >= 55 ? `
-                                    <label style="display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 11px; cursor: pointer;">
-                                        <input type="checkbox" class="validate-add-checkbox" data-index="${i}" ${r.fitScore >= 75 ? 'checked' : ''}>
-                                        Add
-                                    </label>
-                                ` : ''}
+                        </div>
+
+                        <!-- Edit View (hidden by default) -->
+                        <div class="result-edit" id="result-edit-${i}" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div>
+                                    <label style="font-size: 11px; color: #6b7280; display: block; margin-bottom: 2px;">Job Title</label>
+                                    <input type="text" id="edit-title-${i}" value="${escapeHtml(r.title || '')}"
+                                           style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #6b7280; display: block; margin-bottom: 2px;">Company</label>
+                                    <input type="text" id="edit-company-${i}" value="${escapeHtml(r.company || '')}"
+                                           style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #6b7280; display: block; margin-bottom: 2px;">Location</label>
+                                    <input type="text" id="edit-location-${i}" value="${escapeHtml(r.location || '')}"
+                                           style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #6b7280; display: block; margin-bottom: 2px;">Salary</label>
+                                    <input type="text" id="edit-salary-${i}" value="${escapeHtml(r.salary || '')}"
+                                           style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                                </div>
+                            </div>
+                            <div style="margin-top: 10px; display: flex; gap: 8px;">
+                                <button onclick="saveEditResult(${i})" style="background: #059669; color: white; border: none; border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer;">Save</button>
+                                <button onclick="toggleEditResult(${i})" style="background: #f3f4f6; color: #374151; border: none; border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer;">Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -5081,10 +5116,48 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             document.getElementById('validateResultsList').innerHTML = listHtml;
 
             // Show/hide add button based on results
-            const addableCount = results.filter(r => r.status === 'active' && !r.isDuplicate && r.fitScore >= 55).length;
+            const addableCount = results.filter(r => r.status === 'active' && !r.isDuplicate).length;
             document.getElementById('addValidatedBtn').style.display = addableCount > 0 ? 'block' : 'none';
 
             document.getElementById('validateResults').style.display = 'block';
+        }
+
+        function toggleEditResult(index) {
+            const displayEl = document.getElementById(`result-display-${index}`);
+            const editEl = document.getElementById(`result-edit-${index}`);
+
+            if (editEl.style.display === 'none') {
+                displayEl.style.display = 'none';
+                editEl.style.display = 'block';
+            } else {
+                displayEl.style.display = 'block';
+                editEl.style.display = 'none';
+            }
+        }
+
+        function saveEditResult(index) {
+            const title = document.getElementById(`edit-title-${index}`).value.trim();
+            const company = document.getElementById(`edit-company-${index}`).value.trim();
+            const location = document.getElementById(`edit-location-${index}`).value.trim();
+            const salary = document.getElementById(`edit-salary-${index}`).value.trim();
+
+            // Update the validationResults array
+            if (validationResults && validationResults[index]) {
+                validationResults[index].title = title || 'Unknown Title';
+                validationResults[index].company = company || 'Unknown Company';
+                validationResults[index].location = location;
+                validationResults[index].salary = salary;
+
+                // Update display
+                document.getElementById(`display-title-${index}`).textContent = title || 'Unknown Title';
+                document.getElementById(`display-company-${index}`).textContent = company || 'Unknown Company';
+                document.getElementById(`display-location-${index}`).innerHTML = location ? `📍 ${escapeHtml(location)}` : '';
+                document.getElementById(`display-salary-${index}`).innerHTML = salary ? ` · 💰 ${escapeHtml(salary)}` : '';
+            }
+
+            // Toggle back to display view
+            toggleEditResult(index);
+            showToast('Job details updated');
         }
 
         async function addValidatedJobs() {
@@ -5731,7 +5804,10 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
             noSubmissions.style.display = 'none';
 
-            container.innerHTML = submissions.map(sub => {
+            // Store submissions for editing
+            window.pendingSubmissions = submissions;
+
+            container.innerHTML = submissions.map((sub, idx) => {
                 const fitClass = sub.fit_score >= 75 ? 'fit-great' :
                                  sub.fit_score >= 55 ? 'fit-maybe' : 'fit-probably-not';
                 const fitLabel = sub.fit_score >= 75 ? '🎯 Great Fit' :
@@ -5742,46 +5818,89 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                 });
 
                 return `
-                    <div class="submission-card ${fitClass}">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="flex: 1;">
-                                <div style="font-size: 12px; color: #6b7280; margin-bottom: 5px;">
-                                    From: <strong>${escapeHtml(sub.submitted_by || 'A friend')}</strong> · ${date}
+                    <div class="submission-card ${fitClass}" data-sub-id="${sub.id}">
+                        <!-- Display View -->
+                        <div id="sub-display-${sub.id}">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div style="flex: 1;">
+                                    <div style="font-size: 12px; color: #6b7280; margin-bottom: 5px;">
+                                        From: <strong>${escapeHtml(sub.submitted_by || 'A friend')}</strong> · ${date}
+                                    </div>
+                                    <h3 style="margin: 0 0 5px 0; font-size: 16px;" id="sub-title-${sub.id}">
+                                        ${escapeHtml(sub.title || 'Job Position')}
+                                    </h3>
+                                    <div style="color: #667eea; font-weight: 600; margin-bottom: 10px;" id="sub-company-${sub.id}">
+                                        ${escapeHtml(sub.company || 'Company')}
+                                    </div>
+                                    <div style="font-size: 13px; color: #6b7280;">
+                                        <span id="sub-location-${sub.id}">${sub.location ? `📍 ${escapeHtml(sub.location)}` : ''}</span>
+                                        <span id="sub-salary-${sub.id}">${sub.salary ? ` 💰 ${escapeHtml(sub.salary)}` : ''}</span>
+                                    </div>
+                                    <a href="${escapeHtml(sub.url)}" target="_blank"
+                                       style="font-size: 12px; color: #3b82f6; word-break: break-all; display: block; margin-top: 10px;">
+                                        🔗 ${escapeHtml(sub.url?.substring(0, 50))}...
+                                    </a>
+                                    ${sub.notes ? `
+                                        <div style="margin-top: 10px; padding: 10px; background: #fef3c7; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                                            <div style="font-size: 11px; color: #92400e; font-weight: 600; margin-bottom: 4px;">💬 Note from ${escapeHtml(sub.submitted_by || 'friend')}:</div>
+                                            <div style="font-size: 13px; color: #78350f;">${escapeHtml(sub.notes)}</div>
+                                        </div>
+                                    ` : ''}
                                 </div>
-                                <h3 style="margin: 0 0 5px 0; font-size: 16px;">
-                                    ${escapeHtml(sub.title || 'Job Position')}
-                                </h3>
-                                <div style="color: #667eea; font-weight: 600; margin-bottom: 10px;">
-                                    ${escapeHtml(sub.company || 'Company')}
+                                <div style="text-align: center; margin-left: 20px;">
+                                    <div class="submission-score">${sub.fit_score || '?'}</div>
+                                    <div style="font-size: 11px; color: #6b7280;">fit score</div>
+                                    <div style="font-size: 12px; margin-top: 5px; font-weight: 600; color: ${
+                                        sub.fit_score >= 75 ? '#16a34a' : sub.fit_score >= 55 ? '#d97706' : '#dc2626'
+                                    }">${fitLabel}</div>
                                 </div>
-                                <div style="font-size: 13px; color: #6b7280;">
-                                    ${sub.location ? `📍 ${escapeHtml(sub.location)}` : ''}
-                                    ${sub.salary ? `💰 ${escapeHtml(sub.salary)}` : ''}
-                                </div>
-                                <a href="${escapeHtml(sub.url)}" target="_blank"
-                                   style="font-size: 12px; color: #3b82f6; word-break: break-all; display: block; margin-top: 10px;">
-                                    🔗 ${escapeHtml(sub.url?.substring(0, 50))}...
-                                </a>
                             </div>
-                            <div style="text-align: center; margin-left: 20px;">
-                                <div class="submission-score">${sub.fit_score || '?'}</div>
-                                <div style="font-size: 11px; color: #6b7280;">fit score</div>
-                                <div style="font-size: 12px; margin-top: 5px; font-weight: 600; color: ${
-                                    sub.fit_score >= 75 ? '#16a34a' : sub.fit_score >= 55 ? '#d97706' : '#dc2626'
-                                }">${fitLabel}</div>
+                            <div class="submission-actions">
+                                <button onclick="toggleSubEdit('${sub.id}')" style="background: #f3f4f6; color: #374151; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;">
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn-analyze" onclick="analyzeSubmission('${sub.id}', '${escapeHtml(sub.url)}')" id="analyze-${sub.id}" style="background: #059669; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;">
+                                    🔍 Analyze
+                                </button>
+                                <button class="btn-accept" onclick="acceptSubmission('${sub.id}')">
+                                    ✓ Add to Tracker
+                                </button>
+                                <button class="btn-reject" onclick="rejectSubmission('${sub.id}')">
+                                    ✗ Skip
+                                </button>
                             </div>
                         </div>
-                        <div class="submission-actions">
-                            <button class="btn-analyze" onclick="analyzeSubmission('${sub.id}', '${escapeHtml(sub.url)}')" id="analyze-${sub.id}" style="background: #059669; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;">
-                                🔍 Analyze
-                            </button>
-                            <button class="btn-accept" onclick="acceptSubmission('${sub.id}')">
-                                ✓ Add to Tracker
-                            </button>
-                            <button class="btn-reject" onclick="rejectSubmission('${sub.id}')">
-                                ✗ Skip
-                            </button>
+
+                        <!-- Edit View (hidden by default) -->
+                        <div id="sub-edit-${sub.id}" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                <div>
+                                    <label style="font-size: 11px; color: #6b7280; display: block; margin-bottom: 2px;">Job Title</label>
+                                    <input type="text" id="sub-edit-title-${sub.id}" value="${escapeHtml(sub.title || '')}"
+                                           style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #6b7280; display: block; margin-bottom: 2px;">Company</label>
+                                    <input type="text" id="sub-edit-company-${sub.id}" value="${escapeHtml(sub.company || '')}"
+                                           style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #6b7280; display: block; margin-bottom: 2px;">Location</label>
+                                    <input type="text" id="sub-edit-location-${sub.id}" value="${escapeHtml(sub.location || '')}"
+                                           style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #6b7280; display: block; margin-bottom: 2px;">Salary</label>
+                                    <input type="text" id="sub-edit-salary-${sub.id}" value="${escapeHtml(sub.salary || '')}"
+                                           style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="saveSubEdit('${sub.id}')" style="background: #059669; color: white; border: none; border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer;">Save</button>
+                                <button onclick="toggleSubEdit('${sub.id}')" style="background: #f3f4f6; color: #374151; border: none; border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer;">Cancel</button>
+                            </div>
                         </div>
+
                         <div id="analysis-${sub.id}" style="display: none; margin-top: 10px; padding: 10px; background: #f0fdf4; border-radius: 6px; font-size: 12px;"></div>
                     </div>
                 `;
@@ -5914,18 +6033,75 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             }
         }
 
+        function toggleSubEdit(id) {
+            const displayEl = document.getElementById(`sub-display-${id}`);
+            const editEl = document.getElementById(`sub-edit-${id}`);
+
+            if (editEl.style.display === 'none') {
+                displayEl.style.display = 'none';
+                editEl.style.display = 'block';
+            } else {
+                displayEl.style.display = 'block';
+                editEl.style.display = 'none';
+            }
+        }
+
+        async function saveSubEdit(id) {
+            const title = document.getElementById(`sub-edit-title-${id}`).value.trim();
+            const company = document.getElementById(`sub-edit-company-${id}`).value.trim();
+            const location = document.getElementById(`sub-edit-location-${id}`).value.trim();
+            const salary = document.getElementById(`sub-edit-salary-${id}`).value.trim();
+
+            // Update the pendingSubmissions array
+            if (window.pendingSubmissions) {
+                const sub = window.pendingSubmissions.find(s => s.id === id);
+                if (sub) {
+                    sub.title = title || 'Job Position';
+                    sub.company = company || 'Company';
+                    sub.location = location;
+                    sub.salary = salary;
+
+                    // Update display
+                    document.getElementById(`sub-title-${id}`).textContent = title || 'Job Position';
+                    document.getElementById(`sub-company-${id}`).textContent = company || 'Company';
+                    document.getElementById(`sub-location-${id}`).innerHTML = location ? `📍 ${escapeHtml(location)}` : '';
+                    document.getElementById(`sub-salary-${id}`).innerHTML = salary ? ` 💰 ${escapeHtml(salary)}` : '';
+                }
+            }
+
+            // Also update in Supabase so edits persist
+            if (supabaseClient) {
+                try {
+                    await supabaseClient
+                        .from('job_submissions')
+                        .update({ title, company, location, salary })
+                        .eq('id', id);
+                } catch (e) {
+                    console.error('Error saving edit to Supabase:', e);
+                }
+            }
+
+            // Toggle back to display view
+            toggleSubEdit(id);
+            showToast('Job details updated');
+        }
+
         async function acceptSubmission(id) {
             if (!supabaseClient) return;
 
             try {
-                // Get the submission
-                const { data: sub, error: fetchError } = await supabaseClient
-                    .from('job_submissions')
-                    .select('*')
-                    .eq('id', id)
-                    .single();
+                // Get the submission - check local cache first for edits
+                let sub = window.pendingSubmissions?.find(s => s.id === id);
 
-                if (fetchError) throw fetchError;
+                if (!sub) {
+                    const { data, error: fetchError } = await supabaseClient
+                        .from('job_submissions')
+                        .select('*')
+                        .eq('id', id)
+                        .single();
+                    if (fetchError) throw fetchError;
+                    sub = data;
+                }
 
                 // Add to dashboard jobs
                 const data = window.currentData;
@@ -5960,7 +6136,9 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     symbols: [],
                     connections: [],
                     sources: [`Referral: ${sub.submitted_by || 'Friend'}`],
-                    notes: `Submitted by ${sub.submitted_by || 'a friend'} via Job Submission Form`,
+                    notes: sub.notes
+                        ? `Submitted by ${sub.submitted_by || 'a friend'}. Note: "${sub.notes}"`
+                        : `Submitted by ${sub.submitted_by || 'a friend'} via Job Submission Form`,
                     updates: []
                 };
 

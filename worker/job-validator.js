@@ -314,52 +314,82 @@ function extractJobDetails(html, url) {
     description: null
   };
 
+  const source = detectSource(url);
+
   // Try JSON-LD first (most structured)
-  const jsonLdMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
-  if (jsonLdMatch) {
+  const jsonLdMatches = html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi);
+  for (const match of jsonLdMatches) {
     try {
-      const jsonLd = JSON.parse(jsonLdMatch[1]);
-      if (jsonLd['@type'] === 'JobPosting' || jsonLd.title) {
-        details.title = jsonLd.title;
-        details.company = jsonLd.hiringOrganization?.name;
-        details.location = jsonLd.jobLocation?.address?.addressLocality ||
-                          jsonLd.jobLocation?.name;
-        if (jsonLd.baseSalary) {
-          const salary = jsonLd.baseSalary;
-          if (salary.value) {
-            details.salary = typeof salary.value === 'object'
-              ? `${salary.value.minValue} - ${salary.value.maxValue}`
-              : salary.value;
+      const jsonLd = JSON.parse(match[1]);
+      // Handle array of JSON-LD objects
+      const items = Array.isArray(jsonLd) ? jsonLd : [jsonLd];
+      for (const item of items) {
+        if (item['@type'] === 'JobPosting' || item.title) {
+          if (!details.title && item.title) details.title = item.title;
+          if (!details.company && item.hiringOrganization?.name) details.company = item.hiringOrganization.name;
+          if (!details.location) {
+            details.location = item.jobLocation?.address?.addressLocality ||
+                              item.jobLocation?.address?.addressRegion ||
+                              item.jobLocation?.name ||
+                              (item.jobLocationType === 'TELECOMMUTE' ? 'Remote' : null);
+          }
+          if (!details.salary && item.baseSalary) {
+            const salary = item.baseSalary;
+            if (salary.value) {
+              if (typeof salary.value === 'object' && salary.value.minValue) {
+                details.salary = `$${formatSalary(salary.value.minValue)} - $${formatSalary(salary.value.maxValue)}`;
+              } else if (typeof salary.value === 'number') {
+                details.salary = `$${formatSalary(salary.value)}`;
+              }
+            }
+          }
+          if (!details.description && item.description) {
+            details.description = item.description.replace(/<[^>]+>/g, ' ').substring(0, 2000);
           }
         }
-        details.description = jsonLd.description;
       }
     } catch (e) {
       // JSON-LD parsing failed, continue with other methods
     }
   }
 
-  // Try Open Graph tags
+  // Try Open Graph tags (multiple formats)
   if (!details.title) {
-    const ogTitle = html.match(/<meta property="og:title" content="([^"]+)"/i);
-    if (ogTitle) details.title = decodeHtmlEntities(ogTitle[1]);
+    const ogTitle = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]+)"/i) ||
+                   html.match(/<meta[^>]*content="([^"]+)"[^>]*property="og:title"/i);
+    if (ogTitle) {
+      let title = decodeHtmlEntities(ogTitle[1]);
+      // Clean up common suffixes
+      title = title.replace(/\s*[-|–]\s*(LinkedIn|Lever|Greenhouse|Workday|Ashby).*$/i, '')
+                   .replace(/\s*at\s+[^|]+\s*\|.*$/i, '')
+                   .trim();
+      // Handle "Company hiring Job Title in Location" format from LinkedIn
+      const hiringMatch = title.match(/^(.+?)\s+hiring\s+(.+?)\s+in\s+(.+)$/i);
+      if (hiringMatch) {
+        details.company = hiringMatch[1].trim();
+        details.title = hiringMatch[2].trim();
+        details.location = hiringMatch[3].trim();
+      } else {
+        details.title = title;
+      }
+    }
   }
 
   // Try common HTML patterns based on source
-  const source = detectSource(url);
-
   if (source === 'Lever') {
     if (!details.title) {
       const titleMatch = html.match(/<h2[^>]*class="[^"]*posting-headline[^"]*"[^>]*>([^<]+)/i) ||
-                        html.match(/<h2>([^<]+)<\/h2>/i);
+                        html.match(/<h2[^>]*>([^<]+)<\/h2>/i);
       if (titleMatch) details.title = titleMatch[1].trim();
     }
     if (!details.company) {
-      const companyMatch = url.match(/https?:\/\/([^.]+)\.lever\.co/);
-      if (companyMatch) details.company = capitalizeFirst(companyMatch[1]);
+      const companyMatch = url.match(/https?:\/\/jobs\.lever\.co\/([^\/]+)/i) ||
+                          url.match(/https?:\/\/([^.]+)\.lever\.co/i);
+      if (companyMatch) details.company = formatCompanyName(companyMatch[1]);
     }
     if (!details.location) {
-      const locMatch = html.match(/<div class="location">([^<]+)/i);
+      const locMatch = html.match(/<div[^>]*class="[^"]*location[^"]*"[^>]*>([^<]+)/i) ||
+                      html.match(/<span[^>]*class="[^"]*workplaceTypes[^"]*"[^>]*>([^<]+)/i);
       if (locMatch) details.location = locMatch[1].trim();
     }
   }
@@ -367,12 +397,42 @@ function extractJobDetails(html, url) {
   if (source === 'Greenhouse') {
     if (!details.title) {
       const titleMatch = html.match(/<h1[^>]*class="[^"]*app-title[^"]*"[^>]*>([^<]+)/i) ||
-                        html.match(/<h1>([^<]+)<\/h1>/i);
+                        html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
       if (titleMatch) details.title = titleMatch[1].trim();
     }
     if (!details.company) {
-      const companyMatch = url.match(/boards\.greenhouse\.io\/([^\/]+)/);
-      if (companyMatch) details.company = capitalizeFirst(companyMatch[1].replace(/-/g, ' '));
+      const companyMatch = url.match(/boards\.greenhouse\.io\/([^\/]+)/i) ||
+                          url.match(/([^.]+)\.greenhouse\.io/i);
+      if (companyMatch) details.company = formatCompanyName(companyMatch[1]);
+    }
+    if (!details.location) {
+      const locMatch = html.match(/<div[^>]*class="[^"]*location[^"]*"[^>]*>([^<]+)/i);
+      if (locMatch) details.location = locMatch[1].trim();
+    }
+  }
+
+  if (source === 'Ashby') {
+    if (!details.company) {
+      const companyMatch = url.match(/jobs\.ashbyhq\.com\/([^\/]+)/i);
+      if (companyMatch) details.company = formatCompanyName(companyMatch[1]);
+    }
+  }
+
+  if (source === 'Workday') {
+    if (!details.company) {
+      const companyMatch = url.match(/([^.]+)\.wd\d*\.myworkdayjobs\.com/i);
+      if (companyMatch) details.company = formatCompanyName(companyMatch[1]);
+    }
+  }
+
+  if (source === 'LinkedIn') {
+    // LinkedIn blocks direct fetches but OG tags work via proxy
+    // Title was likely extracted from og:title above
+    // Try to extract company from URL or page
+    if (!details.company) {
+      const companyMatch = html.match(/data-tracking-control-name="public_jobs_topcard-org-name"[^>]*>([^<]+)/i) ||
+                          html.match(/<a[^>]*class="[^"]*topcard__org-name-link[^"]*"[^>]*>([^<]+)/i);
+      if (companyMatch) details.company = companyMatch[1].trim();
     }
   }
 
@@ -380,6 +440,49 @@ function extractJobDetails(html, url) {
   if (!details.title) {
     const h1Match = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
     if (h1Match) details.title = h1Match[1].trim();
+  }
+
+  // Generic location extraction
+  if (!details.location) {
+    const locationPatterns = [
+      /(?:location|where)[:\s]*([A-Z][a-zA-Z\s,]+(?:,\s*[A-Z]{2})?)/i,
+      /(Remote|Hybrid|On-?site)/i,
+      /(Boston|New York|NYC|San Francisco|Los Angeles|Chicago|Seattle|Austin|Denver|Atlanta|Miami)[,\s]*(?:MA|NY|CA|IL|WA|TX|CO|GA|FL)?/i
+    ];
+    for (const pattern of locationPatterns) {
+      const match = html.match(pattern);
+      if (match) {
+        details.location = match[1].trim();
+        break;
+      }
+    }
+  }
+
+  // Generic salary extraction
+  if (!details.salary) {
+    const salaryPatterns = [
+      /\$\s*([\d,]+)\s*(?:k|K)?\s*[-–to]+\s*\$?\s*([\d,]+)\s*(?:k|K)?(?:\s*(?:\/year|annually|per year|a year))?/i,
+      /(?:salary|compensation|pay)[:\s]*\$\s*([\d,]+)\s*[-–]?\s*\$?\s*([\d,]+)?/i,
+      /\$(1[0-9]{2}),?000\s*[-–]\s*\$(1[0-9]{2}|2[0-9]{2}),?000/i
+    ];
+    for (const pattern of salaryPatterns) {
+      const match = html.match(pattern);
+      if (match) {
+        if (match[2]) {
+          let min = match[1].replace(/,/g, '');
+          let max = match[2].replace(/,/g, '');
+          // Handle "k" notation
+          if (parseInt(min) < 1000) min = parseInt(min) * 1000;
+          if (parseInt(max) < 1000) max = parseInt(max) * 1000;
+          details.salary = `$${formatSalary(min)} - $${formatSalary(max)}`;
+        } else {
+          let val = match[1].replace(/,/g, '');
+          if (parseInt(val) < 1000) val = parseInt(val) * 1000;
+          details.salary = `$${formatSalary(val)}+`;
+        }
+        break;
+      }
+    }
   }
 
   // Extract description text
@@ -394,11 +497,33 @@ function extractJobDetails(html, url) {
   }
 
   // Clean up extracted values
-  if (details.title) details.title = decodeHtmlEntities(details.title.trim());
+  if (details.title) {
+    details.title = decodeHtmlEntities(details.title.trim())
+      .replace(/\s*[-|–]\s*(Apply|Job|Career).*$/i, '')
+      .trim();
+  }
   if (details.company) details.company = decodeHtmlEntities(details.company.trim());
   if (details.location) details.location = decodeHtmlEntities(details.location.trim());
 
   return details;
+}
+
+function formatSalary(value) {
+  const num = parseInt(value);
+  if (num >= 1000) {
+    return num.toLocaleString();
+  }
+  return (num * 1000).toLocaleString();
+}
+
+function formatCompanyName(slug) {
+  if (!slug) return '';
+  return slug
+    .replace(/-/g, ' ')
+    .replace(/_/g, ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 }
 
 function decodeHtmlEntities(text) {
