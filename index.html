@@ -1446,7 +1446,7 @@ HELP ME:
 
     <!-- Version Footer -->
     <div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 11px;">
-        Job Search Command Center · v2.5 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v2.6 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -1929,17 +1929,23 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         };
 
         async function initStorage() {
+            console.log('[JSCC] initStorage called');
             try {
                 const stored = await window.storage.get('job-tracker-data');
+                console.log('[JSCC] Got stored data:', stored ? 'yes' : 'no');
                 if (stored && stored.value) {
-                    return JSON.parse(stored.value);
+                    const parsed = JSON.parse(stored.value);
+                    console.log('[JSCC] Parsed stored jobs:', parsed.jobs?.length || 0);
+                    return parsed;
                 }
             } catch (e) {
-                console.log('No stored data, using defaults');
+                console.log('[JSCC] No stored data error:', e);
             }
-            
+
+            const sampleJobs = getSampleJobs();
+            console.log('[JSCC] Using sample jobs:', sampleJobs.length);
             return {
-                jobs: getSampleJobs(),
+                jobs: sampleJobs,
                 lastSearch: "2026-01-24T22:00:00Z",
                 searchHistory: [
                     {
@@ -4471,9 +4477,17 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         }
 
         async function loadData() {
+            console.log('[JSCC] loadData started');
             const data = await initStorage();
+            console.log('[JSCC] initStorage returned, jobs:', data?.jobs?.length || 'NO DATA');
             window.currentData = data;
-            
+
+            if (!data || !data.jobs || data.jobs.length === 0) {
+                console.error('[JSCC] ERROR: No jobs data!');
+                document.getElementById('jobsContainer').innerHTML = '<p style="color: red; padding: 20px;">ERROR: No jobs data loaded. Check console.</p>';
+                return;
+            }
+
             // Initialize updates array for all jobs if it doesn't exist
             data.jobs.forEach(job => {
                 if (!job.updates) {
@@ -4525,9 +4539,21 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
         // Force render jobs on load - fallback if filters fail
         function forceRenderAllJobs() {
-            if (window.currentData && window.currentData.jobs) {
+            console.log('[JSCC] forceRenderAllJobs called');
+            console.log('[JSCC] window.currentData exists:', !!window.currentData);
+            console.log('[JSCC] jobs array exists:', !!window.currentData?.jobs);
+            console.log('[JSCC] jobs count:', window.currentData?.jobs?.length || 0);
+
+            if (window.currentData && window.currentData.jobs && window.currentData.jobs.length > 0) {
                 const nonArchived = window.currentData.jobs.filter(j => j.status !== 'archived');
                 console.log('[JSCC] Force rendering', nonArchived.length, 'non-archived jobs');
+                renderJobs(nonArchived);
+            } else {
+                // Last resort: render sample jobs directly
+                console.log('[JSCC] No currentData, rendering sample jobs directly');
+                const sampleJobs = getSampleJobs();
+                const nonArchived = sampleJobs.filter(j => j.status !== 'archived');
+                console.log('[JSCC] Rendering', nonArchived.length, 'sample jobs');
                 renderJobs(nonArchived);
             }
         }
