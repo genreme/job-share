@@ -325,6 +325,12 @@
                 <div class="fit-score-label">Fit Score</div>
                 <div class="fit-category" id="fitCategory">Checking...</div>
 
+                <div id="scoringReasons" style="display: none; margin-top: 15px; padding: 12px; background: white; border-radius: 8px; text-align: left;"></div>
+
+                <div id="limitedInfo" style="display: none; margin-top: 12px; padding: 10px; background: #fef3c7; border-radius: 8px; font-size: 12px; color: #92400e;">
+                    ⚠️ Limited info from URL. Score is approximate - John will review the full posting.
+                </div>
+
                 <div class="job-preview" id="jobPreview" style="display: none;">
                     <h3 id="previewTitle">-</h3>
                     <div class="company" id="previewCompany">-</div>
@@ -336,7 +342,8 @@
             <div id="successResult" class="result">
                 <div class="result-icon">🎉</div>
                 <h2>Sent to John!</h2>
-                <p>He'll see this in his job tracker and get back to you if he applies. Thanks for thinking of him!</p>
+                <p>Saved to his job tracker database. He'll see this in his Inbox and can accept or review it. Thanks for thinking of him!</p>
+                <p id="submissionId" style="font-size: 11px; color: #9ca3af; margin-top: 10px;"></p>
                 <button class="btn btn-secondary" onclick="resetForm()">Submit Another Job</button>
             </div>
 
@@ -412,14 +419,18 @@
         });
 
         // Fit scoring logic (matches John's dashboard)
+        // Returns score AND reasons for transparency
         function calculateFitScore(job) {
             let score = 50; // Base score
+            const reasons = [];
             const title = (job.title || '').toLowerCase();
             const company = (job.company || '').toLowerCase();
             const location = (job.location || '').toLowerCase();
             const salary = (job.salary || '').toLowerCase();
             const industry = (job.industry || '').toLowerCase();
             const url = (job.url || '').toLowerCase();
+
+            reasons.push('Base score: 50');
 
             // Role fit (+25 max)
             const targetRoles = ['creative director', 'vp creative', 'head of design', 'design director',
@@ -428,10 +439,17 @@
 
             if (targetRoles.some(r => title.includes(r))) {
                 score += 25;
+                reasons.push('+25 Role: Target title match');
             } else if (goodRoles.some(r => title.includes(r))) {
                 score += 15;
+                reasons.push('+15 Role: Director-level');
             } else if (title.includes('manager') || title.includes('lead')) {
                 score += 5;
+                reasons.push('+5 Role: Manager/Lead');
+            } else if (!title) {
+                reasons.push('+0 Role: No title detected');
+            } else {
+                reasons.push('+0 Role: Not a target role');
             }
 
             // Industry fit (+20 max)
@@ -442,17 +460,29 @@
             const allText = `${company} ${industry} ${url}`;
             if (targetIndustries.some(i => allText.includes(i))) {
                 score += 20;
+                reasons.push('+20 Industry: Mission-driven org');
             } else if (okIndustries.some(i => allText.includes(i))) {
                 score += 10;
+                reasons.push('+10 Industry: Agency/consulting');
+            } else if (!company) {
+                reasons.push('+0 Industry: No company detected');
+            } else {
+                reasons.push('+0 Industry: Unknown sector');
             }
 
             // Location fit (+15 max)
             if (location.includes('remote') || location.includes('boston') ||
                 location.includes('massachusetts') || location.includes('ma')) {
                 score += 15;
+                reasons.push('+15 Location: Boston/Remote');
             } else if (location.includes('hybrid') || location.includes('new york') ||
                        location.includes('northeast')) {
                 score += 8;
+                reasons.push('+8 Location: Northeast/Hybrid');
+            } else if (!location) {
+                reasons.push('+0 Location: Not detected');
+            } else {
+                reasons.push('+0 Location: Not ideal');
             }
 
             // Salary fit (+15 max)
@@ -461,13 +491,22 @@
                 const salaryNum = parseInt(salaryMatch[1].replace(/,/g, ''));
                 if (salaryNum >= 120000 || (salaryNum >= 120 && salaryNum < 1000)) {
                     score += 15;
+                    reasons.push('+15 Salary: $120K+');
                 } else if (salaryNum >= 100000 || (salaryNum >= 100 && salaryNum < 1000)) {
                     score += 8;
+                    reasons.push('+8 Salary: $100K+');
+                } else {
+                    reasons.push('+0 Salary: Below target');
                 }
+            } else {
+                reasons.push('+0 Salary: Not listed');
             }
 
             // Cap at 100
-            return Math.min(100, Math.max(0, score));
+            return {
+                score: Math.min(100, Math.max(0, score)),
+                reasons: reasons
+            };
         }
 
         function getFitCategory(score) {
@@ -569,14 +608,20 @@
                 console.log('[JSCC] Parsed job:', job);
 
                 // Calculate fit score
-                const fitScore = calculateFitScore(job);
+                const fitResult = calculateFitScore(job);
+                const fitScore = fitResult.score;
                 const fitInfo = getFitCategory(fitScore);
-                console.log('[JSCC] Fit score:', fitScore, fitInfo);
+                console.log('[JSCC] Fit score:', fitScore, fitInfo, fitResult.reasons);
 
                 // Show fit score
                 document.getElementById('fitScoreNumber').textContent = fitScore;
                 document.getElementById('fitCategory').textContent = fitInfo.label;
                 document.getElementById('fitCategory').className = 'fit-category ' + fitInfo.class;
+
+                // Show scoring breakdown
+                const reasonsHtml = fitResult.reasons.map(r => `<div style="font-size: 12px; color: #6b7280;">${r}</div>`).join('');
+                document.getElementById('scoringReasons').innerHTML = reasonsHtml;
+                document.getElementById('scoringReasons').style.display = 'block';
 
                 // Show preview if we have info
                 if (job.company) {
@@ -584,6 +629,11 @@
                     document.getElementById('previewCompany').textContent = job.company;
                     document.getElementById('previewMeta').textContent = job.source || '';
                     document.getElementById('jobPreview').style.display = 'block';
+                }
+
+                // Show note about limited URL info
+                if (!job.company && !job.title) {
+                    document.getElementById('limitedInfo').style.display = 'block';
                 }
 
                 document.getElementById('fitResult').classList.add('show');
@@ -598,7 +648,7 @@
                     try {
                         // Submit to Supabase
                         console.log('[JSCC] Inserting to database...');
-                        const { error: insertError } = await db
+                        const { data: insertedData, error: insertError } = await db
                             .from('job_submissions')
                             .insert({
                                 url: cleanUrl,
@@ -610,14 +660,22 @@
                                 fit_score: fitScore,
                                 fit_category: fitInfo.category,
                                 submitted_by: submittedBy
-                            });
+                            })
+                            .select();
 
                         if (insertError) {
                             console.error('[JSCC] Insert error:', insertError);
                             throw insertError;
                         }
 
-                        console.log('[JSCC] Success!');
+                        console.log('[JSCC] Success! Inserted:', insertedData);
+
+                        // Show confirmation with record ID
+                        if (insertedData && insertedData[0]) {
+                            document.getElementById('submissionId').textContent =
+                                'Record ID: ' + insertedData[0].id.substring(0, 8) + '...';
+                        }
+
                         showResult('success');
                     } catch (err) {
                         console.error('[JSCC] Submit error:', err);
