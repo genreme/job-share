@@ -396,7 +396,7 @@
         </div>
 
         <div class="footer">
-            Job Search Command Center · v1.4
+            Job Search Command Center · v1.5
         </div>
     </div>
 
@@ -732,41 +732,81 @@
                 const html = data.contents;
 
                 if (html) {
-                    // Extract Open Graph title (usually "Job Title at Company")
+                    // Extract Open Graph title
                     const ogTitleMatch = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]+)"/i) ||
                                         html.match(/<meta[^>]*content="([^"]+)"[^>]*property="og:title"/i);
                     if (ogTitleMatch) {
                         const ogTitle = ogTitleMatch[1];
                         console.log('[JSCC] Found og:title:', ogTitle);
 
-                        // LinkedIn format: "Job Title at Company | LinkedIn" or "Job Title - Company | LinkedIn"
-                        const titleMatch = ogTitle.match(/^(.+?)\s+(?:at|-)\s+(.+?)\s*(?:\||$)/i);
-                        if (titleMatch) {
-                            result.title = titleMatch[1].trim();
-                            result.company = titleMatch[2].trim().replace(/\s*\|\s*LinkedIn.*$/i, '');
+                        // LinkedIn has multiple formats:
+                        // 1. "Company hiring Company - Job Title in Location | LinkedIn"
+                        // 2. "Job Title at Company | LinkedIn"
+                        // 3. "Job Title - Company | LinkedIn"
+
+                        // Try format 1: "Company hiring ... - Job Title in Location"
+                        const hiringMatch = ogTitle.match(/^(.+?)\s+hiring\s+.+?\s+-\s+(.+?)\s+in\s+(.+?)\s*\|/i);
+                        if (hiringMatch) {
+                            result.company = hiringMatch[1].trim();
+                            result.title = hiringMatch[2].trim();
+                            result.location = hiringMatch[3].trim();
+                            console.log('[JSCC] Matched hiring format:', result);
                         } else {
-                            // Fallback: just use the whole title minus LinkedIn
-                            result.title = ogTitle.replace(/\s*\|\s*LinkedIn.*$/i, '').trim();
+                            // Try format 2: "Job Title at Company"
+                            const atMatch = ogTitle.match(/^(.+?)\s+at\s+(.+?)\s*(?:\||$)/i);
+                            if (atMatch) {
+                                result.title = atMatch[1].trim();
+                                result.company = atMatch[2].trim().replace(/\s*\|\s*LinkedIn.*$/i, '');
+                            } else {
+                                // Try format 3: "Job Title - Company" or just extract what we can
+                                const dashMatch = ogTitle.match(/^(.+?)\s+-\s+(.+?)\s*(?:\||$)/i);
+                                if (dashMatch) {
+                                    result.title = dashMatch[1].trim();
+                                    result.company = dashMatch[2].trim().replace(/\s*\|\s*LinkedIn.*$/i, '');
+                                } else {
+                                    // Fallback: just use the whole title minus LinkedIn
+                                    result.title = ogTitle.replace(/\s*\|\s*LinkedIn.*$/i, '').trim();
+                                }
+                            }
                         }
                     }
 
-                    // Extract description for location hints
-                    const ogDescMatch = html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]+)"/i) ||
-                                       html.match(/<meta[^>]*content="([^"]+)"[^>]*property="og:description"/i);
-                    if (ogDescMatch) {
-                        const desc = ogDescMatch[1];
-                        console.log('[JSCC] Found og:description:', desc.substring(0, 100));
+                    // Also try to extract from <title> tag as backup
+                    if (!result.title || !result.company) {
+                        const titleTagMatch = html.match(/<title>([^<]+)<\/title>/i);
+                        if (titleTagMatch) {
+                            const titleTag = titleTagMatch[1];
+                            console.log('[JSCC] Found title tag:', titleTag);
 
-                        // Look for location patterns in description
-                        const locMatch = desc.match(/(?:in|location:|based in)\s+([A-Z][a-z]+(?:,\s*[A-Z]{2})?)/i) ||
-                                        desc.match(/(Remote|Hybrid|On-site)/i) ||
-                                        desc.match(/([A-Z][a-z]+,\s*[A-Z]{2})/);
-                        if (locMatch) {
-                            result.location = locMatch[1];
+                            // Same parsing logic for title tag
+                            const hiringMatch2 = titleTag.match(/^(.+?)\s+hiring\s+.+?\s+-\s+(.+?)\s+in\s+(.+?)\s*\|/i);
+                            if (hiringMatch2) {
+                                if (!result.company) result.company = hiringMatch2[1].trim();
+                                if (!result.title) result.title = hiringMatch2[2].trim();
+                                if (!result.location) result.location = hiringMatch2[3].trim();
+                            }
                         }
                     }
 
-                    // Try to find company from LinkedIn company link in HTML
+                    // Extract description for additional location hints
+                    if (!result.location) {
+                        const ogDescMatch = html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]+)"/i) ||
+                                           html.match(/<meta[^>]*content="([^"]+)"[^>]*property="og:description"/i);
+                        if (ogDescMatch) {
+                            const desc = ogDescMatch[1];
+                            console.log('[JSCC] Found og:description:', desc.substring(0, 100));
+
+                            // Look for location patterns in description
+                            const locMatch = desc.match(/(?:in|location:|based in)\s+([A-Z][a-z]+(?:,\s*[A-Z]{2})?)/i) ||
+                                            desc.match(/(Remote|Hybrid|On-site)/i) ||
+                                            desc.match(/([A-Z][a-z]+,\s*[A-Z]{2})/);
+                            if (locMatch) {
+                                result.location = locMatch[1];
+                            }
+                        }
+                    }
+
+                    // Try to find company from LinkedIn company link in HTML as last resort
                     if (!result.company) {
                         const companyMatch = html.match(/linkedin\.com\/company\/([^"\/]+)/i);
                         if (companyMatch) {
