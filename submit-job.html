@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Share a Job with John</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .target-info {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #0369a1;
+        }
+
+        .target-info strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #0c4a6e;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group .hint {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            margin-top: 10px;
+        }
+
+        /* Result states */
+        .result {
+            display: none;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .result h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .result p {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Fit score display */
+        .fit-score-display {
+            display: none;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .fit-score-display.show {
+            display: block;
+        }
+
+        .fit-score-number {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .fit-score-label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .fit-category {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .fit-great {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .fit-maybe {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .fit-probably-not {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .fit-unknown {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .job-preview {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .job-preview h3 {
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .job-preview .company {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .job-preview .meta {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff40;
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: #f9fafb;
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        @media (max-width: 400px) {
+            body {
+                padding: 0;
+            }
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Share a Job with John</h1>
+            <p>Paste a link and I'll check if it's a fit!</p>
+        </div>
+
+        <div class="content">
+            <!-- Input Form -->
+            <div id="inputForm">
+                <div class="target-info">
+                    <strong>What John's looking for:</strong>
+                    Creative Director, VP Creative, Head of Design at mission-driven orgs (nonprofits, healthcare, education). Boston/remote, $120K+
+                </div>
+
+                <div class="form-group">
+                    <label>Job Link</label>
+                    <input type="url" id="jobUrl"
+                        placeholder="Paste LinkedIn or job URL here"
+                        inputmode="url"
+                        autocomplete="off">
+                    <div class="hint">Works with LinkedIn, Lever, Greenhouse, or any job posting</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Name (optional)</label>
+                    <input type="text" id="yourName" placeholder="So John knows who to thank!">
+                </div>
+
+                <button class="btn btn-primary" id="checkBtn" onclick="checkAndSubmit()">
+                    Check Fit & Submit
+                </button>
+            </div>
+
+            <!-- Fit Score Result -->
+            <div id="fitResult" class="fit-score-display">
+                <div class="fit-score-number" id="fitScoreNumber">--</div>
+                <div class="fit-score-label">Fit Score</div>
+                <div class="fit-category" id="fitCategory">Checking...</div>
+
+                <div class="job-preview" id="jobPreview" style="display: none;">
+                    <h3 id="previewTitle">-</h3>
+                    <div class="company" id="previewCompany">-</div>
+                    <div class="meta" id="previewMeta">-</div>
+                </div>
+            </div>
+
+            <!-- Success Result -->
+            <div id="successResult" class="result">
+                <div class="result-icon">🎉</div>
+                <h2>Sent to John!</h2>
+                <p>He'll see this in his job tracker and get back to you if he applies. Thanks for thinking of him!</p>
+                <button class="btn btn-secondary" onclick="resetForm()">Submit Another Job</button>
+            </div>
+
+            <!-- Already Exists Result -->
+            <div id="existsResult" class="result">
+                <div class="result-icon">👍</div>
+                <h2>Already Tracking This One</h2>
+                <p>John already has this job in his tracker. Great minds think alike!</p>
+                <button class="btn btn-secondary" onclick="resetForm()">Submit Another Job</button>
+            </div>
+
+            <!-- Error Result -->
+            <div id="errorResult" class="result">
+                <div class="result-icon">😕</div>
+                <h2>Something Went Wrong</h2>
+                <p id="errorMessage">Please try again or text the link directly to John.</p>
+                <button class="btn btn-secondary" onclick="resetForm()">Try Again</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            Job Search Command Center
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase config
+        const SUPABASE_URL = 'https://ivssytvekpfnaqcbhxkz.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2c3N5dHZla3BmbmFxY2JoeGt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDExNTYsImV4cCI6MjA4NDk3NzE1Nn0.1N89JKYm3CpBpMmKkJfM2AVXmmEFZvCCWacI2i_PTGU';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Fit scoring logic (matches John's dashboard)
+        function calculateFitScore(job) {
+            let score = 50; // Base score
+            const title = (job.title || '').toLowerCase();
+            const company = (job.company || '').toLowerCase();
+            const location = (job.location || '').toLowerCase();
+            const salary = (job.salary || '').toLowerCase();
+            const industry = (job.industry || '').toLowerCase();
+            const url = (job.url || '').toLowerCase();
+
+            // Role fit (+25 max)
+            const targetRoles = ['creative director', 'vp creative', 'head of design', 'design director',
+                                 'director of creative', 'director of design', 'chief creative', 'cco'];
+            const goodRoles = ['senior director', 'director', 'head of', 'vp ', 'vice president'];
+
+            if (targetRoles.some(r => title.includes(r))) {
+                score += 25;
+            } else if (goodRoles.some(r => title.includes(r))) {
+                score += 15;
+            } else if (title.includes('manager') || title.includes('lead')) {
+                score += 5;
+            }
+
+            // Industry fit (+20 max)
+            const targetIndustries = ['nonprofit', 'non-profit', 'healthcare', 'health care', 'hospital',
+                                      'education', 'university', 'college', 'arts', 'museum', 'foundation'];
+            const okIndustries = ['agency', 'consulting', 'media'];
+
+            const allText = `${company} ${industry} ${url}`;
+            if (targetIndustries.some(i => allText.includes(i))) {
+                score += 20;
+            } else if (okIndustries.some(i => allText.includes(i))) {
+                score += 10;
+            }
+
+            // Location fit (+15 max)
+            if (location.includes('remote') || location.includes('boston') ||
+                location.includes('massachusetts') || location.includes('ma')) {
+                score += 15;
+            } else if (location.includes('hybrid') || location.includes('new york') ||
+                       location.includes('northeast')) {
+                score += 8;
+            }
+
+            // Salary fit (+15 max)
+            const salaryMatch = salary.match(/\$?([\d,]+)/);
+            if (salaryMatch) {
+                const salaryNum = parseInt(salaryMatch[1].replace(/,/g, ''));
+                if (salaryNum >= 120000 || (salaryNum >= 120 && salaryNum < 1000)) {
+                    score += 15;
+                } else if (salaryNum >= 100000 || (salaryNum >= 100 && salaryNum < 1000)) {
+                    score += 8;
+                }
+            }
+
+            // Cap at 100
+            return Math.min(100, Math.max(0, score));
+        }
+
+        function getFitCategory(score) {
+            if (score >= 75) return { category: 'great', label: '🎯 Great Fit!', class: 'fit-great' };
+            if (score >= 55) return { category: 'maybe', label: '🤔 Worth a Look', class: 'fit-maybe' };
+            if (score >= 35) return { category: 'probably-not', label: '🤷 Probably Not', class: 'fit-probably-not' };
+            return { category: 'unknown', label: '❓ Hard to Tell', class: 'fit-unknown' };
+        }
+
+        // Try to extract job info from URL (basic parsing)
+        function parseJobUrl(url) {
+            const job = {
+                url: url,
+                title: '',
+                company: '',
+                location: '',
+                salary: '',
+                industry: ''
+            };
+
+            // LinkedIn job ID extraction
+            if (url.includes('linkedin.com/jobs')) {
+                // Can't extract much from URL alone, but mark as LinkedIn
+                job.source = 'LinkedIn';
+            }
+
+            // Lever URLs often have company name
+            const leverMatch = url.match(/jobs\.lever\.co\/([^\/]+)/);
+            if (leverMatch) {
+                job.company = leverMatch[1].replace(/-/g, ' ');
+                job.source = 'Lever';
+            }
+
+            // Greenhouse URLs often have company name
+            const greenhouseMatch = url.match(/boards\.greenhouse\.io\/([^\/]+)/);
+            if (greenhouseMatch) {
+                job.company = greenhouseMatch[1].replace(/-/g, ' ');
+                job.source = 'Greenhouse';
+            }
+
+            return job;
+        }
+
+        async function checkAndSubmit() {
+            const urlInput = document.getElementById('jobUrl');
+            const nameInput = document.getElementById('yourName');
+            const btn = document.getElementById('checkBtn');
+            const url = urlInput.value.trim();
+            const submittedBy = nameInput.value.trim() || 'A friend';
+
+            if (!url) {
+                urlInput.focus();
+                urlInput.style.borderColor = '#ef4444';
+                setTimeout(() => urlInput.style.borderColor = '#e5e7eb', 2000);
+                return;
+            }
+
+            // Clean URL
+            const cleanUrl = url.split('?')[0];
+
+            // Show loading state
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Checking...';
+
+            try {
+                // Check if already submitted
+                const { data: existing } = await supabase
+                    .from('job_submissions')
+                    .select('id')
+                    .eq('url', cleanUrl)
+                    .limit(1);
+
+                if (existing && existing.length > 0) {
+                    showResult('exists');
+                    return;
+                }
+
+                // Parse URL for basic info
+                const job = parseJobUrl(cleanUrl);
+
+                // Calculate fit score
+                const fitScore = calculateFitScore(job);
+                const fitInfo = getFitCategory(fitScore);
+
+                // Show fit score
+                document.getElementById('fitScoreNumber').textContent = fitScore;
+                document.getElementById('fitCategory').textContent = fitInfo.label;
+                document.getElementById('fitCategory').className = 'fit-category ' + fitInfo.class;
+
+                // Show preview if we have info
+                if (job.company) {
+                    document.getElementById('previewTitle').textContent = job.title || 'Job Position';
+                    document.getElementById('previewCompany').textContent = job.company;
+                    document.getElementById('previewMeta').textContent = job.source || '';
+                    document.getElementById('jobPreview').style.display = 'block';
+                }
+
+                document.getElementById('fitResult').classList.add('show');
+
+                // Update button for submission
+                btn.innerHTML = 'Send to John';
+                btn.disabled = false;
+                btn.onclick = async () => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="loading"></span>Sending...';
+
+                    // Submit to Supabase
+                    const { error } = await supabase
+                        .from('job_submissions')
+                        .insert({
+                            url: cleanUrl,
+                            title: job.title || null,
+                            company: job.company || null,
+                            location: job.location || null,
+                            salary: job.salary || null,
+                            industry: job.industry || null,
+                            fit_score: fitScore,
+                            fit_category: fitInfo.category,
+                            submitted_by: submittedBy
+                        });
+
+                    if (error) {
+                        console.error('Submit error:', error);
+                        document.getElementById('errorMessage').textContent =
+                            'Could not submit. Try texting the link to John directly.';
+                        showResult('error');
+                    } else {
+                        showResult('success');
+                    }
+                };
+
+            } catch (err) {
+                console.error('Error:', err);
+                document.getElementById('errorMessage').textContent =
+                    'Network error. Check your connection and try again.';
+                showResult('error');
+            }
+        }
+
+        function showResult(type) {
+            // Hide form
+            document.getElementById('inputForm').style.display = 'none';
+            document.getElementById('fitResult').classList.remove('show');
+
+            // Hide all results first
+            document.querySelectorAll('.result').forEach(r => r.classList.remove('show'));
+
+            // Show specific result
+            document.getElementById(type + 'Result').classList.add('show');
+        }
+
+        function resetForm() {
+            document.getElementById('inputForm').style.display = 'block';
+            document.getElementById('fitResult').classList.remove('show');
+            document.querySelectorAll('.result').forEach(r => r.classList.remove('show'));
+
+            document.getElementById('jobUrl').value = '';
+            document.getElementById('yourName').value = '';
+
+            const btn = document.getElementById('checkBtn');
+            btn.innerHTML = 'Check Fit & Submit';
+            btn.disabled = false;
+            btn.onclick = checkAndSubmit;
+        }
+
+        // Auto-paste from clipboard on focus (mobile friendly)
+        document.getElementById('jobUrl').addEventListener('focus', async function() {
+            if (this.value) return;
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text && (text.includes('linkedin.com') || text.includes('lever.co') ||
+                            text.includes('greenhouse.io') || text.includes('http'))) {
+                    this.value = text;
+                }
+            } catch (err) {
+                // Clipboard access denied, that's fine
+            }
+        });
+    </script>
+</body>
+</html>
