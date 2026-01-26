@@ -1441,7 +1441,7 @@ HELP ME:
 
     <!-- Version Footer -->
     <div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 11px;">
-        Job Search Command Center · v2.2 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v2.3 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -4314,22 +4314,29 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         function applyFilters() {
             // Safety check
             if (!window.currentData || !window.currentData.jobs) {
-                console.error('Data not loaded yet');
+                console.error('[JSCC] Data not loaded yet');
                 return;
             }
-            
+
             let filtered = window.currentData.jobs;
-            
+            console.log('[JSCC] applyFilters: starting with', filtered.length, 'jobs');
+            console.log('[JSCC] applyFilters: filterStates =', JSON.stringify(filterStates));
+
             // Check if any status is set to "only"
             const onlyStatus = Object.keys(filterStates).find(key => filterStates[key] === 'only');
-            
+
             if (onlyStatus) {
                 // Show only this status
                 filtered = filtered.filter(job => job.status === onlyStatus);
+                console.log('[JSCC] applyFilters: showing only', onlyStatus, '→', filtered.length, 'jobs');
             } else {
-                // Hide statuses marked as "hidden"
-                const hiddenStatuses = Object.keys(filterStates).filter(key => filterStates[key] === 'hidden');
+                // Hide statuses marked as "hidden" (but ignore 'all' since it's not a real status)
+                const hiddenStatuses = Object.keys(filterStates).filter(key =>
+                    filterStates[key] === 'hidden' && key !== 'all'
+                );
+                console.log('[JSCC] applyFilters: hidden statuses =', hiddenStatuses);
                 filtered = filtered.filter(job => !hiddenStatuses.includes(job.status));
+                console.log('[JSCC] applyFilters: after filtering →', filtered.length, 'jobs');
             }
             
             // Sort the filtered array
@@ -4482,17 +4489,8 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             sortColumn = 'fitScore';
             sortDirection = 'desc';
 
-            // Try to restore saved sort preferences (but NOT filter visibility)
-            try {
-                const saved = localStorage.getItem('jscc-filter-state');
-                if (saved) {
-                    const state = JSON.parse(saved);
-                    if (state.sortColumn) sortColumn = state.sortColumn;
-                    if (state.sortDirection) sortDirection = state.sortDirection;
-                }
-            } catch (e) {
-                console.warn('Could not load sort preferences:', e);
-            }
+            console.log('[JSCC] Default filter state set:', JSON.stringify(filterStates));
+            console.log('[JSCC] Jobs count:', data.jobs.length);
 
             // Sort jobs according to current sort settings
             if (sortColumn === 'fitScore') {
@@ -5043,15 +5041,29 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         let supabaseClient = null;
 
         // Initialize Supabase when script loads
+        let supabaseInitAttempts = 0;
         function initSupabase() {
+            supabaseInitAttempts++;
+            console.log('[JSCC] initSupabase attempt', supabaseInitAttempts);
+
             if (typeof window.supabase !== 'undefined') {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                console.log('Supabase initialized');
-                loadInbox();
-                setupRealtimeSubscription();
-            } else {
-                console.log('Supabase not loaded yet, retrying...');
+                try {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    console.log('[JSCC] Supabase client created successfully');
+                    loadInbox();
+                    setupRealtimeSubscription();
+                } catch (err) {
+                    console.error('[JSCC] Failed to create Supabase client:', err);
+                }
+            } else if (supabaseInitAttempts < 10) {
+                console.log('[JSCC] Supabase library not loaded yet, retrying...');
                 setTimeout(initSupabase, 500);
+            } else {
+                console.error('[JSCC] Supabase library failed to load after 10 attempts');
+                const pendingList = document.getElementById('pendingList');
+                if (pendingList) {
+                    pendingList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">❌ Database library failed to load. Try refreshing the page.</p>';
+                }
             }
         }
 
