@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Search Command Center - John Ra</title>
-    <!-- Load Supabase in head for Safari compatibility -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -1446,7 +1444,7 @@ HELP ME:
 
     <!-- Version Footer -->
     <div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 11px;">
-        Job Search Command Center · v2.6 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v2.7 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -5404,21 +5402,32 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         // Initialize on load
         window.addEventListener('load', async () => {
             console.log('[JSCC] Page load event fired');
-            await loadData();
-            await checkExtensionJobs();
-
-            // Initialize Supabase (script is loaded in <head>)
-            console.log('[JSCC] Checking for Supabase library...');
-            if (typeof window.supabase !== 'undefined') {
-                console.log('[JSCC] Supabase library found, initializing...');
-                initSupabase();
-            } else {
-                console.error('[JSCC] Supabase library not loaded');
-                const pendingList = document.getElementById('pendingList');
-                if (pendingList) {
-                    pendingList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">❌ Database library not loaded. Try refreshing or use Chrome.</p>';
-                }
+            try {
+                await loadData();
+                console.log('[JSCC] loadData completed');
+            } catch (err) {
+                console.error('[JSCC] loadData error:', err);
             }
+
+            try {
+                await checkExtensionJobs();
+            } catch (err) {
+                console.error('[JSCC] checkExtensionJobs error:', err);
+            }
+
+            // Load Supabase dynamically (after main page works)
+            setTimeout(() => {
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/@supabase/supabase-js@2';
+                script.onload = () => {
+                    console.log('[JSCC] Supabase loaded');
+                    initSupabase();
+                };
+                script.onerror = () => {
+                    console.error('[JSCC] Supabase failed to load');
+                };
+                document.body.appendChild(script);
+            }, 100);
         });
     </script>
 </body>
