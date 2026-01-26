@@ -628,6 +628,9 @@
             <div class="header-top">
                 <h1>🎯 Job Search Command Center</h1>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="copy-btn" onclick="copySearchCommand()" style="background: #7c3aed; color: white;">
+                        🔎 Search Prompt
+                    </button>
                     <button class="copy-btn" onclick="showValidateModal()" style="background: #059669; color: white;">
                         🔍 Validate Jobs
                     </button>
@@ -1516,9 +1519,8 @@ https://www.linkedin.com/jobs/view/789"></textarea>
             <button onclick="exportShareableSnapshot()" style="background: none; border: 1px solid #d1d5db; color: #6b7280; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; margin: 0 3px;">
                 📤 Share Status
             </button>
-            <a href="#" onclick="showCommandModal(); return false;" style="color: #6b7280; margin-left: 10px;">Search Prompt</a>
         </div>
-        Job Search Command Center · v3.1 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v3.2 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -1827,78 +1829,58 @@ https://www.linkedin.com/jobs/view/789"></textarea>
             return false;
         }
 
-        // Search command template
-        const SEARCH_COMMAND = `search
+        // Search command template - optimized for URL output
+        const SEARCH_COMMAND = `# Job Search Request
 
-Run comprehensive job search with these parameters:
+Search for jobs matching my profile and return URLs I can validate.
 
-**JOB TITLES:** Creative Director, VP of Creative, VP Creative Services, Director of Creative Services, Creative Operations Manager, Creative Operations Director, Head of Creative, Head of Design, Design Director, Executive Creative Director, Senior Creative Director
+## My Target Profile
+- **Role:** Creative Director, VP Creative, Head of Design, Design Director, Creative Ops Director
+- **Industries:** Healthcare/nonprofit, Education, Arts/Culture, Social Impact, Mission-driven tech
+- **Location:** Boston area, Remote US, Hybrid (NYC/Bay Area acceptable)
+- **Salary:** $120K+ minimum (prefer $140K+)
+- **Posted:** Last 7 days preferred
 
-**INDUSTRIES (Priority):** Healthcare nonprofits, Education (K-12, higher ed, edtech), Arts & Culture (museums, galleries, music), Nonprofit/Social Impact, Purpose-driven technology, Purpose-driven agencies
+## Search These Sources (in order)
+1. **Lever** - Search: site:jobs.lever.co "creative director" OR "head of design" OR "vp creative"
+2. **Greenhouse** - Search: site:boards.greenhouse.io "creative director" OR "design director"
+3. **LinkedIn** - Search jobs directly on linkedin.com/jobs
+4. **Built In Boston** - Check builtin.com/boston for creative leadership roles
+5. **Ashby** - Search: site:jobs.ashbyhq.com creative director
 
-**LOCATIONS:** Boston/Greater Boston, Remote US, Hybrid NYC, Hybrid Bay Area, Remote Europe/Canada, Remote Western Europe (Spain, Portugal, Switzerland, Scandinavia), High-happiness index countries with relocation support
+## What Makes a Good Fit
+✅ Mission-driven org (nonprofit, healthcare, education, social impact)
+✅ Leadership role (director+, managing team)
+✅ Boston/Remote/Hybrid
+✅ $120K+ salary (or likely based on role level)
+✅ Small-medium org (<500 people = less competition)
 
-**SALARY RANGE:** $90k-$260k (minimum $120k for management roles, minimum $130k for senior director+)
+❌ Skip: Agencies (unless mission-focused), pure tech startups, crypto/gaming
 
-**TIMING:** Posted within last 3-5 days (fresher is better for breaking through)
+## Output Format
+Return URLs only, one per line, grouped by confidence:
 
-**JOB BOARDS TO SEARCH:**
-⭐ TIER 1 - FOCUS 80% EFFORT (Best mission-driven signal):
-- Foundation List (nonprofit-specific, disclosed salaries)
-- site:jobs.lever.co (nonprofit agencies, clean URLs)
-- site:greenhouse.io (mission-driven companies)
+**🎯 HIGH FIT (8+ match factors):**
+https://jobs.lever.co/company/position-id
+https://boards.greenhouse.io/company/jobs/12345
 
-🔄 TIER 2 - MONITOR 15% EFFORT:
-- Built In (healthcare tech)
-- Breezy HR (mission-driven orgs)
-- site:wd1.myworkdayjobs.com (corporate healthcare/edu)
-- site:jobs.smartrecruiters.com (healthcare agencies)
-- site:jobs.jobvite.com (healthcare agencies)
-- LinkedIn
-- site:ashbyhq.com
-- site:careers.workable.com
+**🤔 WORTH REVIEWING (5-7 match factors):**
+https://www.linkedin.com/jobs/view/123456
+https://jobs.ashbyhq.com/company/job-id
 
-⚠️ TIER 3 - LOW PRIORITY 5% EFFORT (Aggregators, stale postings):
-- Indeed (aggregator, poor URLs)
-- Media Bistro (weak mission alignment)
-- Idealist (stale postings confirmed)
+**📝 NOTES:**
+- [Any companies with connections I should know about]
+- [Any urgent postings - "closing soon" or posted today]
+- [Any salary info spotted]
 
-❌ SKIP: Glassdoor (no direct URLs)
+I will paste these URLs into my Job Validator which will:
+- Check if still active
+- Extract full job details
+- Calculate fit scores
+- Find duplicates
+- Locate company careers pages
 
-**CONNECTION TRACKING:** For each job, identify:
-- LinkedIn 1st/2nd degree connections at the company (HIGH PRIORITY - dramatically boosts interview chances)
-- Michigan State University alumni at the company
-- Hiring managers if identifiable
-- Note: I haven't actively used MSU connections yet, so these are untapped opportunities
-
-**SPECIAL PRIORITY FACTORS:**
-- LinkedIn 1st/2nd degree connections (HIGH PRIORITY - boosts interview chances)
-- Michigan State University alumni at company
-- Posted today (urgent - apply same day)
-- Small orgs <200 people (less competition)
-- Design systems mentioned
-- Remote flexibility
-
-**SCAN TARGET:** 100+ jobs, identify top 10-15 best fits for deep research
-
-**OUTPUT FORMAT:** Provide a list of job URLs only (one per line), organized by fit tier:
-
-🎯 HIGH FIT (Apply Now candidates):
-[URLs here]
-
-🤔 MAYBE (Worth reviewing):
-[URLs here]
-
-I will paste these URLs into my Job Validator to get automated fit scores, duplicate checking, and status verification. The validator will handle:
-- Checking if jobs are still active
-- Extracting job details
-- Calculating fit scores
-- Finding company careers pages
-- Detecting duplicates
-
-**LEARNING:** Ask about any low-scored jobs I end up applying to - may reveal hidden preferences or connections to adjust scoring.
-
-**FOLLOW-UP TRACKING:** Note if any jobs need follow-up action (connections to reach out to, applications to check on, etc.)`;
+Just give me the URLs - my validator handles the rest!`;
 
         // Weekly status check command template
         const STATUS_CHECK_COMMAND = `Check Job Posting Status
