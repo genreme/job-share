@@ -355,7 +355,22 @@
         const SUPABASE_URL = 'https://ivssytvekpfnaqcbhxkz.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2c3N5dHZla3BmbmFxY2JoeGt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDExNTYsImV4cCI6MjA4NDk3NzE1Nn0.1N89JKYm3CpBpMmKkJfM2AVXmmEFZvCCWacI2i_PTGU';
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let supabase = null;
+
+        // Initialize Supabase when ready
+        function initSupabase() {
+            if (window.supabase && window.supabase.createClient) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('Supabase initialized');
+                return true;
+            }
+            return false;
+        }
+
+        // Try to init immediately, or wait for load
+        if (!initSupabase()) {
+            window.addEventListener('load', initSupabase);
+        }
 
         // Fit scoring logic (matches John's dashboard)
         function calculateFitScore(job) {
@@ -463,6 +478,14 @@
             const btn = document.getElementById('checkBtn');
             const url = urlInput.value.trim();
             const submittedBy = nameInput.value.trim() || 'A friend';
+
+            // Ensure Supabase is ready
+            if (!supabase) {
+                if (!initSupabase()) {
+                    alert('Still loading... please try again in a moment.');
+                    return;
+                }
+            }
 
             if (!url) {
                 urlInput.focus();
