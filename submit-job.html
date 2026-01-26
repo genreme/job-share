@@ -261,6 +261,17 @@
             font-size: 11px;
         }
 
+        .debug-info {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 11px;
+            color: #92400e;
+            display: none;
+        }
+
         @media (max-width: 400px) {
             body {
                 padding: 0;
@@ -304,6 +315,8 @@
                 <button class="btn btn-primary" id="checkBtn" onclick="checkAndSubmit()">
                     Check Fit & Submit
                 </button>
+
+                <div class="debug-info" id="debugInfo"></div>
             </div>
 
             <!-- Fit Score Result -->
@@ -355,22 +368,48 @@
         const SUPABASE_URL = 'https://ivssytvekpfnaqcbhxkz.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2c3N5dHZla3BmbmFxY2JoeGt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDExNTYsImV4cCI6MjA4NDk3NzE1Nn0.1N89JKYm3CpBpMmKkJfM2AVXmmEFZvCCWacI2i_PTGU';
 
-        let supabase = null;
+        let db = null;
+
+        // Debug helper
+        function debug(msg) {
+            console.log('[JSCC]', msg);
+            const el = document.getElementById('debugInfo');
+            if (el) {
+                el.style.display = 'block';
+                el.textContent = msg;
+            }
+        }
 
         // Initialize Supabase when ready
         function initSupabase() {
-            if (window.supabase && window.supabase.createClient) {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                console.log('Supabase initialized');
-                return true;
+            console.log('[JSCC] initSupabase called, window.supabase:', typeof window.supabase);
+
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                try {
+                    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    console.log('[JSCC] Supabase client created successfully');
+                    return true;
+                } catch (e) {
+                    console.error('[JSCC] Supabase init error:', e);
+                    debug('Init error: ' + e.message);
+                }
             }
             return false;
         }
 
-        // Try to init immediately, or wait for load
-        if (!initSupabase()) {
-            window.addEventListener('load', initSupabase);
-        }
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[JSCC] DOMContentLoaded');
+            if (!initSupabase()) {
+                // Retry after a short delay
+                setTimeout(function() {
+                    if (!db) {
+                        console.log('[JSCC] Retrying init...');
+                        initSupabase();
+                    }
+                }, 1000);
+            }
+        });
 
         // Fit scoring logic (matches John's dashboard)
         function calculateFitScore(job) {
@@ -451,7 +490,6 @@
 
             // LinkedIn job ID extraction
             if (url.includes('linkedin.com/jobs')) {
-                // Can't extract much from URL alone, but mark as LinkedIn
                 job.source = 'LinkedIn';
             }
 
@@ -473,6 +511,8 @@
         }
 
         async function checkAndSubmit() {
+            console.log('[JSCC] checkAndSubmit called');
+
             const urlInput = document.getElementById('jobUrl');
             const nameInput = document.getElementById('yourName');
             const btn = document.getElementById('checkBtn');
@@ -480,9 +520,11 @@
             const submittedBy = nameInput.value.trim() || 'A friend';
 
             // Ensure Supabase is ready
-            if (!supabase) {
+            if (!db) {
+                console.log('[JSCC] db not ready, trying init...');
                 if (!initSupabase()) {
-                    alert('Still loading... please try again in a moment.');
+                    debug('Database not ready. Please wait and try again.');
+                    alert('Still connecting... please try again in a moment.');
                     return;
                 }
             }
@@ -496,6 +538,7 @@
 
             // Clean URL
             const cleanUrl = url.split('?')[0];
+            console.log('[JSCC] Processing URL:', cleanUrl);
 
             // Show loading state
             btn.disabled = true;
@@ -503,23 +546,32 @@
 
             try {
                 // Check if already submitted
-                const { data: existing } = await supabase
+                console.log('[JSCC] Checking for existing...');
+                const { data: existing, error: checkError } = await db
                     .from('job_submissions')
                     .select('id')
                     .eq('url', cleanUrl)
                     .limit(1);
 
+                if (checkError) {
+                    console.error('[JSCC] Check error:', checkError);
+                    throw checkError;
+                }
+
                 if (existing && existing.length > 0) {
+                    console.log('[JSCC] Already exists');
                     showResult('exists');
                     return;
                 }
 
                 // Parse URL for basic info
                 const job = parseJobUrl(cleanUrl);
+                console.log('[JSCC] Parsed job:', job);
 
                 // Calculate fit score
                 const fitScore = calculateFitScore(job);
                 const fitInfo = getFitCategory(fitScore);
+                console.log('[JSCC] Fit score:', fitScore, fitInfo);
 
                 // Show fit score
                 document.getElementById('fitScoreNumber').textContent = fitScore;
@@ -539,39 +591,46 @@
                 // Update button for submission
                 btn.innerHTML = 'Send to John';
                 btn.disabled = false;
-                btn.onclick = async () => {
+                btn.onclick = async function() {
                     btn.disabled = true;
                     btn.innerHTML = '<span class="loading"></span>Sending...';
 
-                    // Submit to Supabase
-                    const { error } = await supabase
-                        .from('job_submissions')
-                        .insert({
-                            url: cleanUrl,
-                            title: job.title || null,
-                            company: job.company || null,
-                            location: job.location || null,
-                            salary: job.salary || null,
-                            industry: job.industry || null,
-                            fit_score: fitScore,
-                            fit_category: fitInfo.category,
-                            submitted_by: submittedBy
-                        });
+                    try {
+                        // Submit to Supabase
+                        console.log('[JSCC] Inserting to database...');
+                        const { error: insertError } = await db
+                            .from('job_submissions')
+                            .insert({
+                                url: cleanUrl,
+                                title: job.title || null,
+                                company: job.company || null,
+                                location: job.location || null,
+                                salary: job.salary || null,
+                                industry: job.industry || null,
+                                fit_score: fitScore,
+                                fit_category: fitInfo.category,
+                                submitted_by: submittedBy
+                            });
 
-                    if (error) {
-                        console.error('Submit error:', error);
-                        document.getElementById('errorMessage').textContent =
-                            'Could not submit. Try texting the link to John directly.';
-                        showResult('error');
-                    } else {
+                        if (insertError) {
+                            console.error('[JSCC] Insert error:', insertError);
+                            throw insertError;
+                        }
+
+                        console.log('[JSCC] Success!');
                         showResult('success');
+                    } catch (err) {
+                        console.error('[JSCC] Submit error:', err);
+                        document.getElementById('errorMessage').textContent =
+                            'Could not submit: ' + (err.message || 'Unknown error');
+                        showResult('error');
                     }
                 };
 
             } catch (err) {
-                console.error('Error:', err);
+                console.error('[JSCC] Error:', err);
                 document.getElementById('errorMessage').textContent =
-                    'Network error. Check your connection and try again.';
+                    'Error: ' + (err.message || 'Check your connection');
                 showResult('error');
             }
         }
@@ -600,6 +659,8 @@
             btn.innerHTML = 'Check Fit & Submit';
             btn.disabled = false;
             btn.onclick = checkAndSubmit;
+
+            document.getElementById('debugInfo').style.display = 'none';
         }
 
         // Auto-paste from clipboard on focus (mobile friendly)
