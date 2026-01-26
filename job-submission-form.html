@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit a Job Lead for John</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .intro {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #0369a1;
+        }
+
+        .intro strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #0c4a6e;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        .form-group label .required {
+            color: #dc2626;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group .hint {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f3ff;
+        }
+
+        .success-message {
+            display: none;
+            background: #d1fae5;
+            border: 1px solid #6ee7b7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-message h3 {
+            color: #065f46;
+            margin-bottom: 10px;
+        }
+
+        .success-message p {
+            color: #047857;
+            font-size: 14px;
+        }
+
+        .output-section {
+            display: none;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .output-section.show {
+            display: block;
+        }
+
+        .output-section h3 {
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .output-section p {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .output-box {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            margin-top: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .target-info {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .target-info h4 {
+            color: #92400e;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .target-info ul {
+            color: #78350f;
+            font-size: 13px;
+            margin-left: 20px;
+        }
+
+        .target-info li {
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Submit a Job Lead</h1>
+            <p>Help John find his next opportunity</p>
+        </div>
+
+        <div class="form-container">
+            <div class="intro">
+                <strong>Thanks for thinking of me!</strong>
+                Fill out this form to share a job opportunity you think might be a good fit.
+                I'll review it and add it to my job tracker.
+            </div>
+
+            <div class="target-info">
+                <h4>What I'm Looking For:</h4>
+                <ul>
+                    <li><strong>Roles:</strong> Creative Director, VP Creative, Head of Design, Design Director</li>
+                    <li><strong>Industries:</strong> Nonprofits, Healthcare, Education, Arts & Culture</li>
+                    <li><strong>Location:</strong> Boston/MA area, or Remote</li>
+                    <li><strong>Salary:</strong> $120K+ preferred</li>
+                </ul>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <h3>Job Submitted!</h3>
+                <p>Copy the code below and send it to John (text, email, or Slack).</p>
+            </div>
+
+            <form id="jobForm">
+                <div class="form-group">
+                    <label>Job Title <span class="required">*</span></label>
+                    <input type="text" id="title" required placeholder="e.g., Creative Director">
+                </div>
+
+                <div class="form-group">
+                    <label>Company <span class="required">*</span></label>
+                    <input type="text" id="company" required placeholder="e.g., Boston Children's Hospital">
+                </div>
+
+                <div class="form-group">
+                    <label>Job Posting URL <span class="required">*</span></label>
+                    <input type="url" id="url" required placeholder="https://...">
+                    <div class="hint">Link to the job posting (LinkedIn, company site, etc.)</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="location" placeholder="e.g., Boston, MA">
+                    </div>
+                    <div class="form-group">
+                        <label>Salary (if listed)</label>
+                        <input type="text" id="salary" placeholder="e.g., $130K-$150K">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Industry</label>
+                        <select id="industry">
+                            <option value="Unknown">Not sure</option>
+                            <option value="Nonprofit">Nonprofit</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Education">Education</option>
+                            <option value="Arts & Culture">Arts & Culture</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Agency">Agency</option>
+                            <option value="For-Profit">For-Profit (Other)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>How urgent?</label>
+                        <select id="urgency">
+                            <option value="normal">Normal - whenever</option>
+                            <option value="soon">Soon - closing in 1-2 weeks</option>
+                            <option value="urgent">Urgent - closing soon!</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="submitterName" placeholder="So John knows who to thank!">
+                </div>
+
+                <div class="form-group">
+                    <label>Why do you think this is a good fit?</label>
+                    <textarea id="notes" placeholder="e.g., 'Saw this and thought of you - they're doing amazing work in global health and need someone to lead their creative team. The mission aligns with your PIH experience.'"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Do you have a connection there?</label>
+                    <input type="text" id="connection" placeholder="e.g., 'I know Sarah in Marketing' or 'My friend works there'">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Generate Job Lead Code</button>
+            </form>
+
+            <div class="output-section" id="outputSection">
+                <h3>Send this to John:</h3>
+                <p>Copy the code below and send it via text, email, or Slack. John can paste it directly into his job tracker.</p>
+                <div class="output-box" id="outputCode"></div>
+                <button type="button" class="btn btn-secondary copy-btn" onclick="copyCode()">Copy to Clipboard</button>
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">Submit Another Job</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This form generates a code snippet that John can import into his Job Search Command Center.</p>
+            <p style="margin-top: 8px;">Questions? <a href="mailto:john@example.com">Email John</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('jobForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value.trim();
+            const company = document.getElementById('company').value.trim();
+            const url = document.getElementById('url').value.trim();
+            const location = document.getElementById('location').value.trim();
+            const salary = document.getElementById('salary').value.trim();
+            const industry = document.getElementById('industry').value;
+            const urgency = document.getElementById('urgency').value;
+            const submitterName = document.getElementById('submitterName').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+            const connection = document.getElementById('connection').value.trim();
+
+            // Build the job lead object
+            const jobLead = {
+                _type: 'job-lead',
+                _version: 1,
+                _submitted: new Date().toISOString(),
+                _submitter: submitterName || 'Anonymous',
+                title: title,
+                company: company,
+                url: url,
+                location: location || 'Not specified',
+                salary: salary || 'Not listed',
+                industry: industry,
+                urgency: urgency,
+                notes: notes ? `[From ${submitterName || 'a friend'}] ${notes}` : `[Submitted by ${submitterName || 'a friend'}]`,
+                connection: connection || null,
+                status: 'maybe',
+                fitScore: 75, // Default, John will adjust
+                sources: ['Friend Referral']
+            };
+
+            // Generate the output code
+            const outputCode = JSON.stringify(jobLead, null, 2);
+
+            // Show success state
+            document.getElementById('successMessage').classList.add('show');
+            document.getElementById('outputSection').classList.add('show');
+            document.getElementById('outputCode').textContent = outputCode;
+            document.getElementById('jobForm').style.display = 'none';
+
+            // Scroll to output
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        function copyCode() {
+            const code = document.getElementById('outputCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'Copied!';
+                btn.style.background = '#d1fae5';
+                btn.style.color = '#065f46';
+                btn.style.borderColor = '#6ee7b7';
+                setTimeout(() => {
+                    btn.textContent = 'Copy to Clipboard';
+                    btn.style.background = '';
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }, 2000);
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('jobForm').reset();
+            document.getElementById('jobForm').style.display = 'block';
+            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('outputSection').classList.remove('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

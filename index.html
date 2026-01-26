@@ -554,6 +554,9 @@
                     <button class="copy-btn" onclick="importFromExtension()" id="extensionImportBtn" style="background: #6366f1; color: white; display: none;">
                         🔗 Import from Extension (<span id="pendingJobCount">0</span>)
                     </button>
+                    <button class="copy-btn" onclick="showJobLeadModal()" style="background: #ec4899; color: white;">
+                        🎁 Import Job Lead
+                    </button>
                 </div>
             </div>
             
@@ -1196,6 +1199,48 @@ HELP ME:
                     <button type="button" class="btn-primary" style="flex: 1; background: #6c757d;" onclick="closeUpdateModal()">Cancel</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Job Lead Import Modal -->
+    <div id="jobLeadModal" class="modal">
+        <div class="modal-content" style="max-width: 550px;">
+            <span class="close-modal" onclick="closeJobLeadModal()">&times;</span>
+            <h2 style="color: #ec4899;">Import Job Lead</h2>
+            <p style="color: #6b7280; margin: 10px 0 20px;">Paste a job lead from a friend below. They can generate this code using your <a href="job-submission-form.html" target="_blank" style="color: #667eea;">Job Submission Form</a>.</p>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Paste Job Lead JSON:</label>
+                <textarea id="jobLeadInput"
+                    style="width: 100%; height: 200px; padding: 12px; border: 2px solid #e0e4e8; border-radius: 6px; font-family: Monaco, monospace; font-size: 12px;"
+                    placeholder='Paste the JSON code here, e.g.:
+{
+  "_type": "job-lead",
+  "title": "Creative Director",
+  "company": "Example Corp",
+  ...
+}'></textarea>
+            </div>
+
+            <div id="jobLeadPreview" style="display: none; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                <h4 style="color: #166534; margin-bottom: 10px;">Preview:</h4>
+                <div id="jobLeadPreviewContent"></div>
+            </div>
+
+            <div id="jobLeadError" style="display: none; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 15px; margin-bottom: 15px; color: #991b1b;">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-primary" style="flex: 1; background: #ec4899;" onclick="previewJobLead()">Preview</button>
+                <button type="button" class="btn-primary" style="flex: 1; background: #10b981;" onclick="importJobLead()" id="importJobLeadBtn" disabled>Import Job</button>
+                <button type="button" class="btn-primary" style="flex: 1; background: #6c757d;" onclick="closeJobLeadModal()">Cancel</button>
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                <p style="font-size: 12px; color: #9ca3af; text-align: center;">
+                    Share the submission form with friends: <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">job-submission-form.html</code>
+                </p>
+            </div>
         </div>
     </div>
 
@@ -4414,6 +4459,143 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
             } catch (e) {
                 console.error('Extension import error:', e);
+                showToast('Import failed: ' + e.message, 'error');
+            }
+        }
+
+        // ============================================
+        // JOB LEAD IMPORT (from friends)
+        // ============================================
+        let pendingJobLead = null;
+
+        function showJobLeadModal() {
+            document.getElementById('jobLeadModal').classList.add('active');
+            document.getElementById('jobLeadInput').value = '';
+            document.getElementById('jobLeadPreview').style.display = 'none';
+            document.getElementById('jobLeadError').style.display = 'none';
+            document.getElementById('importJobLeadBtn').disabled = true;
+            pendingJobLead = null;
+        }
+
+        function closeJobLeadModal() {
+            document.getElementById('jobLeadModal').classList.remove('active');
+            pendingJobLead = null;
+        }
+
+        function previewJobLead() {
+            const input = document.getElementById('jobLeadInput').value.trim();
+            const previewDiv = document.getElementById('jobLeadPreview');
+            const previewContent = document.getElementById('jobLeadPreviewContent');
+            const errorDiv = document.getElementById('jobLeadError');
+            const importBtn = document.getElementById('importJobLeadBtn');
+
+            // Reset state
+            previewDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            importBtn.disabled = true;
+            pendingJobLead = null;
+
+            if (!input) {
+                errorDiv.textContent = 'Please paste a job lead JSON first.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const jobLead = JSON.parse(input);
+
+                // Validate required fields
+                if (!jobLead.title || !jobLead.company) {
+                    throw new Error('Job lead must have at least a title and company.');
+                }
+
+                // Check if it's a valid job lead format
+                if (jobLead._type && jobLead._type !== 'job-lead') {
+                    throw new Error('Invalid job lead format. Please use the Job Submission Form.');
+                }
+
+                // Check for duplicate URL
+                const data = window.currentData;
+                if (jobLead.url && data.jobs.some(j => j.url && j.url.split('?')[0] === jobLead.url.split('?')[0])) {
+                    throw new Error('A job with this URL already exists in your dashboard.');
+                }
+
+                // Store for import
+                pendingJobLead = jobLead;
+
+                // Show preview
+                const urgencyEmoji = {
+                    'urgent': '🔥',
+                    'soon': '⏰',
+                    'normal': ''
+                };
+
+                previewContent.innerHTML = `
+                    <p><strong>Title:</strong> ${escapeHtml(jobLead.title)}</p>
+                    <p><strong>Company:</strong> ${escapeHtml(jobLead.company)}</p>
+                    <p><strong>Location:</strong> ${escapeHtml(jobLead.location || 'Not specified')}</p>
+                    <p><strong>Salary:</strong> ${escapeHtml(jobLead.salary || 'Not listed')}</p>
+                    <p><strong>Industry:</strong> ${escapeHtml(jobLead.industry || 'Unknown')}</p>
+                    ${jobLead.urgency ? `<p><strong>Urgency:</strong> ${urgencyEmoji[jobLead.urgency] || ''} ${jobLead.urgency}</p>` : ''}
+                    ${jobLead._submitter ? `<p><strong>Submitted by:</strong> ${escapeHtml(jobLead._submitter)}</p>` : ''}
+                    ${jobLead.connection ? `<p><strong>Connection:</strong> ${escapeHtml(jobLead.connection)}</p>` : ''}
+                    ${jobLead.notes ? `<p><strong>Notes:</strong> ${escapeHtml(jobLead.notes)}</p>` : ''}
+                    <p><strong>URL:</strong> <a href="${escapeHtml(jobLead.url)}" target="_blank" style="color: #667eea; word-break: break-all;">${escapeHtml(jobLead.url || 'Not provided')}</a></p>
+                `;
+
+                previewDiv.style.display = 'block';
+                importBtn.disabled = false;
+
+            } catch (e) {
+                errorDiv.textContent = e.message || 'Invalid JSON format. Please check the pasted content.';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        async function importJobLead() {
+            if (!pendingJobLead) {
+                showToast('No job lead to import. Please preview first.', 'error');
+                return;
+            }
+
+            try {
+                const data = window.currentData;
+                const maxId = Math.max(0, ...data.jobs.map(j => j.id));
+
+                // Build the job object
+                const newJob = {
+                    id: maxId + 1,
+                    title: pendingJobLead.title,
+                    company: pendingJobLead.company,
+                    industry: pendingJobLead.industry || 'Unknown',
+                    location: pendingJobLead.location || 'Not specified',
+                    salary: pendingJobLead.salary || 'Not listed',
+                    fitScore: pendingJobLead.fitScore || 75,
+                    status: pendingJobLead.status || 'maybe',
+                    posted: new Date().toISOString().split('T')[0],
+                    found: new Date().toISOString().split('T')[0],
+                    applied: null,
+                    followup: null,
+                    url: pendingJobLead.url || '',
+                    symbols: pendingJobLead.urgency === 'urgent' ? ['🔥'] : [],
+                    connections: pendingJobLead.connection ? [pendingJobLead.connection] : [],
+                    sources: pendingJobLead.sources || ['Friend Referral'],
+                    notes: pendingJobLead.notes || `Submitted by ${pendingJobLead._submitter || 'a friend'}`,
+                    updates: []
+                };
+
+                // Add to jobs
+                data.jobs.push(newJob);
+                await saveData(data);
+
+                // Close modal and reload
+                closeJobLeadModal();
+                await loadData();
+
+                showToast(`Imported "${newJob.title}" at ${newJob.company} from ${pendingJobLead._submitter || 'friend'}`);
+
+            } catch (e) {
+                console.error('Job lead import error:', e);
                 showToast('Import failed: ' + e.message, 'error');
             }
         }
