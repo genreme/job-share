@@ -1520,7 +1520,7 @@ https://www.linkedin.com/jobs/view/789"></textarea>
                 📤 Share Status
             </button>
         </div>
-        Job Search Command Center · v3.3 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v3.4 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -5253,15 +5253,16 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             const progressText = document.getElementById('statusCheckProgressText');
 
             progressBar.style.width = '10%';
-            progressText.textContent = `Checking ${jobsToCheck.length} jobs...`;
+            progressText.textContent = `Analyzing ${jobsToCheck.length} jobs (full scan)...`;
 
             try {
                 const urls = jobsToCheck.map(j => j.url);
 
-                const response = await fetch(`${JOB_VALIDATOR_URL}/status`, {
+                // Use /batch for full analysis instead of /status for quick check
+                const response = await fetch(`${JOB_VALIDATOR_URL}/batch`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ urls })
+                    body: JSON.stringify({ urls, existingJobs: [] })
                 });
 
                 progressBar.style.width = '90%';
@@ -5272,22 +5273,57 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
                 const result = await response.json();
 
-                // Map results back to jobs
+                // Map results back to jobs with comparison data
                 statusCheckResults = jobsToCheck.map(job => {
                     const urlResult = result.results.find(r => r.url === job.url);
+
+                    // Calculate what changed
+                    const changes = [];
+                    if (urlResult) {
+                        if (urlResult.title && urlResult.title !== job.title &&
+                            urlResult.title !== 'Unknown Title' && job.title !== urlResult.title) {
+                            changes.push({ field: 'title', old: job.title, new: urlResult.title });
+                        }
+                        if (urlResult.company && urlResult.company !== job.company &&
+                            urlResult.company !== 'Unknown Company' && job.company !== urlResult.company) {
+                            changes.push({ field: 'company', old: job.company, new: urlResult.company });
+                        }
+                        if (urlResult.location && urlResult.location !== job.location &&
+                            job.location !== urlResult.location) {
+                            changes.push({ field: 'location', old: job.location, new: urlResult.location });
+                        }
+                        if (urlResult.salary && urlResult.salary !== job.salary &&
+                            urlResult.salary !== 'Not listed' && job.salary !== urlResult.salary) {
+                            changes.push({ field: 'salary', old: job.salary, new: urlResult.salary });
+                        }
+                        // Check if fit score changed significantly (more than 5 points)
+                        if (urlResult.fitScore && Math.abs(urlResult.fitScore - job.fitScore) > 5) {
+                            changes.push({ field: 'fitScore', old: job.fitScore, new: urlResult.fitScore });
+                        }
+                    }
+
                     return {
                         job,
                         status: urlResult?.status || 'error',
-                        httpStatus: urlResult?.httpStatus
+                        httpStatus: urlResult?.httpStatus,
+                        newData: urlResult,
+                        changes,
+                        hasChanges: changes.length > 0
                     };
                 });
 
                 progressBar.style.width = '100%';
                 progressText.textContent = 'Complete!';
 
+                // Build summary with change counts
+                const summary = {
+                    ...result.summary,
+                    needsUpdate: statusCheckResults.filter(r => r.hasChanges).length
+                };
+
                 setTimeout(() => {
                     document.getElementById('statusCheckProgress').style.display = 'none';
-                    displayStatusCheckResults(result.summary);
+                    displayStatusCheckResults(summary);
                 }, 500);
 
             } catch (error) {
@@ -5298,7 +5334,7 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         }
 
         function displayStatusCheckResults(summary) {
-            // Summary cards
+            // Summary cards - now includes "needs update" count
             const summaryHtml = `
                 <div style="background: #d1fae5; padding: 12px; border-radius: 8px; text-align: center;">
                     <div style="font-size: 24px; font-weight: 700; color: #059669;">${summary.active}</div>
@@ -5308,6 +5344,10 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     <div style="font-size: 24px; font-weight: 700; color: #dc2626;">${summary.closed}</div>
                     <div style="font-size: 11px; color: #991b1b;">Closed/Removed</div>
                 </div>
+                <div style="background: #dbeafe; padding: 12px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 700; color: #2563eb;">${summary.needsUpdate || 0}</div>
+                    <div style="font-size: 11px; color: #1d4ed8;">Data Updates</div>
+                </div>
                 <div style="background: #fef3c7; padding: 12px; border-radius: 8px; text-align: center;">
                     <div style="font-size: 24px; font-weight: 700; color: #d97706;">${summary.errors}</div>
                     <div style="font-size: 11px; color: #92400e;">Errors</div>
@@ -5315,16 +5355,56 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             `;
             document.getElementById('statusCheckSummary').innerHTML = summaryHtml;
 
-            // Group by status
+            // Group by status and changes
             const closed = statusCheckResults.filter(r => r.status === 'closed');
             const errors = statusCheckResults.filter(r => r.status === 'error');
             const active = statusCheckResults.filter(r => r.status === 'active');
+            const needsUpdate = statusCheckResults.filter(r => r.hasChanges && r.status === 'active');
 
             // Separate closed jobs: applied (in progress) vs not applied
             const closedApplied = closed.filter(r => r.job.status === 'applied' || r.job.appliedDate);
             const closedNotApplied = closed.filter(r => r.job.status !== 'applied' && !r.job.appliedDate);
 
             let listHtml = '';
+
+            // Show jobs that need data updates FIRST
+            if (needsUpdate.length > 0) {
+                listHtml += `<h4 style="color: #2563eb; margin: 15px 0 10px;">📝 Data Updates Available (${needsUpdate.length})</h4>`;
+                listHtml += needsUpdate.map(r => {
+                    const changesHtml = r.changes.map(c => {
+                        const fieldLabel = { title: 'Title', company: 'Company', location: 'Location', salary: 'Salary', fitScore: 'Fit Score' }[c.field] || c.field;
+                        return `
+                            <div style="display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 12px;">
+                                <input type="checkbox" class="update-field-checkbox" data-job-id="${r.job.id}" data-field="${c.field}" data-new-value="${escapeHtml(String(c.new))}" checked>
+                                <span style="color: #6b7280; min-width: 70px;">${fieldLabel}:</span>
+                                <span style="color: #dc2626; text-decoration: line-through;">${escapeHtml(String(c.old || '(empty)'))}</span>
+                                <span style="color: #6b7280;">→</span>
+                                <span style="color: #059669; font-weight: 500;">${escapeHtml(String(c.new))}</span>
+                            </div>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div style="border: 1px solid #bfdbfe; background: #eff6ff; border-radius: 6px; padding: 10px; margin-bottom: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600;">${escapeHtml(r.job.title)}</div>
+                                    <div style="color: #667eea; font-size: 13px;">${escapeHtml(r.job.company)}</div>
+                                    <div style="margin-top: 8px; padding: 8px; background: white; border-radius: 4px;">
+                                        ${changesHtml}
+                                    </div>
+                                </div>
+                                <div style="text-align: center; margin-left: 10px;">
+                                    <div style="font-size: 11px; color: #2563eb; font-weight: 600;">NEW SCORE</div>
+                                    <div style="font-size: 24px; font-weight: 700; color: ${(r.newData?.fitScore || 0) >= 75 ? '#059669' : (r.newData?.fitScore || 0) >= 55 ? '#d97706' : '#dc2626'};">
+                                        ${r.newData?.fitScore || '?'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
 
             if (closedApplied.length > 0) {
                 listHtml += `<h4 style="color: #d97706; margin: 15px 0 10px;">⏳ Closed But Applied (${closedApplied.length}) - Application may still be in progress</h4>`;
@@ -5374,41 +5454,66 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                 `).join('');
             }
 
-            if (active.length > 0 && (closed.length > 0 || errors.length > 0)) {
-                listHtml += `<h4 style="color: #059669; margin: 15px 0 10px;">✅ Still Active (${active.length})</h4>`;
-                listHtml += `<p style="font-size: 12px; color: #6b7280;">${active.map(r => r.job.company).slice(0, 5).join(', ')}${active.length > 5 ? ` and ${active.length - 5} more...` : ''}</p>`;
+            // Show active jobs without changes
+            const activeNoChanges = active.filter(r => !r.hasChanges);
+            if (activeNoChanges.length > 0 && (closed.length > 0 || errors.length > 0 || needsUpdate.length > 0)) {
+                listHtml += `<h4 style="color: #059669; margin: 15px 0 10px;">✅ Active & Up-to-Date (${activeNoChanges.length})</h4>`;
+                listHtml += `<p style="font-size: 12px; color: #6b7280;">${activeNoChanges.map(r => r.job.company).slice(0, 5).join(', ')}${activeNoChanges.length > 5 ? ` and ${activeNoChanges.length - 5} more...` : ''}</p>`;
             }
 
-            if (closed.length === 0 && errors.length === 0) {
+            if (closed.length === 0 && errors.length === 0 && needsUpdate.length === 0) {
                 listHtml = `
                     <div style="text-align: center; padding: 30px;">
                         <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
-                        <div style="font-size: 18px; font-weight: 600; color: #059669;">All jobs are still active!</div>
-                        <div style="font-size: 13px; color: #6b7280; margin-top: 5px;">No closed postings found.</div>
+                        <div style="font-size: 18px; font-weight: 600; color: #059669;">All jobs are up to date!</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 5px;">No closed postings or data changes found.</div>
                     </div>
                 `;
             }
 
             document.getElementById('statusCheckList').innerHTML = listHtml;
 
-            // Show archive button if there are closed jobs
-            document.getElementById('archiveClosedBtn').style.display = closed.length > 0 ? 'block' : 'none';
+            // Show action button if there are things to do
+            const hasActions = closed.length > 0 || needsUpdate.length > 0;
+            document.getElementById('archiveClosedBtn').style.display = hasActions ? 'block' : 'none';
+            if (hasActions) {
+                document.getElementById('archiveClosedBtn').textContent =
+                    needsUpdate.length > 0 && closed.length > 0 ? '💾 Apply Updates & Archive Closed' :
+                    needsUpdate.length > 0 ? '💾 Apply Selected Updates' :
+                    '🗄️ Archive Selected Jobs';
+            }
 
             document.getElementById('statusCheckResults').style.display = 'block';
         }
 
         async function archiveClosedJobs() {
-            // Get only checked jobs
-            const checkboxes = document.querySelectorAll('.archive-checkbox:checked');
-            if (checkboxes.length === 0) {
-                showToast('No jobs selected to archive', 'error');
-                return;
-            }
-
             const data = window.currentData;
             let archivedCount = 0;
+            let updatedCount = 0;
 
-            checkboxes.forEach(cb => {
+            // Handle field updates first
+            const updateCheckboxes = document.querySelectorAll('.update-field-checkbox:checked');
+            updateCheckboxes.forEach(cb => {
+                const jobId = parseInt(cb.dataset.jobId);
+                const field = cb.dataset.field;
+                const newValue = cb.dataset.newValue;
+                const job = data.jobs.find(j => j.id === jobId);
+
+                if (job && field && newValue !== undefined) {
+                    const oldValue = job[field];
+                    job[field] = field === 'fitScore' ? parseInt(newValue) : newValue;
+                    job.updates = job.updates || [];
+                    job.updates.push({
+                        date: new Date().toISOString(),
+                        text: `Updated ${field}: "${oldValue}" → "${newValue}"`
+                    });
+                    updatedCount++;
+                }
+            });
+
+            // Handle archives
+            const archiveCheckboxes = document.querySelectorAll('.archive-checkbox:checked');
+            archiveCheckboxes.forEach(cb => {
                 const jobId = parseInt(cb.dataset.jobId);
                 const job = data.jobs.find(j => j.id === jobId);
                 if (job && job.status !== 'archived') {
@@ -5422,11 +5527,17 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                 }
             });
 
-            if (archivedCount > 0) {
+            if (archivedCount > 0 || updatedCount > 0) {
                 await saveData(data);
                 await loadData();
                 closeStatusCheckModal();
-                showToast(`Archived ${archivedCount} closed job${archivedCount > 1 ? 's' : ''}`);
+
+                const messages = [];
+                if (updatedCount > 0) messages.push(`Updated ${updatedCount} field${updatedCount > 1 ? 's' : ''}`);
+                if (archivedCount > 0) messages.push(`Archived ${archivedCount} job${archivedCount > 1 ? 's' : ''}`);
+                showToast(messages.join(', '));
+            } else {
+                showToast('No changes selected', 'error');
             }
         }
 
