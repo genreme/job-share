@@ -34,7 +34,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DISC-04**: Shortlist presented with reasoning for user review (present stage)
 - [ ] **DISC-05**: User can confirm add to dashboard or defer
 - [ ] **DISC-06**: User can manually submit jobs via URL for deep research
-- [ ] **DISC-06a**: Manual submissions go through full research → score → reasoning flow
+- [ ] **DISC-06a**: Manual submissions go through full research -> score -> reasoning flow
 - [ ] **DISC-06b**: User confirms add to dashboard or defer with notes
 - [ ] **DISC-07**: Friend job submission flows through same research process
 - [ ] **DISC-07a**: Friends can include context (connections, benefits, why they thought of you)
@@ -79,7 +79,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Analytics
 
-- [ ] **ANLT-01**: Analytics dashboard visualizes application → interview → offer funnel
+- [ ] **ANLT-01**: Analytics dashboard visualizes application -> interview -> offer funnel
 - [ ] **ANLT-02**: Response rates shown by company size, industry, application method
 - [ ] **ANLT-03**: Skill gap identification from accumulated JD patterns
 - [ ] **ANLT-04**: Criteria evolution recommendations based on outcomes
@@ -152,45 +152,68 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROF-05 | Phase 2 | Pending |
 | PROF-06 | Phase 2 | Pending |
 | PROF-07 | Phase 2 | Pending |
-| PROF-08 | Phase 2 | Pending |
-| PROF-09 | Phase 2 | Pending |
-| PROF-10 | Phase 2 | Pending |
-| PROF-11 | Phase 2 | Pending |
-| DISC-01 | Phase 3 | Pending |
-| DISC-02 | Phase 3 | Pending |
-| DISC-03 | Phase 3 | Pending |
-| DISC-04 | Phase 3 | Pending |
-| DISC-05 | Phase 3 | Pending |
-| DISC-06 | Phase 3 | Pending |
-| DISC-07 | Phase 3 | Pending |
-| DISC-08 | Phase 3 | Pending |
-| DISC-09 | Phase 3 | Pending |
-| DISC-10 | Phase 3 | Pending |
-| APPL-01 | Phase 4 | Pending |
-| APPL-02 | Phase 4 | Pending |
-| APPL-03 | Phase 4 | Pending |
-| APPL-04 | Phase 4 | Pending |
-| APPL-05 | Phase 4 | Pending |
-| APPL-06 | Phase 4 | Pending |
-| APPL-07 | Phase 4 | Pending |
-| INTV-01 | Phase 5 | Pending |
-| INTV-02 | Phase 5 | Pending |
-| INTV-03 | Phase 5 | Pending |
-| INTV-04 | Phase 5 | Pending |
-| INTV-05 | Phase 5 | Pending |
-| INTV-06 | Phase 5 | Pending |
-| INTV-07 | Phase 5 | Pending |
-| ANLT-01 | Phase 6 | Pending |
-| ANLT-02 | Phase 6 | Pending |
-| ANLT-03 | Phase 6 | Pending |
-| ANLT-04 | Phase 6 | Pending |
-| ANLT-05 | Phase 6 | Pending |
+| PROF-08 | Phase 3 | Pending |
+| PROF-08a | Phase 3 | Pending |
+| PROF-08b | Phase 3 | Pending |
+| PROF-09 | Phase 3 | Pending |
+| PROF-10 | Phase 3 | Pending |
+| PROF-11 | Phase 3 | Pending |
+| PROF-12 | Phase 3 | Pending |
+| PROF-13 | Phase 3 | Pending |
+| PROF-14 | Phase 3 | Pending |
+| DISC-01 | Phase 4 | Pending |
+| DISC-02 | Phase 4 | Pending |
+| DISC-03 | Phase 4 | Pending |
+| DISC-04 | Phase 4 | Pending |
+| DISC-05 | Phase 4 | Pending |
+| DISC-06 | Phase 4 | Pending |
+| DISC-06a | Phase 4 | Pending |
+| DISC-06b | Phase 4 | Pending |
+| DISC-07 | Phase 5 | Pending |
+| DISC-07a | Phase 5 | Pending |
+| DISC-07b | Phase 5 | Pending |
+| DISC-08 | Phase 5 | Pending |
+| DISC-09 | Phase 5 | Pending |
+| DISC-10 | Phase 5 | Pending |
+| DISC-11 | Phase 5 | Pending |
+| DISC-12 | Phase 5 | Pending |
+| DISC-13 | Phase 5 | Pending |
+| DISC-14 | Phase 5 | Pending |
+| APPL-01 | Phase 6 | Pending |
+| APPL-02 | Phase 6 | Pending |
+| APPL-03 | Phase 6 | Pending |
+| APPL-04 | Phase 6 | Pending |
+| APPL-05 | Phase 6 | Pending |
+| APPL-06 | Phase 6 | Pending |
+| APPL-07 | Phase 6 | Pending |
+| APPL-08 | Phase 7 | Pending |
+| APPL-09 | Phase 7 | Pending |
+| APPL-10 | Phase 7 | Pending |
+| APPL-11 | Phase 7 | Pending |
+| APPL-12 | Phase 7 | Pending |
+| APPL-13 | Phase 7 | Pending |
+| APPL-14 | Phase 7 | Pending |
+| INTV-01 | Phase 8 | Pending |
+| INTV-02 | Phase 8 | Pending |
+| INTV-03 | Phase 8 | Pending |
+| INTV-04 | Phase 8 | Pending |
+| INTV-05 | Phase 8 | Pending |
+| INTV-06 | Phase 8 | Pending |
+| INTV-07 | Phase 9 | Pending |
+| INTV-08 | Phase 9 | Pending |
+| INTV-09 | Phase 9 | Pending |
+| INTV-10 | Phase 9 | Pending |
+| ANLT-01 | Phase 10 | Pending |
+| ANLT-02 | Phase 10 | Pending |
+| ANLT-03 | Phase 10 | Pending |
+| ANLT-04 | Phase 10 | Pending |
+| ANLT-05 | Phase 10 | Pending |
 
 **Coverage:**
 - v1 requirements: 69 total
 - Mapped to phases: 69
-- Unmapped: 0 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-29*
-*Last updated: 2026-01-29 after initial definition*
+*Last updated: 2026-01-29 after roadmap creation*
