@@ -50,17 +50,17 @@ Plans:
 **Depends on**: Phase 1
 **Requirements**: PROF-01, PROF-02, PROF-03, PROF-04, PROF-05, PROF-06, PROF-07
 **Success Criteria** (what must be TRUE):
-  1. master-profile.json exists with validated schema (Ajv rejects invalid data)
+  1. master-profile.json exists with validated schema (Zod rejects invalid data)
   2. Profile contains experience entries with quantified achievements accessible via MCP
   3. Skills inventory distinguishes explicit skills from inferred skills
   4. Multiple professional summaries exist for different audiences (e.g., technical, leadership)
   5. Interview stories in STAR format are stored and retrievable
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: Schema design and validation
-- [ ] 02-02: Experience and skills data structure
-- [ ] 02-03: Summaries, stories, and preferences
+- [ ] 02-01-PLAN.md - Core profile schema, loader with atomic writes, history tracking
+- [ ] 02-02-PLAN.md - Experience entries with project-centric structure, skills with evidence linking
+- [ ] 02-03-PLAN.md - Summary blocks, STAR stories, target roles, communication preferences, MCP tools
 
 ### Phase 3: Self-Profile Integration
 **Goal**: Profile data flows into all outputs and the system learns from natural interactions
