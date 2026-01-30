@@ -740,6 +740,133 @@ const TOOLS = [
       },
       required: ['findingHash']
     }
+  },
+
+  // === Profile Learning ===
+  {
+    name: 'queue_profile_extraction',
+    description: 'Queue a profile insight extracted from conversation for user confirmation. Call this proactively during normal conversations when you detect professional information worth capturing - skills mentioned, achievements discussed, preferences expressed, story elements shared, or work patterns observed. The user confirms before any profile changes.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        category: {
+          type: 'string',
+          description: 'Type of insight',
+          enum: ['skill', 'achievement', 'preference', 'story', 'pattern']
+        },
+        content: {
+          type: 'string',
+          description: 'The extracted insight (e.g., skill name, achievement description)'
+        },
+        confidence: {
+          type: 'string',
+          description: 'Confidence in the extraction accuracy',
+          enum: ['high', 'medium', 'low']
+        },
+        sourceQuote: {
+          type: 'string',
+          description: 'Supporting text from the conversation'
+        },
+        targetField: {
+          type: 'string',
+          description: 'Specific profile field path if known'
+        }
+      },
+      required: ['category', 'content', 'confidence']
+    }
+  },
+  {
+    name: 'get_pending_extractions',
+    description: 'Get pending profile extractions awaiting user confirmation. Sorted by confidence (high first).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        filter: {
+          type: 'object',
+          properties: {
+            category: {
+              type: 'string',
+              description: 'Filter by category',
+              enum: ['skill', 'achievement', 'preference', 'story', 'pattern']
+            },
+            confidence: {
+              type: 'string',
+              description: 'Filter by confidence level',
+              enum: ['high', 'medium', 'low']
+            }
+          }
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number to return'
+        }
+      }
+    }
+  },
+  {
+    name: 'confirm_extraction',
+    description: 'Confirm, reject, or merge a pending extraction. Confirm adds to profile, reject discards, merge updates existing profile item.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        extractionId: {
+          type: 'string',
+          description: 'The extraction ID to process'
+        },
+        action: {
+          type: 'string',
+          description: 'Action to take',
+          enum: ['confirm', 'reject', 'merge']
+        },
+        targetField: {
+          type: 'string',
+          description: 'Override target field for confirm'
+        },
+        mergeWith: {
+          type: 'string',
+          description: 'Profile item ID to merge with (required for merge action)'
+        }
+      },
+      required: ['extractionId', 'action']
+    }
+  },
+  {
+    name: 'batch_confirm_extractions',
+    description: 'Confirm or reject multiple extractions at once. Useful for end-of-conversation batch processing.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        extractionIds: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Array of extraction IDs to process'
+        },
+        action: {
+          type: 'string',
+          description: 'Action to take on all',
+          enum: ['confirm', 'reject']
+        }
+      },
+      required: ['extractionIds', 'action']
+    }
+  },
+  {
+    name: 'get_extraction_history',
+    description: 'Get history of processed extractions (confirmed, rejected, merged).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'string',
+          description: 'Filter by status',
+          enum: ['confirmed', 'rejected', 'merged']
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number to return'
+        }
+      }
+    }
   }
 ];
 
@@ -921,6 +1048,43 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         break;
       case 'dismiss_finding':
         result = dismissCleanupFinding({ findingHash: args.findingHash, reason: args?.reason });
+        break;
+
+      // Profile Learning
+      case 'queue_profile_extraction':
+        result = queueProfileExtraction({
+          category: args.category,
+          content: args.content,
+          confidence: args.confidence,
+          sourceQuote: args.sourceQuote,
+          targetField: args.targetField
+        });
+        break;
+      case 'get_pending_extractions':
+        result = getPendingExtractions({
+          filter: args?.filter,
+          limit: args?.limit
+        });
+        break;
+      case 'confirm_extraction':
+        result = confirmExtraction({
+          extractionId: args.extractionId,
+          action: args.action,
+          targetField: args?.targetField,
+          mergeWith: args?.mergeWith
+        });
+        break;
+      case 'batch_confirm_extractions':
+        result = batchConfirmExtractions({
+          extractionIds: args.extractionIds,
+          action: args.action
+        });
+        break;
+      case 'get_extraction_history':
+        result = getExtractionHistory({
+          status: args?.status,
+          limit: args?.limit
+        });
         break;
 
       default:
