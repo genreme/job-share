@@ -39,6 +39,8 @@ import {
 import {
   generateResume,
   generateCoverLetter,
+  generateInterviewPrep,
+  previewDocumentSources,
   validateResume,
   validateCoverLetter,
   assessPageFit
@@ -269,7 +271,7 @@ const TOOLS = [
   // === Document Generation ===
   {
     name: 'generate_resume',
-    description: 'Generate a tailored resume PDF for a specific company/role. Uses the Python generator with customizations.',
+    description: 'Generate a tailored resume PDF for a specific company/role. Uses profile data as primary source, with gap warnings that can be bypassed.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -281,6 +283,16 @@ const TOOLS = [
           type: 'string',
           description: 'Target job title'
         },
+        audience: {
+          type: 'string',
+          description: 'Audience type for summary selection',
+          enum: ['technical', 'leadership', 'executive', 'mission-driven']
+        },
+        keywords: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Keywords for relevance matching'
+        },
         customizations: {
           type: 'object',
           description: 'Customization options (bullets to include/exclude, summary tweaks, etc.)'
@@ -288,6 +300,10 @@ const TOOLS = [
         outputPath: {
           type: 'string',
           description: 'Optional custom output filename'
+        },
+        proceedWithGaps: {
+          type: 'boolean',
+          description: 'Set to true to proceed despite profile gaps'
         }
       },
       required: ['company', 'title']
@@ -295,7 +311,7 @@ const TOOLS = [
   },
   {
     name: 'generate_cover_letter',
-    description: 'Generate a tailored cover letter PDF for a specific company/role.',
+    description: 'Generate a tailored cover letter PDF for a specific company/role. Uses profile tone preferences and STAR stories.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -316,12 +332,82 @@ const TOOLS = [
           items: { type: 'string' },
           description: 'Key points to emphasize in the letter'
         },
+        keywords: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Keywords for relevance matching'
+        },
         outputPath: {
           type: 'string',
           description: 'Optional custom output filename'
+        },
+        proceedWithGaps: {
+          type: 'boolean',
+          description: 'Set to true to proceed despite profile gaps'
         }
       },
       required: ['company', 'title']
+    }
+  },
+  {
+    name: 'generate_interview_prep',
+    description: 'Generate interview preparation materials from profile STAR stories and target role information.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        company: {
+          type: 'string',
+          description: 'Target company name'
+        },
+        title: {
+          type: 'string',
+          description: 'Target job title'
+        },
+        interviewType: {
+          type: 'string',
+          description: 'Type of interview',
+          enum: ['behavioral', 'technical', 'leadership']
+        },
+        keywords: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Keywords for relevance matching'
+        }
+      },
+      required: ['company', 'title']
+    }
+  },
+  {
+    name: 'preview_document_sources',
+    description: 'Preview which profile sections will be used before generating a document. Shows summary blocks, experience, skills, and any gaps.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        documentType: {
+          type: 'string',
+          description: 'Type of document to preview',
+          enum: ['resume', 'cover_letter', 'interview_prep']
+        },
+        company: {
+          type: 'string',
+          description: 'Target company name'
+        },
+        title: {
+          type: 'string',
+          description: 'Target job title'
+        },
+        audience: {
+          type: 'string',
+          description: 'Audience type (for resume)',
+          enum: ['technical', 'leadership', 'executive', 'mission-driven']
+        },
+        keywords: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Keywords for relevance matching'
+        }
+      },
+      required: ['documentType']
     }
   },
   {
@@ -663,8 +749,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         result = generateResume({
           company: args.company,
           title: args.title,
+          audience: args.audience,
+          keywords: args.keywords,
           customizations: args.customizations,
-          outputPath: args.outputPath
+          outputPath: args.outputPath,
+          proceedWithGaps: args.proceedWithGaps
         });
         break;
       case 'generate_cover_letter':
@@ -673,7 +762,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           title: args.title,
           hiringManager: args.hiringManager,
           keyPoints: args.keyPoints,
-          outputPath: args.outputPath
+          keywords: args.keywords,
+          outputPath: args.outputPath,
+          proceedWithGaps: args.proceedWithGaps
+        });
+        break;
+      case 'generate_interview_prep':
+        result = generateInterviewPrep({
+          company: args.company,
+          title: args.title,
+          interviewType: args.interviewType,
+          keywords: args.keywords
+        });
+        break;
+      case 'preview_document_sources':
+        result = previewDocumentSources({
+          documentType: args.documentType,
+          company: args.company,
+          title: args.title,
+          audience: args.audience,
+          keywords: args.keywords
         });
         break;
       case 'validate_resume':
