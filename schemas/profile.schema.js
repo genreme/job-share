@@ -8,6 +8,56 @@
 
 import { z } from 'zod'
 
+// =============================================================================
+// METRICS SCHEMA (Optional structured metrics for achievements)
+// =============================================================================
+export const MetricsSchema = z.object({
+  value: z.union([z.number(), z.string()]), // "40%" or 40
+  unit: z.string(), // "percent", "users", "dollars"
+  context: z.string().optional() // "year-over-year", "within 6 months"
+})
+
+// =============================================================================
+// PROJECT SCHEMA (Primary unit of achievement)
+// =============================================================================
+export const ProjectSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  description: z.string(), // Human-readable narrative with achievement
+  metrics: MetricsSchema.optional(), // Optional structured metrics
+  tags: z.array(z.string()).default([]), // Core + custom tags
+  skillRefs: z.array(z.string()).default([]), // Skill IDs demonstrated
+  createdAt: z.string(),
+  updatedAt: z.string()
+})
+
+// =============================================================================
+// ROLE SCHEMA (Context for projects)
+// =============================================================================
+export const RoleSchema = z.object({
+  title: z.string().min(1),
+  company: z.string().min(1),
+  location: z.string().optional(),
+  startDate: z.string(), // ISO date (YYYY-MM-DD)
+  endDate: z.string().nullable() // null = current role
+})
+
+// =============================================================================
+// EXPERIENCE ENTRY SCHEMA (Role + Projects)
+// =============================================================================
+export const ExperienceEntrySchema = z.object({
+  id: z.string().uuid(),
+  role: RoleSchema,
+  projects: z.array(ProjectSchema).min(1), // At least one project per role
+  version: z.number().int().positive().default(1),
+  createdAt: z.string(),
+  updatedAt: z.string()
+})
+
+// =============================================================================
+// PROFILE METADATA SCHEMA
+// =============================================================================
+
 // Profile metadata schema
 export const ProfileMetadataSchema = z.object({
   version: z.number().int().positive(),
@@ -31,8 +81,8 @@ export const HistoryEntrySchema = z.object({
 // Base profile structure with placeholder arrays for Plans 02-02 and 02-03
 export const ProfileSchema = z.object({
   metadata: ProfileMetadataSchema,
-  experience: z.array(z.unknown()).default([]), // Populated in 02-02
-  skills: z.array(z.unknown()).default([]), // Populated in 02-02
+  experience: z.array(ExperienceEntrySchema).default([]), // Project-centric structure
+  skills: z.array(z.unknown()).default([]), // Populated in Task 2
   summaryBlocks: z.array(z.unknown()).default([]), // Populated in 02-03
   stories: z.array(z.unknown()).default([]), // Populated in 02-03
   preferences: z

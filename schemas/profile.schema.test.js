@@ -12,6 +12,10 @@ import {
   ProfileSchema,
   ProfileMetadataSchema,
   HistoryEntrySchema,
+  MetricsSchema,
+  ProjectSchema,
+  RoleSchema,
+  ExperienceEntrySchema,
   validateProfile,
   validateHistoryEntry
 } from './profile.schema.js'
@@ -22,6 +26,330 @@ const fixturesDir = join(__dirname, '..', 'test', 'fixtures')
 // Load test fixtures
 const validProfile = JSON.parse(readFileSync(join(fixturesDir, 'valid-profile.json'), 'utf-8'))
 const invalidProfiles = JSON.parse(readFileSync(join(fixturesDir, 'invalid-profiles.json'), 'utf-8'))
+
+describe('MetricsSchema', () => {
+  it('accepts metrics with numeric value', () => {
+    const metrics = {
+      value: 40,
+      unit: 'percent'
+    }
+    const result = MetricsSchema.safeParse(metrics)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts metrics with string value', () => {
+    const metrics = {
+      value: '40%',
+      unit: 'percent'
+    }
+    const result = MetricsSchema.safeParse(metrics)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts optional context field', () => {
+    const metrics = {
+      value: 40,
+      unit: 'percent',
+      context: 'year-over-year'
+    }
+    const result = MetricsSchema.safeParse(metrics)
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects missing unit', () => {
+    const metrics = {
+      value: 40
+    }
+    const result = MetricsSchema.safeParse(metrics)
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('RoleSchema', () => {
+  it('accepts valid role with all fields', () => {
+    const role = {
+      title: 'Senior Software Engineer',
+      company: 'Tech Company Inc',
+      location: 'San Francisco, CA',
+      startDate: '2022-01-15',
+      endDate: '2024-06-30'
+    }
+    const result = RoleSchema.safeParse(role)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts null endDate for current role', () => {
+    const role = {
+      title: 'Senior Software Engineer',
+      company: 'Tech Company Inc',
+      startDate: '2022-01-15',
+      endDate: null
+    }
+    const result = RoleSchema.safeParse(role)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts role without optional location', () => {
+    const role = {
+      title: 'Senior Software Engineer',
+      company: 'Tech Company Inc',
+      startDate: '2022-01-15',
+      endDate: null
+    }
+    const result = RoleSchema.safeParse(role)
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects missing title', () => {
+    const role = {
+      company: 'Tech Company Inc',
+      startDate: '2022-01-15',
+      endDate: null
+    }
+    const result = RoleSchema.safeParse(role)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects missing company', () => {
+    const role = {
+      title: 'Senior Software Engineer',
+      startDate: '2022-01-15',
+      endDate: null
+    }
+    const result = RoleSchema.safeParse(role)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects empty title', () => {
+    const role = {
+      title: '',
+      company: 'Tech Company Inc',
+      startDate: '2022-01-15',
+      endDate: null
+    }
+    const result = RoleSchema.safeParse(role)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects empty company', () => {
+    const role = {
+      title: 'Senior Software Engineer',
+      company: '',
+      startDate: '2022-01-15',
+      endDate: null
+    }
+    const result = RoleSchema.safeParse(role)
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('ProjectSchema', () => {
+  it('accepts valid project with all fields', () => {
+    const project = {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      name: 'Design System Migration',
+      description: 'Led migration from legacy component library',
+      metrics: {
+        value: 40,
+        unit: 'percent',
+        context: 'bundle size reduction'
+      },
+      tags: ['technical', 'leadership'],
+      skillRefs: ['550e8400-e29b-41d4-a716-446655440001'],
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ProjectSchema.safeParse(project)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts project without optional metrics', () => {
+    const project = {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      name: 'Design System Migration',
+      description: 'Led migration from legacy component library',
+      tags: ['technical'],
+      skillRefs: [],
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ProjectSchema.safeParse(project)
+    expect(result.success).toBe(true)
+  })
+
+  it('applies defaults for tags and skillRefs when missing', () => {
+    const project = {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      name: 'Design System Migration',
+      description: 'Led migration from legacy component library',
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ProjectSchema.safeParse(project)
+    expect(result.success).toBe(true)
+    expect(result.data.tags).toEqual([])
+    expect(result.data.skillRefs).toEqual([])
+  })
+
+  it('rejects project with missing name', () => {
+    const project = {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      description: 'Led migration from legacy component library',
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ProjectSchema.safeParse(project)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects project with missing description', () => {
+    const project = {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      name: 'Design System Migration',
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ProjectSchema.safeParse(project)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects project with empty name', () => {
+    const project = {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      name: '',
+      description: 'Led migration from legacy component library',
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ProjectSchema.safeParse(project)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects project with invalid uuid', () => {
+    const project = {
+      id: 'not-a-uuid',
+      name: 'Design System Migration',
+      description: 'Led migration from legacy component library',
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ProjectSchema.safeParse(project)
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('ExperienceEntrySchema', () => {
+  const validRole = {
+    title: 'Senior Software Engineer',
+    company: 'Tech Company Inc',
+    startDate: '2022-01-15',
+    endDate: null
+  }
+
+  const validProject = {
+    id: '550e8400-e29b-41d4-a716-446655440002',
+    name: 'Design System Migration',
+    description: 'Led migration from legacy component library',
+    createdAt: '2026-01-30T10:00:00.000Z',
+    updatedAt: '2026-01-30T10:00:00.000Z'
+  }
+
+  it('accepts valid experience entry with role and projects', () => {
+    const entry = {
+      id: '550e8400-e29b-41d4-a716-446655440001',
+      role: validRole,
+      projects: [validProject],
+      version: 1,
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ExperienceEntrySchema.safeParse(entry)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts multiple projects per experience entry', () => {
+    const secondProject = {
+      ...validProject,
+      id: '550e8400-e29b-41d4-a716-446655440003',
+      name: 'Performance Optimization'
+    }
+    const entry = {
+      id: '550e8400-e29b-41d4-a716-446655440001',
+      role: validRole,
+      projects: [validProject, secondProject],
+      version: 1,
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ExperienceEntrySchema.safeParse(entry)
+    expect(result.success).toBe(true)
+    expect(result.data.projects).toHaveLength(2)
+  })
+
+  it('applies default version when missing', () => {
+    const entry = {
+      id: '550e8400-e29b-41d4-a716-446655440001',
+      role: validRole,
+      projects: [validProject],
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ExperienceEntrySchema.safeParse(entry)
+    expect(result.success).toBe(true)
+    expect(result.data.version).toBe(1)
+  })
+
+  it('rejects empty projects array (at least one project required)', () => {
+    const entry = {
+      id: '550e8400-e29b-41d4-a716-446655440001',
+      role: validRole,
+      projects: [],
+      version: 1,
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ExperienceEntrySchema.safeParse(entry)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects missing role', () => {
+    const entry = {
+      id: '550e8400-e29b-41d4-a716-446655440001',
+      projects: [validProject],
+      version: 1,
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ExperienceEntrySchema.safeParse(entry)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects invalid uuid', () => {
+    const entry = {
+      id: 'not-a-uuid',
+      role: validRole,
+      projects: [validProject],
+      version: 1,
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ExperienceEntrySchema.safeParse(entry)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects non-positive version', () => {
+    const entry = {
+      id: '550e8400-e29b-41d4-a716-446655440001',
+      role: validRole,
+      projects: [validProject],
+      version: 0,
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = ExperienceEntrySchema.safeParse(entry)
+    expect(result.success).toBe(false)
+  })
+})
 
 describe('ProfileMetadataSchema', () => {
   it('accepts valid metadata', () => {

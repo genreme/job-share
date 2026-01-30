@@ -5,8 +5,51 @@
     "updatedAt": "2026-01-30T10:00:00.000Z",
     "schemaVersion": "1.0"
   },
-  "experience": [],
-  "skills": [],
+  "experience": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "role": {
+        "title": "Senior Software Engineer",
+        "company": "Tech Company Inc",
+        "location": "San Francisco, CA",
+        "startDate": "2022-01-15",
+        "endDate": null
+      },
+      "projects": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440002",
+          "name": "Design System Migration",
+          "description": "Led migration from legacy component library to modern design system, reducing bundle size by 40% and improving developer productivity across 12 product teams.",
+          "metrics": {
+            "value": 40,
+            "unit": "percent",
+            "context": "bundle size reduction"
+          },
+          "tags": ["technical", "leadership", "cross-functional"],
+          "skillRefs": ["550e8400-e29b-41d4-a716-446655440010"],
+          "createdAt": "2026-01-30T10:00:00.000Z",
+          "updatedAt": "2026-01-30T10:00:00.000Z"
+        }
+      ],
+      "version": 1,
+      "createdAt": "2026-01-30T10:00:00.000Z",
+      "updatedAt": "2026-01-30T10:00:00.000Z"
+    }
+  ],
+  "skills": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440010",
+      "name": "React",
+      "category": "Technical",
+      "subcategory": "Frontend Frameworks",
+      "proficiency": "expert",
+      "source": "explicit",
+      "confidence": 95,
+      "evidence": ["550e8400-e29b-41d4-a716-446655440002"],
+      "createdAt": "2026-01-30T10:00:00.000Z",
+      "updatedAt": "2026-01-30T10:00:00.000Z"
+    }
+  ],
   "summaryBlocks": [],
   "stories": [],
   "preferences": {
