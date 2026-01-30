@@ -186,7 +186,7 @@ export const ProfileSchema = z.object({
   preferences: z
     .object({
       targetRoles: z.array(TargetRoleSchema).default([]), // Job search criteria
-      communication: CommunicationPrefsSchema.optional() // Tone and style preferences
+      communication: CommunicationPrefsSchema.nullable().optional() // Tone and style preferences
     })
     .default({}),
   history: z.array(HistoryEntrySchema).default([])
