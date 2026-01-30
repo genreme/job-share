@@ -9,13 +9,13 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Self-Profile
 
-- [ ] **PROF-01**: Centralized master-profile.json stores all professional identity data
-- [ ] **PROF-02**: Profile includes experience entries with quantified achievements
-- [ ] **PROF-03**: Profile includes skills inventory (explicit + inferred from experience)
-- [ ] **PROF-04**: Profile includes multiple professional summaries for different audiences
-- [ ] **PROF-05**: Profile includes interview stories in STAR format
-- [ ] **PROF-06**: Profile includes target role criteria and preferences
-- [ ] **PROF-07**: Profile includes communication style and tone preferences
+- [x] **PROF-01**: Centralized master-profile.json stores all professional identity data
+- [x] **PROF-02**: Profile includes experience entries with quantified achievements
+- [x] **PROF-03**: Profile includes skills inventory (explicit + inferred from experience)
+- [x] **PROF-04**: Profile includes multiple professional summaries for different audiences
+- [x] **PROF-05**: Profile includes interview stories in STAR format
+- [x] **PROF-06**: Profile includes target role criteria and preferences
+- [x] **PROF-07**: Profile includes communication style and tone preferences
 - [ ] **PROF-08**: Weekly profile cleanup routine consolidates and deduplicates data
 - [ ] **PROF-08a**: Profile gaps are surfaced for user review, never auto-filled
 - [ ] **PROF-08b**: Gap recommendations include why it matters and suggested ways to address

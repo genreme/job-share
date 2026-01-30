@@ -13,7 +13,7 @@ This roadmap transforms the existing Job Search Command Center into a comprehens
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: QA Layer Foundation** - Self-testing framework that validates each component before proceeding
-- [ ] **Phase 2: Self-Profile Schema** - Centralized professional identity data structure
+- [x] **Phase 2: Self-Profile Schema** - Centralized professional identity data structure
 - [ ] **Phase 3: Self-Profile Integration** - Profile feeds into outputs and learns from interactions
 - [ ] **Phase 4: Discovery Core** - Scan, filter, research, and present job opportunities
 - [ ] **Phase 5: Discovery Management** - Friend submissions, archiving, and job board curation
@@ -58,9 +58,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md - Core profile schema, loader with atomic writes, history tracking
-- [ ] 02-02-PLAN.md - Experience entries with project-centric structure, skills with evidence linking
-- [ ] 02-03-PLAN.md - Summary blocks, STAR stories, target roles, communication preferences, MCP tools
+- [x] 02-01-PLAN.md - Core profile schema, loader with atomic writes, history tracking
+- [x] 02-02-PLAN.md - Experience entries with project-centric structure, skills with evidence linking
+- [x] 02-03-PLAN.md - Summary blocks, STAR stories, target roles, communication preferences, MCP tools
 
 ### Phase 3: Self-Profile Integration
 **Goal**: Profile data flows into all outputs and the system learns from natural interactions
@@ -203,7 +203,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. QA Layer Foundation | 6/6 | Complete ✓ | 2026-01-30 |
-| 2. Self-Profile Schema | 0/3 | Not started | - |
+| 2. Self-Profile Schema | 3/3 | Complete ✓ | 2026-01-30 |
 | 3. Self-Profile Integration | 0/3 | Not started | - |
 | 4. Discovery Core | 0/3 | Not started | - |
 | 5. Discovery Management | 0/3 | Not started | - |
