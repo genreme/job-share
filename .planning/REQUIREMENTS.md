@@ -16,15 +16,15 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PROF-05**: Profile includes interview stories in STAR format
 - [x] **PROF-06**: Profile includes target role criteria and preferences
 - [x] **PROF-07**: Profile includes communication style and tone preferences
-- [ ] **PROF-08**: Weekly profile cleanup routine consolidates and deduplicates data
-- [ ] **PROF-08a**: Profile gaps are surfaced for user review, never auto-filled
-- [ ] **PROF-08b**: Gap recommendations include why it matters and suggested ways to address
-- [ ] **PROF-09**: Profile data feeds into resume generation
-- [ ] **PROF-10**: Profile data feeds into cover letter generation
-- [ ] **PROF-11**: Profile data feeds into interview prep
-- [ ] **PROF-12**: Conversation-based profile learning extracts insights from natural chat
-- [ ] **PROF-13**: Extracted insights surfaced for user confirmation before adding to profile
-- [ ] **PROF-14**: Learning runs passively during normal system interactions
+- [x] **PROF-08**: Weekly profile cleanup routine consolidates and deduplicates data
+- [x] **PROF-08a**: Profile gaps are surfaced for user review, never auto-filled
+- [x] **PROF-08b**: Gap recommendations include why it matters and suggested ways to address
+- [x] **PROF-09**: Profile data feeds into resume generation
+- [x] **PROF-10**: Profile data feeds into cover letter generation
+- [x] **PROF-11**: Profile data feeds into interview prep
+- [x] **PROF-12**: Conversation-based profile learning extracts insights from natural chat
+- [x] **PROF-13**: Extracted insights surfaced for user confirmation before adding to profile
+- [x] **PROF-14**: Learning runs passively during normal system interactions
 
 ### Discovery
 
@@ -145,22 +145,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 | QALY-04 | Phase 1 | Complete |
 | QALY-05 | Phase 1 | Complete |
 | QALY-06 | Phase 1 | Complete |
-| PROF-01 | Phase 2 | Pending |
-| PROF-02 | Phase 2 | Pending |
-| PROF-03 | Phase 2 | Pending |
-| PROF-04 | Phase 2 | Pending |
-| PROF-05 | Phase 2 | Pending |
-| PROF-06 | Phase 2 | Pending |
-| PROF-07 | Phase 2 | Pending |
-| PROF-08 | Phase 3 | Pending |
-| PROF-08a | Phase 3 | Pending |
-| PROF-08b | Phase 3 | Pending |
-| PROF-09 | Phase 3 | Pending |
-| PROF-10 | Phase 3 | Pending |
-| PROF-11 | Phase 3 | Pending |
-| PROF-12 | Phase 3 | Pending |
-| PROF-13 | Phase 3 | Pending |
-| PROF-14 | Phase 3 | Pending |
+| PROF-01 | Phase 2 | Complete |
+| PROF-02 | Phase 2 | Complete |
+| PROF-03 | Phase 2 | Complete |
+| PROF-04 | Phase 2 | Complete |
+| PROF-05 | Phase 2 | Complete |
+| PROF-06 | Phase 2 | Complete |
+| PROF-07 | Phase 2 | Complete |
+| PROF-08 | Phase 3 | Complete |
+| PROF-08a | Phase 3 | Complete |
+| PROF-08b | Phase 3 | Complete |
+| PROF-09 | Phase 3 | Complete |
+| PROF-10 | Phase 3 | Complete |
+| PROF-11 | Phase 3 | Complete |
+| PROF-12 | Phase 3 | Complete |
+| PROF-13 | Phase 3 | Complete |
+| PROF-14 | Phase 3 | Complete |
 | DISC-01 | Phase 4 | Pending |
 | DISC-02 | Phase 4 | Pending |
 | DISC-03 | Phase 4 | Pending |
