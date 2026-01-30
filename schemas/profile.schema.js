@@ -114,6 +114,45 @@ export const STARStorySchema = z.object({
 })
 
 // =============================================================================
+// TARGET ROLE SCHEMA (What jobs to pursue)
+// =============================================================================
+export const SalaryRangeSchema = z.object({
+  min: z.number().optional(),
+  max: z.number().optional(),
+  currency: z.string().default('USD')
+})
+
+export const TargetRoleSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string().min(1), // e.g., "Head of Design", "VP Product Design"
+  level: z.enum(['ic', 'lead', 'manager', 'director', 'vp', 'c-level']).optional(),
+  industries: z.array(z.string()).default([]), // e.g., ['fintech', 'healthcare', 'b2b-saas']
+  companyStages: z
+    .array(z.enum(['seed', 'series-a', 'series-b', 'series-c', 'growth', 'public']))
+    .default([]),
+  remotePref: z.enum(['remote', 'hybrid', 'onsite', 'flexible']).optional(),
+  locations: z.array(z.string()).default([]), // e.g., ['San Francisco', 'New York']
+  salaryRange: SalaryRangeSchema.optional(),
+  priorities: z.array(z.string()).default([]), // e.g., ['impact', 'growth', 'compensation']
+  dealbreakers: z.array(z.string()).default([]), // e.g., ['no-equity', 'travel>50%']
+  createdAt: z.string(),
+  updatedAt: z.string()
+})
+
+// =============================================================================
+// COMMUNICATION PREFERENCES SCHEMA (Tone and style)
+// =============================================================================
+export const CommunicationPrefsSchema = z.object({
+  tone: z.enum(['formal', 'conversational', 'direct', 'warm']).default('conversational'),
+  verbosity: z.enum(['concise', 'balanced', 'detailed']).default('balanced'),
+  emphasisAreas: z.array(z.string()).default([]), // e.g., ['impact-driven', 'collaborative', 'strategic']
+  avoidPhrases: z.array(z.string()).default([]), // e.g., ['synergy', 'leverage', 'disrupt']
+  customGuidelines: z.string().optional(), // Free-form notes about communication style
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional()
+})
+
+// =============================================================================
 // PROFILE METADATA SCHEMA
 // =============================================================================
 
@@ -146,8 +185,8 @@ export const ProfileSchema = z.object({
   stories: z.array(STARStorySchema).default([]), // Interview stories with variants
   preferences: z
     .object({
-      targetRoles: z.array(z.unknown()).default([]), // Populated in 02-03 Task 2
-      communication: z.unknown().optional() // Populated in 02-03 Task 2
+      targetRoles: z.array(TargetRoleSchema).default([]), // Job search criteria
+      communication: CommunicationPrefsSchema.optional() // Tone and style preferences
     })
     .default({}),
   history: z.array(HistoryEntrySchema).default([])

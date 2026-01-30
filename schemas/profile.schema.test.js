@@ -20,6 +20,9 @@ import {
   SummaryBlockSchema,
   StoryVariantSchema,
   STARStorySchema,
+  TargetRoleSchema,
+  SalaryRangeSchema,
+  CommunicationPrefsSchema,
   validateProfile,
   validateHistoryEntry
 } from './profile.schema.js'
@@ -681,6 +684,238 @@ describe('STARStorySchema', () => {
     const story = { ...validStory, id: 'not-a-uuid' }
     const result = STARStorySchema.safeParse(story)
     expect(result.success).toBe(false)
+  })
+})
+
+describe('SalaryRangeSchema', () => {
+  it('accepts salary range with all fields', () => {
+    const salary = { min: 150000, max: 250000, currency: 'USD' }
+    const result = SalaryRangeSchema.safeParse(salary)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts salary range with only min', () => {
+    const salary = { min: 150000 }
+    const result = SalaryRangeSchema.safeParse(salary)
+    expect(result.success).toBe(true)
+    expect(result.data.currency).toBe('USD') // default currency
+  })
+
+  it('accepts salary range with only max', () => {
+    const salary = { max: 250000 }
+    const result = SalaryRangeSchema.safeParse(salary)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts empty salary range (all fields optional)', () => {
+    const salary = {}
+    const result = SalaryRangeSchema.safeParse(salary)
+    expect(result.success).toBe(true)
+    expect(result.data.currency).toBe('USD')
+  })
+
+  it('accepts non-USD currency', () => {
+    const salary = { min: 100000, max: 200000, currency: 'EUR' }
+    const result = SalaryRangeSchema.safeParse(salary)
+    expect(result.success).toBe(true)
+    expect(result.data.currency).toBe('EUR')
+  })
+})
+
+describe('TargetRoleSchema', () => {
+  const validTargetRole = {
+    id: '550e8400-e29b-41d4-a716-446655440040',
+    title: 'Head of Design',
+    level: 'director',
+    industries: ['fintech', 'b2b-saas'],
+    companyStages: ['series-b', 'series-c'],
+    remotePref: 'hybrid',
+    locations: ['San Francisco', 'New York'],
+    salaryRange: { min: 200000, max: 300000, currency: 'USD' },
+    priorities: ['impact', 'growth'],
+    dealbreakers: ['no-equity'],
+    createdAt: '2026-01-30T10:00:00.000Z',
+    updatedAt: '2026-01-30T10:00:00.000Z'
+  }
+
+  it('accepts valid target role with all fields', () => {
+    const result = TargetRoleSchema.safeParse(validTargetRole)
+    expect(result.success).toBe(true)
+  })
+
+  it('requires title (non-empty)', () => {
+    const role = { ...validTargetRole, title: '' }
+    const result = TargetRoleSchema.safeParse(role)
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts all valid level values', () => {
+    const levels = ['ic', 'lead', 'manager', 'director', 'vp', 'c-level']
+
+    for (const level of levels) {
+      const role = { ...validTargetRole, level }
+      const result = TargetRoleSchema.safeParse(role)
+      expect(result.success, `Level "${level}" should be valid`).toBe(true)
+    }
+  })
+
+  it('rejects invalid level value', () => {
+    const role = { ...validTargetRole, level: 'junior' }
+    const result = TargetRoleSchema.safeParse(role)
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts all valid company stages', () => {
+    const stages = ['seed', 'series-a', 'series-b', 'series-c', 'growth', 'public']
+
+    for (const stage of stages) {
+      const role = { ...validTargetRole, companyStages: [stage] }
+      const result = TargetRoleSchema.safeParse(role)
+      expect(result.success, `Company stage "${stage}" should be valid`).toBe(true)
+    }
+  })
+
+  it('rejects invalid company stage', () => {
+    const role = { ...validTargetRole, companyStages: ['pre-seed'] }
+    const result = TargetRoleSchema.safeParse(role)
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts all valid remote preferences', () => {
+    const prefs = ['remote', 'hybrid', 'onsite', 'flexible']
+
+    for (const remotePref of prefs) {
+      const role = { ...validTargetRole, remotePref }
+      const result = TargetRoleSchema.safeParse(role)
+      expect(result.success, `Remote pref "${remotePref}" should be valid`).toBe(true)
+    }
+  })
+
+  it('rejects invalid remote preference', () => {
+    const role = { ...validTargetRole, remotePref: 'sometimes' }
+    const result = TargetRoleSchema.safeParse(role)
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts role without optional level', () => {
+    const { level, ...roleWithout } = validTargetRole
+    const result = TargetRoleSchema.safeParse(roleWithout)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts role without optional remotePref', () => {
+    const { remotePref, ...roleWithout } = validTargetRole
+    const result = TargetRoleSchema.safeParse(roleWithout)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts role without optional salaryRange', () => {
+    const { salaryRange, ...roleWithout } = validTargetRole
+    const result = TargetRoleSchema.safeParse(roleWithout)
+    expect(result.success).toBe(true)
+  })
+
+  it('applies default empty arrays for optional array fields', () => {
+    const minimalRole = {
+      id: '550e8400-e29b-41d4-a716-446655440040',
+      title: 'Head of Design',
+      createdAt: '2026-01-30T10:00:00.000Z',
+      updatedAt: '2026-01-30T10:00:00.000Z'
+    }
+    const result = TargetRoleSchema.safeParse(minimalRole)
+    expect(result.success).toBe(true)
+    expect(result.data.industries).toEqual([])
+    expect(result.data.companyStages).toEqual([])
+    expect(result.data.locations).toEqual([])
+    expect(result.data.priorities).toEqual([])
+    expect(result.data.dealbreakers).toEqual([])
+  })
+
+  it('rejects invalid uuid', () => {
+    const role = { ...validTargetRole, id: 'not-a-uuid' }
+    const result = TargetRoleSchema.safeParse(role)
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('CommunicationPrefsSchema', () => {
+  const validPrefs = {
+    tone: 'conversational',
+    verbosity: 'balanced',
+    emphasisAreas: ['impact-driven', 'collaborative'],
+    avoidPhrases: ['synergy', 'leverage'],
+    customGuidelines: 'Lead with outcomes.',
+    createdAt: '2026-01-30T10:00:00.000Z',
+    updatedAt: '2026-01-30T10:00:00.000Z'
+  }
+
+  it('accepts valid communication preferences', () => {
+    const result = CommunicationPrefsSchema.safeParse(validPrefs)
+    expect(result.success).toBe(true)
+  })
+
+  it('applies sensible defaults for tone and verbosity', () => {
+    const emptyPrefs = {}
+    const result = CommunicationPrefsSchema.safeParse(emptyPrefs)
+    expect(result.success).toBe(true)
+    expect(result.data.tone).toBe('conversational')
+    expect(result.data.verbosity).toBe('balanced')
+  })
+
+  it('accepts all valid tone values', () => {
+    const tones = ['formal', 'conversational', 'direct', 'warm']
+
+    for (const tone of tones) {
+      const prefs = { ...validPrefs, tone }
+      const result = CommunicationPrefsSchema.safeParse(prefs)
+      expect(result.success, `Tone "${tone}" should be valid`).toBe(true)
+    }
+  })
+
+  it('rejects invalid tone value', () => {
+    const prefs = { ...validPrefs, tone: 'casual' }
+    const result = CommunicationPrefsSchema.safeParse(prefs)
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts all valid verbosity values', () => {
+    const levels = ['concise', 'balanced', 'detailed']
+
+    for (const verbosity of levels) {
+      const prefs = { ...validPrefs, verbosity }
+      const result = CommunicationPrefsSchema.safeParse(prefs)
+      expect(result.success, `Verbosity "${verbosity}" should be valid`).toBe(true)
+    }
+  })
+
+  it('rejects invalid verbosity value', () => {
+    const prefs = { ...validPrefs, verbosity: 'verbose' }
+    const result = CommunicationPrefsSchema.safeParse(prefs)
+    expect(result.success).toBe(false)
+  })
+
+  it('applies default empty arrays for emphasisAreas and avoidPhrases', () => {
+    const result = CommunicationPrefsSchema.safeParse({})
+    expect(result.success).toBe(true)
+    expect(result.data.emphasisAreas).toEqual([])
+    expect(result.data.avoidPhrases).toEqual([])
+  })
+
+  it('accepts prefs without optional customGuidelines', () => {
+    const { customGuidelines, ...prefsWithout } = validPrefs
+    const result = CommunicationPrefsSchema.safeParse(prefsWithout)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts prefs without optional timestamps', () => {
+    const { createdAt, updatedAt, ...prefsWithout } = validPrefs
+    const result = CommunicationPrefsSchema.safeParse(prefsWithout)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts empty object (all fields have defaults)', () => {
+    const result = CommunicationPrefsSchema.safeParse({})
+    expect(result.success).toBe(true)
   })
 })
 

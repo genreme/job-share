@@ -82,8 +82,35 @@
     }
   ],
   "preferences": {
-    "targetRoles": [],
-    "communication": null
+    "targetRoles": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440040",
+        "title": "Head of Design",
+        "level": "director",
+        "industries": ["fintech", "b2b-saas", "healthcare"],
+        "companyStages": ["series-b", "series-c", "growth"],
+        "remotePref": "hybrid",
+        "locations": ["San Francisco", "New York", "Remote"],
+        "salaryRange": {
+          "min": 200000,
+          "max": 300000,
+          "currency": "USD"
+        },
+        "priorities": ["impact", "team-growth", "product-quality"],
+        "dealbreakers": ["no-equity", "travel>50%"],
+        "createdAt": "2026-01-30T10:00:00.000Z",
+        "updatedAt": "2026-01-30T10:00:00.000Z"
+      }
+    ],
+    "communication": {
+      "tone": "conversational",
+      "verbosity": "balanced",
+      "emphasisAreas": ["impact-driven", "collaborative", "strategic-thinking"],
+      "avoidPhrases": ["synergy", "leverage", "disrupt", "rockstar"],
+      "customGuidelines": "Prefer concrete examples over buzzwords. Lead with outcomes.",
+      "createdAt": "2026-01-30T10:00:00.000Z",
+      "updatedAt": "2026-01-30T10:00:00.000Z"
+    }
   },
   "history": []
 }
