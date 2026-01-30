@@ -87,12 +87,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### QA Layer
 
-- [ ] **QALY-01**: Self-testing framework validates each component before proceeding
-- [ ] **QALY-02**: Functional tests verify core operations work
-- [ ] **QALY-03**: Visual tests verify UI renders correctly
-- [ ] **QALY-04**: Logical tests verify workflow flows make sense
-- [ ] **QALY-05**: QA runs automatically on each phase completion
-- [ ] **QALY-06**: QA failures block proceeding to next phase
+- [x] **QALY-01**: Self-testing framework validates each component before proceeding
+- [x] **QALY-02**: Functional tests verify core operations work
+- [x] **QALY-03**: Visual tests verify UI renders correctly
+- [x] **QALY-04**: Logical tests verify workflow flows make sense
+- [x] **QALY-05**: QA runs automatically on each phase completion
+- [x] **QALY-06**: QA failures block proceeding to next phase
 
 ## v2 Requirements
 
@@ -139,12 +139,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| QALY-01 | Phase 1 | Pending |
-| QALY-02 | Phase 1 | Pending |
-| QALY-03 | Phase 1 | Pending |
-| QALY-04 | Phase 1 | Pending |
-| QALY-05 | Phase 1 | Pending |
-| QALY-06 | Phase 1 | Pending |
+| QALY-01 | Phase 1 | Complete |
+| QALY-02 | Phase 1 | Complete |
+| QALY-03 | Phase 1 | Complete |
+| QALY-04 | Phase 1 | Complete |
+| QALY-05 | Phase 1 | Complete |
+| QALY-06 | Phase 1 | Complete |
 | PROF-01 | Phase 2 | Pending |
 | PROF-02 | Phase 2 | Pending |
 | PROF-03 | Phase 2 | Pending |

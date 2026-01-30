@@ -12,7 +12,7 @@ This roadmap transforms the existing Job Search Command Center into a comprehens
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: QA Layer Foundation** - Self-testing framework that validates each component before proceeding
+- [x] **Phase 1: QA Layer Foundation** - Self-testing framework that validates each component before proceeding
 - [ ] **Phase 2: Self-Profile Schema** - Centralized professional identity data structure
 - [ ] **Phase 3: Self-Profile Integration** - Profile feeds into outputs and learns from interactions
 - [ ] **Phase 4: Discovery Core** - Scan, filter, research, and present job opportunities
@@ -41,9 +41,9 @@ Plans:
 - [x] 01-01-PLAN.md - Install Vitest, create Zod schemas for job/workflow validation
 - [x] 01-02-PLAN.md - Functional tests for MCP tools and dashboard rendering
 - [x] 01-03-PLAN.md - GitHub Actions CI and phase-gating mechanism
-- [ ] 01-04-PLAN.md - Wire schema validation into application code (Gap Closure)
-- [ ] 01-05-PLAN.md - Add E2E tests for actual UI rendering (Gap Closure)
-- [ ] 01-06-PLAN.md - Adjust coverage threshold to realistic baseline (Gap Closure)
+- [x] 01-04-PLAN.md - Wire schema validation into application code (Gap Closure)
+- [x] 01-05-PLAN.md - Add E2E tests for actual UI rendering (Gap Closure)
+- [x] 01-06-PLAN.md - Adjust coverage threshold to realistic baseline (Gap Closure)
 
 ### Phase 2: Self-Profile Schema
 **Goal**: Create the centralized data structure that stores all professional identity information
@@ -202,7 +202,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. QA Layer Foundation | 3/6 | Gap closure | - |
+| 1. QA Layer Foundation | 6/6 | Complete ✓ | 2026-01-30 |
 | 2. Self-Profile Schema | 0/3 | Not started | - |
 | 3. Self-Profile Integration | 0/3 | Not started | - |
 | 4. Discovery Core | 0/3 | Not started | - |
