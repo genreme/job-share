@@ -12,26 +12,26 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 Phase: 1 of 10 (QA Layer Foundation)
 Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-30 - Completed 01-03-PLAN.md (CI Pipeline & Phase Gate)
+Last activity: 2026-01-30 - Completed 01-02-PLAN.md (Functional Tests)
 
-Progress: [==--------] ~7% (2 of ~30 plans)
+Progress: [==--------] ~10% (3 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
+- Total plans completed: 3
 - Average duration: 4 min
-- Total execution time: 8 min
+- Total execution time: 13 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-qa-layer | 2 | 8 min | 4 min |
+| 01-qa-layer | 3 | 13 min | ~4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5min), 01-03 (3min)
-- Trend: Establishing baseline
+- Last 5 plans: 01-01 (5min), 01-02 (5min), 01-03 (3min)
+- Trend: Consistent execution speed
 
 *Updated after each plan completion*
 
@@ -49,6 +49,8 @@ Recent decisions affecting current work:
 - [01-01]: Advisory mode default for validation (non-breaking for existing data)
 - [01-01]: 70% coverage threshold as starting baseline
 - [01-01]: Workflow: probably-not cannot directly transition to applied
+- [01-02]: Mock loader module to isolate jobs tests from file system
+- [01-02]: Extract rendering helper functions for testable dashboard logic
 - [01-03]: 7-day artifact retention for CI reports (balance access vs storage)
 - [01-03]: Phase gate enforced via npm run phase:complete
 
@@ -58,10 +60,11 @@ None yet.
 
 ### Blockers/Concerns
 
-- Coverage currently at ~4% (schema files 100%, MCP server 0%). Plan 01-02 will add MCP server tests to reach 70% threshold.
+- Coverage at ~21% overall (jobs.js: 99%, updates.js: 91%, but server.js, index.js, documents.js, resume.js at 0%)
+- Coverage threshold (70%) will fail until remaining MCP server files are tested or thresholds are adjusted
 
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 01-03-PLAN.md
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
