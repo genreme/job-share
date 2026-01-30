@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     // Test discovery
     include: ['**/*.test.js'],
-    exclude: ['**/node_modules/**', '**/extension/**'],
+    exclude: ['**/node_modules/**', '**/extension/**', '**/test/e2e/**'],
 
     // Environment
     environment: 'node', // Default; override per-file with @vitest-environment
