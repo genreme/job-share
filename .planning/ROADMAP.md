@@ -35,12 +35,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. UI renders correctly in browser (visual tests confirm layout/styling)
   4. Workflow logic validates sensibly (e.g., status transitions follow allowed paths)
   5. Completing any phase requires passing QA before marking complete
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Test framework setup and schema validators
-- [ ] 01-02: Functional and visual test suites for existing components
-- [ ] 01-03: Phase-gating mechanism and validation reporting
+- [ ] 01-01-PLAN.md - Install Vitest, create Zod schemas for job/workflow validation
+- [ ] 01-02-PLAN.md - Functional tests for MCP tools and dashboard rendering
+- [ ] 01-03-PLAN.md - GitHub Actions CI and phase-gating mechanism
 
 ### Phase 2: Self-Profile Schema
 **Goal**: Create the centralized data structure that stores all professional identity information
