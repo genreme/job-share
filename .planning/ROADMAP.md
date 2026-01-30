@@ -35,12 +35,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. UI renders correctly in browser (visual tests confirm layout/styling)
   4. Workflow logic validates sensibly (e.g., status transitions follow allowed paths)
   5. Completing any phase requires passing QA before marking complete
-**Plans**: 3 plans
+**Plans**: 6 plans
 
 Plans:
-- [ ] 01-01-PLAN.md - Install Vitest, create Zod schemas for job/workflow validation
-- [ ] 01-02-PLAN.md - Functional tests for MCP tools and dashboard rendering
-- [ ] 01-03-PLAN.md - GitHub Actions CI and phase-gating mechanism
+- [x] 01-01-PLAN.md - Install Vitest, create Zod schemas for job/workflow validation
+- [x] 01-02-PLAN.md - Functional tests for MCP tools and dashboard rendering
+- [x] 01-03-PLAN.md - GitHub Actions CI and phase-gating mechanism
+- [ ] 01-04-PLAN.md - Wire schema validation into application code (Gap Closure)
+- [ ] 01-05-PLAN.md - Add E2E tests for actual UI rendering (Gap Closure)
+- [ ] 01-06-PLAN.md - Adjust coverage threshold to realistic baseline (Gap Closure)
 
 ### Phase 2: Self-Profile Schema
 **Goal**: Create the centralized data structure that stores all professional identity information
@@ -199,7 +202,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. QA Layer Foundation | 0/3 | Not started | - |
+| 1. QA Layer Foundation | 3/6 | Gap closure | - |
 | 2. Self-Profile Schema | 0/3 | Not started | - |
 | 3. Self-Profile Integration | 0/3 | Not started | - |
 | 4. Discovery Core | 0/3 | Not started | - |
@@ -212,4 +215,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 ---
 *Roadmap created: 2026-01-29*
-*Total phases: 10 | Total plans: 28 | Requirements covered: 69/69*
+*Total phases: 10 | Total plans: 31 | Requirements covered: 69/69*
