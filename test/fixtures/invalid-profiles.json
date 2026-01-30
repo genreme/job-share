@@ -1,0 +1,150 @@
+[
+  {
+    "name": "missing metadata",
+    "profile": {
+      "experience": [],
+      "skills": [],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": []
+    },
+    "expectedErrors": ["metadata"]
+  },
+  {
+    "name": "wrong schema version",
+    "profile": {
+      "metadata": {
+        "version": 1,
+        "createdAt": "2026-01-30T10:00:00.000Z",
+        "updatedAt": "2026-01-30T10:00:00.000Z",
+        "schemaVersion": "2.0"
+      },
+      "experience": [],
+      "skills": [],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": []
+    },
+    "expectedErrors": ["metadata.schemaVersion"]
+  },
+  {
+    "name": "invalid history entry action",
+    "profile": {
+      "metadata": {
+        "version": 1,
+        "createdAt": "2026-01-30T10:00:00.000Z",
+        "updatedAt": "2026-01-30T10:00:00.000Z",
+        "schemaVersion": "1.0"
+      },
+      "experience": [],
+      "skills": [],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440000",
+          "timestamp": "2026-01-30T10:00:00.000Z",
+          "action": "invalid-action",
+          "entityType": "skill",
+          "entityId": "skill-1",
+          "previousValue": null,
+          "newValue": { "name": "React" }
+        }
+      ]
+    },
+    "expectedErrors": ["history.0.action"]
+  },
+  {
+    "name": "invalid history entry entityType",
+    "profile": {
+      "metadata": {
+        "version": 1,
+        "createdAt": "2026-01-30T10:00:00.000Z",
+        "updatedAt": "2026-01-30T10:00:00.000Z",
+        "schemaVersion": "1.0"
+      },
+      "experience": [],
+      "skills": [],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440000",
+          "timestamp": "2026-01-30T10:00:00.000Z",
+          "action": "create",
+          "entityType": "unknown-type",
+          "entityId": "item-1",
+          "previousValue": null,
+          "newValue": {}
+        }
+      ]
+    },
+    "expectedErrors": ["history.0.entityType"]
+  },
+  {
+    "name": "invalid history entry uuid",
+    "profile": {
+      "metadata": {
+        "version": 1,
+        "createdAt": "2026-01-30T10:00:00.000Z",
+        "updatedAt": "2026-01-30T10:00:00.000Z",
+        "schemaVersion": "1.0"
+      },
+      "experience": [],
+      "skills": [],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": [
+        {
+          "id": "not-a-valid-uuid",
+          "timestamp": "2026-01-30T10:00:00.000Z",
+          "action": "create",
+          "entityType": "skill",
+          "entityId": "skill-1",
+          "previousValue": null,
+          "newValue": {}
+        }
+      ]
+    },
+    "expectedErrors": ["history.0.id"]
+  },
+  {
+    "name": "missing required metadata fields",
+    "profile": {
+      "metadata": {
+        "version": 1,
+        "schemaVersion": "1.0"
+      },
+      "experience": [],
+      "skills": [],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": []
+    },
+    "expectedErrors": ["metadata.createdAt", "metadata.updatedAt"]
+  },
+  {
+    "name": "negative version number",
+    "profile": {
+      "metadata": {
+        "version": -1,
+        "createdAt": "2026-01-30T10:00:00.000Z",
+        "updatedAt": "2026-01-30T10:00:00.000Z",
+        "schemaVersion": "1.0"
+      },
+      "experience": [],
+      "skills": [],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": []
+    },
+    "expectedErrors": ["metadata.version"]
+  }
+]
