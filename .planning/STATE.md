@@ -12,16 +12,16 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 Phase: 3 of 10 (Self-Profile Integration)
 Plan: 2 of 3 in current phase - COMPLETE
 Status: In progress
-Last activity: 2026-01-30 - Completed 03-02-PLAN.md (Profile Integration for Document Generation)
+Last activity: 2026-01-30 - Completed 03-01-PLAN.md (Cleanup and Gap Detection Services)
 
-Progress: [====------] ~33% (10 of ~30 plans)
+Progress: [=====-----] ~37% (11 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 5 min
-- Total execution time: 46 min
+- Total execution time: 54 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [====------] ~33% (10 of ~30 plans)
 |-------|-------|-------|----------|
 | 01-qa-layer | 6 | 21 min | ~4 min |
 | 02-self-profile-schema | 3 | 15 min | ~5 min |
-| 03-self-profile-integration | 1 | 10 min | 10 min |
+| 03-self-profile-integration | 2 | 18 min | 9 min |
 
 **Recent Trend:**
-- Last 10 plans: 01-01 (5min), 01-02 (5min), 01-03 (3min), 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min)
+- Last 10 plans: 01-02 (5min), 01-03 (3min), 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min)
 - Trend: Consistent ~4-5 min per plan, larger integration plans take longer
 
 *Updated after each plan completion*
@@ -75,6 +75,10 @@ Recent decisions affecting current work:
 - [03-02]: Document history tracks { itemType, itemId } for staleness detection
 - [03-02]: Rolling window of 100 records for document history
 - [03-02]: Interview prep requires at least one STAR story to generate
+- [03-01]: DEFAULT_THRESHOLD=0.85 for duplicate detection (85% similarity)
+- [03-01]: STALENESS_THRESHOLDS: AGE_DAYS=180, USAGE_DAYS=90 (both conditions required)
+- [03-01]: MIN_EVIDENCE_COUNT=2 for skills (thin evidence detection)
+- [03-01]: Graceful degradation when document-history.json missing
 
 ### Pending Todos
 
@@ -82,13 +86,12 @@ None yet.
 
 ### Blockers/Concerns
 
-- Plan 03-01 (cleanup/gap detection) not yet executed - gap-detector has minimal implementation
-- learning.test.js has pre-existing test failures (unrelated to current work)
+None. Plans 03-01 and 03-02 complete.
 
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 03-02-PLAN.md
+Stopped at: Completed 03-01-PLAN.md (Cleanup and Gap Detection Services)
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -180,3 +183,19 @@ Resume file: None
 | generate_cover_letter | Generate PDF with tone from profile |
 | generate_interview_prep | STAR-based interview prep package |
 | preview_document_sources | Show which profile sections will be used |
+
+- **Plan 03-01: Cleanup and Gap Detection Services**
+  - Duplicate detector with fuzzy matching (85% threshold)
+  - Staleness detector requiring BOTH age (180d) AND usage (90d) conditions
+  - Gap detector updated to CleanupFinding structure
+  - Cleanup orchestrator service with 4-run history
+  - 178 new tests
+  - 3 new MCP tools: run_weekly_cleanup, get_cleanup_findings, dismiss_finding
+
+### New MCP Tools (Cleanup):
+
+| Tool | Purpose |
+|------|---------|
+| run_weekly_cleanup | Analyze profile for duplicates, staleness, gaps |
+| get_cleanup_findings | Get stored findings with type filtering |
+| dismiss_finding | Mark finding as acknowledged |
