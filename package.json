@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "date-fns": "^4.1.0",
+    "string-similarity": "^4.0.4",
     "uuid": "^13.0.0"
   }
 }
