@@ -16,6 +16,7 @@ import {
   ProjectSchema,
   RoleSchema,
   ExperienceEntrySchema,
+  SkillSchema,
   validateProfile,
   validateHistoryEntry
 } from './profile.schema.js'
@@ -347,6 +348,138 @@ describe('ExperienceEntrySchema', () => {
       updatedAt: '2026-01-30T10:00:00.000Z'
     }
     const result = ExperienceEntrySchema.safeParse(entry)
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('SkillSchema', () => {
+  const validSkill = {
+    id: '550e8400-e29b-41d4-a716-446655440010',
+    name: 'React',
+    category: 'Technical',
+    subcategory: 'Frontend Frameworks',
+    proficiency: 'expert',
+    source: 'explicit',
+    confidence: 95,
+    evidence: ['550e8400-e29b-41d4-a716-446655440002'],
+    createdAt: '2026-01-30T10:00:00.000Z',
+    updatedAt: '2026-01-30T10:00:00.000Z'
+  }
+
+  it('accepts valid skill with all required fields', () => {
+    const result = SkillSchema.safeParse(validSkill)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts all proficiency levels', () => {
+    const proficiencyLevels = ['familiar', 'proficient', 'expert']
+
+    for (const proficiency of proficiencyLevels) {
+      const skill = { ...validSkill, proficiency }
+      const result = SkillSchema.safeParse(skill)
+      expect(result.success, `Proficiency "${proficiency}" should be valid`).toBe(true)
+    }
+  })
+
+  it('accepts both source types', () => {
+    const sourceTypes = ['explicit', 'inferred']
+
+    for (const source of sourceTypes) {
+      const skill = { ...validSkill, source }
+      const result = SkillSchema.safeParse(skill)
+      expect(result.success, `Source "${source}" should be valid`).toBe(true)
+    }
+  })
+
+  it('accepts confidence at boundary values (0 and 100)', () => {
+    const skill0 = { ...validSkill, confidence: 0 }
+    const skill100 = { ...validSkill, confidence: 100 }
+
+    expect(SkillSchema.safeParse(skill0).success).toBe(true)
+    expect(SkillSchema.safeParse(skill100).success).toBe(true)
+  })
+
+  it('accepts skill with multiple evidence references', () => {
+    const skill = {
+      ...validSkill,
+      evidence: [
+        '550e8400-e29b-41d4-a716-446655440002',
+        '550e8400-e29b-41d4-a716-446655440003'
+      ]
+    }
+    const result = SkillSchema.safeParse(skill)
+    expect(result.success).toBe(true)
+    expect(result.data.evidence).toHaveLength(2)
+  })
+
+  // CRITICAL TEST: Evidence is REQUIRED per RESEARCH.md Pitfall 5
+  it('FAILS if evidence array is empty (evidence is required)', () => {
+    const skillWithEmptyEvidence = {
+      ...validSkill,
+      evidence: []
+    }
+    const result = SkillSchema.safeParse(skillWithEmptyEvidence)
+    expect(result.success).toBe(false)
+    expect(result.error.issues.some((issue) => issue.path.includes('evidence'))).toBe(true)
+  })
+
+  it('rejects invalid proficiency value', () => {
+    const skill = { ...validSkill, proficiency: 'intermediate' }
+    const result = SkillSchema.safeParse(skill)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects invalid source value', () => {
+    const skill = { ...validSkill, source: 'unknown' }
+    const result = SkillSchema.safeParse(skill)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects confidence greater than 100', () => {
+    const skill = { ...validSkill, confidence: 150 }
+    const result = SkillSchema.safeParse(skill)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects negative confidence', () => {
+    const skill = { ...validSkill, confidence: -10 }
+    const result = SkillSchema.safeParse(skill)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects missing category', () => {
+    const { category, ...skillWithoutCategory } = validSkill
+    const result = SkillSchema.safeParse(skillWithoutCategory)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects missing subcategory', () => {
+    const { subcategory, ...skillWithoutSubcategory } = validSkill
+    const result = SkillSchema.safeParse(skillWithoutSubcategory)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects empty category', () => {
+    const skill = { ...validSkill, category: '' }
+    const result = SkillSchema.safeParse(skill)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects empty subcategory', () => {
+    const skill = { ...validSkill, subcategory: '' }
+    const result = SkillSchema.safeParse(skill)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects empty name', () => {
+    const skill = { ...validSkill, name: '' }
+    const result = SkillSchema.safeParse(skill)
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects invalid uuid', () => {
+    const skill = { ...validSkill, id: 'not-a-uuid' }
+    const result = SkillSchema.safeParse(skill)
     expect(result.success).toBe(false)
   })
 })

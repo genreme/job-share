@@ -55,6 +55,22 @@ export const ExperienceEntrySchema = z.object({
 })
 
 // =============================================================================
+// SKILL SCHEMA (Hierarchical with evidence linking)
+// =============================================================================
+export const SkillSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  category: z.string().min(1), // e.g., "Technical", "Leadership", "Domain", "Soft Skills"
+  subcategory: z.string().min(1), // e.g., "Design Systems", "Team Management"
+  proficiency: z.enum(['familiar', 'proficient', 'expert']),
+  source: z.enum(['explicit', 'inferred']), // User-stated vs derived from experience
+  confidence: z.number().min(0).max(100), // Evidence strength percentage
+  evidence: z.array(z.string()).min(1), // Project IDs demonstrating this skill (REQUIRED)
+  createdAt: z.string(),
+  updatedAt: z.string()
+})
+
+// =============================================================================
 // PROFILE METADATA SCHEMA
 // =============================================================================
 
@@ -82,7 +98,7 @@ export const HistoryEntrySchema = z.object({
 export const ProfileSchema = z.object({
   metadata: ProfileMetadataSchema,
   experience: z.array(ExperienceEntrySchema).default([]), // Project-centric structure
-  skills: z.array(z.unknown()).default([]), // Populated in Task 2
+  skills: z.array(SkillSchema).default([]), // Hierarchical with evidence linking
   summaryBlocks: z.array(z.unknown()).default([]), // Populated in 02-03
   stories: z.array(z.unknown()).default([]), // Populated in 02-03
   preferences: z

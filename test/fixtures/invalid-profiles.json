@@ -146,5 +146,129 @@
       "history": []
     },
     "expectedErrors": ["metadata.version"]
+  },
+  {
+    "name": "skill with empty evidence array",
+    "profile": {
+      "metadata": {
+        "version": 1,
+        "createdAt": "2026-01-30T10:00:00.000Z",
+        "updatedAt": "2026-01-30T10:00:00.000Z",
+        "schemaVersion": "1.0"
+      },
+      "experience": [],
+      "skills": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440010",
+          "name": "React",
+          "category": "Technical",
+          "subcategory": "Frontend Frameworks",
+          "proficiency": "expert",
+          "source": "explicit",
+          "confidence": 95,
+          "evidence": [],
+          "createdAt": "2026-01-30T10:00:00.000Z",
+          "updatedAt": "2026-01-30T10:00:00.000Z"
+        }
+      ],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": []
+    },
+    "expectedErrors": ["skills.0.evidence"]
+  },
+  {
+    "name": "skill with invalid proficiency",
+    "profile": {
+      "metadata": {
+        "version": 1,
+        "createdAt": "2026-01-30T10:00:00.000Z",
+        "updatedAt": "2026-01-30T10:00:00.000Z",
+        "schemaVersion": "1.0"
+      },
+      "experience": [],
+      "skills": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440010",
+          "name": "React",
+          "category": "Technical",
+          "subcategory": "Frontend Frameworks",
+          "proficiency": "intermediate",
+          "source": "explicit",
+          "confidence": 95,
+          "evidence": ["550e8400-e29b-41d4-a716-446655440002"],
+          "createdAt": "2026-01-30T10:00:00.000Z",
+          "updatedAt": "2026-01-30T10:00:00.000Z"
+        }
+      ],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": []
+    },
+    "expectedErrors": ["skills.0.proficiency"]
+  },
+  {
+    "name": "skill with confidence greater than 100",
+    "profile": {
+      "metadata": {
+        "version": 1,
+        "createdAt": "2026-01-30T10:00:00.000Z",
+        "updatedAt": "2026-01-30T10:00:00.000Z",
+        "schemaVersion": "1.0"
+      },
+      "experience": [],
+      "skills": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440010",
+          "name": "React",
+          "category": "Technical",
+          "subcategory": "Frontend Frameworks",
+          "proficiency": "expert",
+          "source": "explicit",
+          "confidence": 150,
+          "evidence": ["550e8400-e29b-41d4-a716-446655440002"],
+          "createdAt": "2026-01-30T10:00:00.000Z",
+          "updatedAt": "2026-01-30T10:00:00.000Z"
+        }
+      ],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": []
+    },
+    "expectedErrors": ["skills.0.confidence"]
+  },
+  {
+    "name": "skill with negative confidence",
+    "profile": {
+      "metadata": {
+        "version": 1,
+        "createdAt": "2026-01-30T10:00:00.000Z",
+        "updatedAt": "2026-01-30T10:00:00.000Z",
+        "schemaVersion": "1.0"
+      },
+      "experience": [],
+      "skills": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440010",
+          "name": "React",
+          "category": "Technical",
+          "subcategory": "Frontend Frameworks",
+          "proficiency": "expert",
+          "source": "explicit",
+          "confidence": -10,
+          "evidence": ["550e8400-e29b-41d4-a716-446655440002"],
+          "createdAt": "2026-01-30T10:00:00.000Z",
+          "updatedAt": "2026-01-30T10:00:00.000Z"
+        }
+      ],
+      "summaryBlocks": [],
+      "stories": [],
+      "preferences": {},
+      "history": []
+    },
+    "expectedErrors": ["skills.0.confidence"]
   }
 ]
