@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Present the best version of myself to the right opportunities, informed by a comprehensive understanding of who I am professionally
-**Current focus:** Phase 3: Self-Profile Integration (in progress)
+**Current focus:** Phase 3: Self-Profile Integration - COMPLETE
 
 ## Current Position
 
-Phase: 3 of 10 (Self-Profile Integration)
-Plan: 2 of 3 in current phase - COMPLETE
-Status: In progress
-Last activity: 2026-01-30 - Completed 03-01-PLAN.md (Cleanup and Gap Detection Services)
+Phase: 3 of 10 (Self-Profile Integration) - COMPLETE
+Plan: 3 of 3 in current phase - COMPLETE
+Status: Phase complete
+Last activity: 2026-01-30 - Completed 03-03-PLAN.md (Conversation Learning System)
 
-Progress: [=====-----] ~37% (11 of ~30 plans)
+Progress: [=====-----] ~40% (12 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
-- Average duration: 5 min
-- Total execution time: 54 min
+- Total plans completed: 12
+- Average duration: 6 min
+- Total execution time: 68 min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [=====-----] ~37% (11 of ~30 plans)
 |-------|-------|-------|----------|
 | 01-qa-layer | 6 | 21 min | ~4 min |
 | 02-self-profile-schema | 3 | 15 min | ~5 min |
-| 03-self-profile-integration | 2 | 18 min | 9 min |
+| 03-self-profile-integration | 3 | 32 min | ~11 min |
 
 **Recent Trend:**
-- Last 10 plans: 01-02 (5min), 01-03 (3min), 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min)
-- Trend: Consistent ~4-5 min per plan, larger integration plans take longer
+- Last 10 plans: 01-03 (3min), 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min)
+- Trend: Integration plans take longer (~10-14 min) due to cross-module dependencies
 
 *Updated after each plan completion*
 
@@ -79,19 +79,24 @@ Recent decisions affecting current work:
 - [03-01]: STALENESS_THRESHOLDS: AGE_DAYS=180, USAGE_DAYS=90 (both conditions required)
 - [03-01]: MIN_EVIDENCE_COUNT=2 for skills (thin evidence detection)
 - [03-01]: Graceful degradation when document-history.json missing
+- [03-03]: String similarity threshold 0.7 for overlap detection
+- [03-03]: Conservative 'familiar' proficiency default for inferred skills
+- [03-03]: Confidence levels map to percentages: high=90, medium=70, low=50
+- [03-03]: Suggestion system: high->confirm_inline, medium->review_soon, low->batch
+- [03-03]: Queue persistence uses atomic write pattern (temp+rename)
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-None. Plans 03-01 and 03-02 complete.
+None. Phase 3 complete.
 
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 03-01-PLAN.md (Cleanup and Gap Detection Services)
+Stopped at: Completed 03-03-PLAN.md (Phase 3 Complete)
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -161,9 +166,15 @@ Resume file: None
 | get_target_roles | Job search criteria |
 | get_communication_prefs | Tone/style prefs |
 
-## Phase 3 Progress
+## Phase 3 Completion Summary
 
-**Phase 3: Self-Profile Integration** — IN PROGRESS
+**Phase 3: Self-Profile Integration** — COMPLETE
+
+- 3 plans executed
+- 751 total tests passing (376 new in Phase 3)
+- Profile-to-document transformation complete
+- Cleanup and gap detection operational
+- Conversation learning system with queue and confirmation workflow
 
 ### Plans Completed:
 
@@ -175,6 +186,22 @@ Resume file: None
   - 117 new tests
   - 4 new MCP tools: generate_interview_prep, preview_document_sources
 
+- **Plan 03-01: Cleanup and Gap Detection Services**
+  - Duplicate detector with fuzzy matching (85% threshold)
+  - Staleness detector requiring BOTH age (180d) AND usage (90d) conditions
+  - Gap detector updated to CleanupFinding structure
+  - Cleanup orchestrator service with 4-run history
+  - 178 new tests
+  - 3 new MCP tools: run_weekly_cleanup, get_cleanup_findings, dismiss_finding
+
+- **Plan 03-03: Conversation Learning System**
+  - ExtractionSchema and LearningQueueSchema for extraction validation
+  - Learning queue with persistence and overlap detection
+  - Extraction-to-profile mapper for confirm workflow
+  - 5 MCP tools for learning workflow (queue, confirm, batch, history)
+  - 81 new tests
+  - Enables PROF-12, PROF-13, PROF-14 requirements
+
 ### New MCP Tools (Document Generation):
 
 | Tool | Purpose |
@@ -184,14 +211,6 @@ Resume file: None
 | generate_interview_prep | STAR-based interview prep package |
 | preview_document_sources | Show which profile sections will be used |
 
-- **Plan 03-01: Cleanup and Gap Detection Services**
-  - Duplicate detector with fuzzy matching (85% threshold)
-  - Staleness detector requiring BOTH age (180d) AND usage (90d) conditions
-  - Gap detector updated to CleanupFinding structure
-  - Cleanup orchestrator service with 4-run history
-  - 178 new tests
-  - 3 new MCP tools: run_weekly_cleanup, get_cleanup_findings, dismiss_finding
-
 ### New MCP Tools (Cleanup):
 
 | Tool | Purpose |
@@ -199,3 +218,21 @@ Resume file: None
 | run_weekly_cleanup | Analyze profile for duplicates, staleness, gaps |
 | get_cleanup_findings | Get stored findings with type filtering |
 | dismiss_finding | Mark finding as acknowledged |
+
+### New MCP Tools (Learning):
+
+| Tool | Purpose |
+|------|---------|
+| queue_profile_extraction | Queue insight from conversation for confirmation |
+| get_pending_extractions | View pending extractions with overlap info |
+| confirm_extraction | Confirm/reject/merge extraction to profile |
+| batch_confirm_extractions | Bulk confirm/reject multiple extractions |
+| get_extraction_history | View past confirmed/rejected extractions |
+
+### Integration Status:
+
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| PROF-12 Passive learning | queue_profile_extraction tool | Complete |
+| PROF-13 Confirm before update | confirm_extraction workflow | Complete |
+| PROF-14 Cleanup workflow | run_weekly_cleanup + dismiss_finding | Complete |
