@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 1 of 10 (QA Layer Foundation)
-Plan: 6 of 6 in current phase (gap closure plans)
+Plan: 4 of 6 in current phase (gap closure plans)
 Status: In progress
-Last activity: 2026-01-29 - Completed 01-06-PLAN.md (Coverage Threshold Adjustment)
+Last activity: 2026-01-30 - Completed 01-04-PLAN.md (Validation Wiring)
 
-Progress: [==--------] ~13% (4 of ~30 plans)
+Progress: [===-------] ~17% (5 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 4 min
-- Total execution time: 15 min
+- Total plans completed: 5
+- Average duration: 3 min
+- Total execution time: 17 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-qa-layer | 4 | 15 min | ~4 min |
+| 01-qa-layer | 5 | 17 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5min), 01-02 (5min), 01-03 (3min), 01-06 (2min)
-- Trend: Consistent execution speed
+- Last 5 plans: 01-01 (5min), 01-02 (5min), 01-03 (3min), 01-06 (2min), 01-04 (2min)
+- Trend: Consistent execution speed, improving
 
 *Updated after each plan completion*
 
@@ -54,6 +54,8 @@ Recent decisions affecting current work:
 - [01-03]: 7-day artifact retention for CI reports (balance access vs storage)
 - [01-03]: Phase gate enforced via npm run phase:complete
 - [01-06]: Coverage thresholds adjusted to 20% baseline (target 70% by Phase 3)
+- [01-04]: Advisory mode for data loading validation (warns but continues)
+- [01-04]: Validation before status change in all 4 update functions
 
 ### Pending Todos
 
@@ -63,9 +65,10 @@ None yet.
 
 - Coverage at ~21% overall (jobs.js: 99%, updates.js: 91%, but server.js, index.js, documents.js, resume.js at 0%)
 - RESOLVED: Coverage threshold adjusted from 70% to 20% baseline, phase gate now passes
+- Gap 1 (Validation Wiring) RESOLVED: Schema and workflow validation now wired into application code
 
 ## Session Continuity
 
-Last session: 2026-01-29
-Stopped at: Completed 01-06-PLAN.md
+Last session: 2026-01-30
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None
