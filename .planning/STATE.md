@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Present the best version of myself to the right opportunities, informed by a comprehensive understanding of who I am professionally
-**Current focus:** Phase 3: Profile Population (next)
+**Current focus:** Phase 3: Self-Profile Integration (in progress)
 
 ## Current Position
 
-Phase: 2 of 10 (Self-Profile Schema) - COMPLETE
-Plan: 3 of 3 in current phase - COMPLETE
-Status: Phase complete
-Last activity: 2026-01-30 - Completed 02-03-PLAN.md (Summaries, Stories, Preferences & MCP Tools)
+Phase: 3 of 10 (Self-Profile Integration)
+Plan: 2 of 3 in current phase - COMPLETE
+Status: In progress
+Last activity: 2026-01-30 - Completed 03-02-PLAN.md (Profile Integration for Document Generation)
 
-Progress: [====------] ~30% (9 of ~30 plans)
+Progress: [====------] ~33% (10 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 4 min
-- Total execution time: 36 min
+- Total plans completed: 10
+- Average duration: 5 min
+- Total execution time: 46 min
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [====------] ~30% (9 of ~30 plans)
 |-------|-------|-------|----------|
 | 01-qa-layer | 6 | 21 min | ~4 min |
 | 02-self-profile-schema | 3 | 15 min | ~5 min |
+| 03-self-profile-integration | 1 | 10 min | 10 min |
 
 **Recent Trend:**
-- Last 9 plans: 01-01 (5min), 01-02 (5min), 01-03 (3min), 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min)
-- Trend: Consistent ~4-5 min per plan
+- Last 10 plans: 01-01 (5min), 01-02 (5min), 01-03 (3min), 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min)
+- Trend: Consistent ~4-5 min per plan, larger integration plans take longer
 
 *Updated after each plan completion*
 
@@ -69,6 +70,11 @@ Recent decisions affecting current work:
 - [02-03]: Target roles use enum for level and company stage
 - [02-03]: Communication prefs use nullable().optional() for backwards compatibility
 - [02-03]: MCP tool tests use vi.mock for loader isolation
+- [03-02]: Profile is primary data source; legacy JSON is fallback with deprecation warning
+- [03-02]: Gap detection warns but allows proceed with proceedWithGaps flag
+- [03-02]: Document history tracks { itemType, itemId } for staleness detection
+- [03-02]: Rolling window of 100 records for document history
+- [03-02]: Interview prep requires at least one STAR story to generate
 
 ### Pending Todos
 
@@ -76,12 +82,13 @@ None yet.
 
 ### Blockers/Concerns
 
-None. Phase 2 complete. Ready for Phase 3.
+- Plan 03-01 (cleanup/gap detection) not yet executed - gap-detector has minimal implementation
+- learning.test.js has pre-existing test failures (unrelated to current work)
 
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 02-03-PLAN.md (Phase 2 Complete)
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -150,3 +157,26 @@ Resume file: None
 | get_summary_blocks_by_audience | Filter summaries |
 | get_target_roles | Job search criteria |
 | get_communication_prefs | Tone/style prefs |
+
+## Phase 3 Progress
+
+**Phase 3: Self-Profile Integration** — IN PROGRESS
+
+### Plans Completed:
+
+- **Plan 03-02: Profile Integration for Document Generation**
+  - Profile-to-resume transformation service with relevance scoring
+  - Profile-to-cover-letter transformation with tone preferences
+  - Interview prep generation from STAR stories
+  - Document history tracking for staleness detection
+  - 117 new tests
+  - 4 new MCP tools: generate_interview_prep, preview_document_sources
+
+### New MCP Tools (Document Generation):
+
+| Tool | Purpose |
+|------|---------|
+| generate_resume | Generate PDF using profile (with gaps warning) |
+| generate_cover_letter | Generate PDF with tone from profile |
+| generate_interview_prep | STAR-based interview prep package |
+| preview_document_sources | Show which profile sections will be used |
