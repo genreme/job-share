@@ -12,7 +12,8 @@
     "test:run": "vitest run",
     "test:ci": "vitest run --coverage --reporter=default",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "phase:complete": "node scripts/phase-gate.js"
   },
   "author": "John Ra",
   "license": "MIT",
