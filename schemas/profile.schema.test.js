@@ -17,6 +17,9 @@ import {
   RoleSchema,
   ExperienceEntrySchema,
   SkillSchema,
+  SummaryBlockSchema,
+  StoryVariantSchema,
+  STARStorySchema,
   validateProfile,
   validateHistoryEntry
 } from './profile.schema.js'
@@ -480,6 +483,203 @@ describe('SkillSchema', () => {
   it('rejects invalid uuid', () => {
     const skill = { ...validSkill, id: 'not-a-uuid' }
     const result = SkillSchema.safeParse(skill)
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('SummaryBlockSchema', () => {
+  const validSummaryBlock = {
+    id: '550e8400-e29b-41d4-a716-446655440020',
+    content:
+      'Engineering leader with 10+ years scaling teams from startup to growth stage.',
+    audiences: ['technical', 'leadership'],
+    themes: ['team-scaling'],
+    createdAt: '2026-01-30T10:00:00.000Z',
+    updatedAt: '2026-01-30T10:00:00.000Z'
+  }
+
+  it('accepts valid summary block with all fields', () => {
+    const result = SummaryBlockSchema.safeParse(validSummaryBlock)
+    expect(result.success).toBe(true)
+  })
+
+  it('requires content (non-empty)', () => {
+    const block = { ...validSummaryBlock, content: '' }
+    const result = SummaryBlockSchema.safeParse(block)
+    expect(result.success).toBe(false)
+  })
+
+  it('requires at least one audience', () => {
+    const block = { ...validSummaryBlock, audiences: [] }
+    const result = SummaryBlockSchema.safeParse(block)
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts all valid audience types', () => {
+    const audiences = ['technical', 'leadership', 'executive', 'mission-driven']
+    for (const audience of audiences) {
+      const block = { ...validSummaryBlock, audiences: [audience] }
+      const result = SummaryBlockSchema.safeParse(block)
+      expect(result.success, `Audience "${audience}" should be valid`).toBe(true)
+    }
+  })
+
+  it('rejects invalid audience type', () => {
+    const block = { ...validSummaryBlock, audiences: ['invalid-audience'] }
+    const result = SummaryBlockSchema.safeParse(block)
+    expect(result.success).toBe(false)
+  })
+
+  it('applies default empty array for themes when missing', () => {
+    const { themes, ...blockWithoutThemes } = validSummaryBlock
+    const result = SummaryBlockSchema.safeParse(blockWithoutThemes)
+    expect(result.success).toBe(true)
+    expect(result.data.themes).toEqual([])
+  })
+
+  it('rejects invalid uuid', () => {
+    const block = { ...validSummaryBlock, id: 'not-a-uuid' }
+    const result = SummaryBlockSchema.safeParse(block)
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('StoryVariantSchema', () => {
+  it('accepts variant with audience only', () => {
+    const variant = { audience: 'technical' }
+    const result = StoryVariantSchema.safeParse(variant)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts variant with all optional overrides', () => {
+    const variant = {
+      audience: 'leadership',
+      situation: 'Leading a cross-functional team...',
+      task: 'Align stakeholders...',
+      action: 'Facilitated workshops...',
+      result: 'Achieved 100% buy-in...'
+    }
+    const result = StoryVariantSchema.safeParse(variant)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts all valid audience types', () => {
+    const audiences = ['technical', 'leadership', 'behavioral']
+    for (const audience of audiences) {
+      const variant = { audience }
+      const result = StoryVariantSchema.safeParse(variant)
+      expect(result.success, `Audience "${audience}" should be valid`).toBe(true)
+    }
+  })
+
+  it('rejects invalid audience type', () => {
+    const variant = { audience: 'invalid' }
+    const result = StoryVariantSchema.safeParse(variant)
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('STARStorySchema', () => {
+  const validStory = {
+    id: '550e8400-e29b-41d4-a716-446655440030',
+    title: 'Design System Migration Leadership',
+    situation: 'Legacy component library was causing 40% of front-end bugs.',
+    task: 'Lead migration to modern design system while maintaining velocity.',
+    action: 'Created phased migration plan with backwards compatibility.',
+    result: 'Completed in 6 months with zero production incidents.',
+    questionCategories: ['leadership', 'change-management'],
+    themes: ['cross-functional', 'technical-leadership'],
+    variants: [{ audience: 'technical', action: 'Implemented codemod strategy.' }],
+    projectRef: '550e8400-e29b-41d4-a716-446655440002',
+    createdAt: '2026-01-30T10:00:00.000Z',
+    updatedAt: '2026-01-30T10:00:00.000Z'
+  }
+
+  it('accepts valid STAR story with all fields', () => {
+    const result = STARStorySchema.safeParse(validStory)
+    expect(result.success).toBe(true)
+  })
+
+  it('requires all four STAR components (situation, task, action, result)', () => {
+    const components = ['situation', 'task', 'action', 'result']
+
+    for (const component of components) {
+      const story = { ...validStory }
+      delete story[component]
+      const result = STARStorySchema.safeParse(story)
+      expect(result.success, `Missing ${component} should fail`).toBe(false)
+    }
+  })
+
+  it('rejects empty STAR components', () => {
+    const components = ['situation', 'task', 'action', 'result']
+
+    for (const component of components) {
+      const story = { ...validStory, [component]: '' }
+      const result = STARStorySchema.safeParse(story)
+      expect(result.success, `Empty ${component} should fail`).toBe(false)
+    }
+  })
+
+  it('requires title (non-empty)', () => {
+    const story = { ...validStory, title: '' }
+    const result = STARStorySchema.safeParse(story)
+    expect(result.success).toBe(false)
+  })
+
+  it('applies default empty array for questionCategories when missing', () => {
+    const { questionCategories, ...storyWithout } = validStory
+    const result = STARStorySchema.safeParse(storyWithout)
+    expect(result.success).toBe(true)
+    expect(result.data.questionCategories).toEqual([])
+  })
+
+  it('applies default empty array for themes when missing', () => {
+    const { themes, ...storyWithout } = validStory
+    const result = STARStorySchema.safeParse(storyWithout)
+    expect(result.success).toBe(true)
+    expect(result.data.themes).toEqual([])
+  })
+
+  it('applies default empty array for variants when missing', () => {
+    const { variants, ...storyWithout } = validStory
+    const result = STARStorySchema.safeParse(storyWithout)
+    expect(result.success).toBe(true)
+    expect(result.data.variants).toEqual([])
+  })
+
+  it('accepts story without projectRef (optional)', () => {
+    const { projectRef, ...storyWithout } = validStory
+    const result = STARStorySchema.safeParse(storyWithout)
+    expect(result.success).toBe(true)
+  })
+
+  it('validates variants array when present', () => {
+    const story = {
+      ...validStory,
+      variants: [{ audience: 'invalid-audience' }]
+    }
+    const result = STARStorySchema.safeParse(story)
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts multiple variants for different audiences', () => {
+    const story = {
+      ...validStory,
+      variants: [
+        { audience: 'technical', action: 'Implemented codemod strategy.' },
+        { audience: 'leadership', situation: 'Team morale was low...' },
+        { audience: 'behavioral', result: 'Improved team collaboration.' }
+      ]
+    }
+    const result = STARStorySchema.safeParse(story)
+    expect(result.success).toBe(true)
+    expect(result.data.variants).toHaveLength(3)
+  })
+
+  it('rejects invalid uuid', () => {
+    const story = { ...validStory, id: 'not-a-uuid' }
+    const result = STARStorySchema.safeParse(story)
     expect(result.success).toBe(false)
   })
 })

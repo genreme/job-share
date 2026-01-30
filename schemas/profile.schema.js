@@ -71,6 +71,49 @@ export const SkillSchema = z.object({
 })
 
 // =============================================================================
+// SUMMARY BLOCK SCHEMA (Modular paragraphs for audience-specific generation)
+// =============================================================================
+export const SummaryBlockSchema = z.object({
+  id: z.string().uuid(),
+  content: z.string().min(1), // The actual paragraph text
+  audiences: z
+    .array(z.enum(['technical', 'leadership', 'executive', 'mission-driven']))
+    .min(1), // At least one audience required
+  themes: z.array(z.string()).default([]), // e.g., ['team-scaling', 'revenue-impact']
+  createdAt: z.string(),
+  updatedAt: z.string()
+})
+
+// =============================================================================
+// STORY VARIANT SCHEMA (Audience-specific STAR adjustments)
+// =============================================================================
+export const StoryVariantSchema = z.object({
+  audience: z.enum(['technical', 'leadership', 'behavioral']),
+  situation: z.string().optional(), // Override base if present
+  task: z.string().optional(),
+  action: z.string().optional(),
+  result: z.string().optional()
+})
+
+// =============================================================================
+// STAR STORY SCHEMA (Interview stories with audience variants)
+// =============================================================================
+export const STARStorySchema = z.object({
+  id: z.string().uuid(),
+  title: z.string().min(1), // Short identifier for the story
+  situation: z.string().min(1), // Base STAR components
+  task: z.string().min(1),
+  action: z.string().min(1),
+  result: z.string().min(1),
+  questionCategories: z.array(z.string()).default([]), // e.g., ['conflict-resolution', 'leadership']
+  themes: z.array(z.string()).default([]), // Cross-reference tags
+  variants: z.array(StoryVariantSchema).default([]), // Audience-specific versions
+  projectRef: z.string().optional(), // Link to experience project ID
+  createdAt: z.string(),
+  updatedAt: z.string()
+})
+
+// =============================================================================
 // PROFILE METADATA SCHEMA
 // =============================================================================
 
@@ -99,12 +142,12 @@ export const ProfileSchema = z.object({
   metadata: ProfileMetadataSchema,
   experience: z.array(ExperienceEntrySchema).default([]), // Project-centric structure
   skills: z.array(SkillSchema).default([]), // Hierarchical with evidence linking
-  summaryBlocks: z.array(z.unknown()).default([]), // Populated in 02-03
-  stories: z.array(z.unknown()).default([]), // Populated in 02-03
+  summaryBlocks: z.array(SummaryBlockSchema).default([]), // Modular paragraphs for audience adaptation
+  stories: z.array(STARStorySchema).default([]), // Interview stories with variants
   preferences: z
     .object({
-      targetRoles: z.array(z.unknown()).default([]), // Populated in 02-03
-      communication: z.unknown().optional() // Populated in 02-03
+      targetRoles: z.array(z.unknown()).default([]), // Populated in 02-03 Task 2
+      communication: z.unknown().optional() // Populated in 02-03 Task 2
     })
     .default({}),
   history: z.array(HistoryEntrySchema).default([])

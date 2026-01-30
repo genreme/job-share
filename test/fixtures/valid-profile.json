@@ -50,8 +50,37 @@
       "updatedAt": "2026-01-30T10:00:00.000Z"
     }
   ],
-  "summaryBlocks": [],
-  "stories": [],
+  "summaryBlocks": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440020",
+      "content": "Engineering leader with 10+ years scaling teams from startup to growth stage, combining deep technical expertise in frontend systems with strategic thinking on organizational design.",
+      "audiences": ["technical", "leadership"],
+      "themes": ["team-scaling", "technical-leadership"],
+      "createdAt": "2026-01-30T10:00:00.000Z",
+      "updatedAt": "2026-01-30T10:00:00.000Z"
+    }
+  ],
+  "stories": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440030",
+      "title": "Design System Migration Leadership",
+      "situation": "Our legacy component library was causing 40% of front-end bugs and slowing feature development by 30%. Teams were duplicating components inconsistently.",
+      "task": "Lead the migration to a modern design system while maintaining feature velocity and gaining buy-in from 12 product teams.",
+      "action": "Created a phased migration plan with backwards compatibility. Established design tokens, documented component APIs, and paired with team leads to address concerns. Ran weekly office hours.",
+      "result": "Completed migration in 6 months with zero production incidents. Reduced front-end bugs by 60%, cut new feature development time by 25%, and achieved 95% adoption across teams.",
+      "questionCategories": ["leadership", "change-management", "technical-decision"],
+      "themes": ["cross-functional", "technical-leadership", "team-scaling"],
+      "variants": [
+        {
+          "audience": "technical",
+          "action": "Implemented a codemods-based migration strategy with AST transformations. Built a Storybook-driven testing harness to validate visual regression. Created TypeScript strict mode wrapper components for type safety during transition."
+        }
+      ],
+      "projectRef": "550e8400-e29b-41d4-a716-446655440002",
+      "createdAt": "2026-01-30T10:00:00.000Z",
+      "updatedAt": "2026-01-30T10:00:00.000Z"
+    }
+  ],
   "preferences": {
     "targetRoles": [],
     "communication": null
