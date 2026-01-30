@@ -1,0 +1,41 @@
+{
+  "id": 1,
+  "title": "Creative Director",
+  "company": "Acme Corp",
+  "industry": "Technology",
+  "location": "Boston, MA",
+  "salary": "$140,000 - $180,000",
+  "fitScore": 85,
+  "status": "apply-now",
+  "posted": "2026-01-15",
+  "found": "2026-01-20",
+  "applied": null,
+  "followup": null,
+  "url": "https://acme.com/careers/creative-director",
+  "symbols": ["💰", "🏠"],
+  "connections": [
+    {
+      "name": "John Smith",
+      "role": "VP of Marketing",
+      "linkedIn": "https://linkedin.com/in/johnsmith",
+      "notes": "Former colleague",
+      "isPrimary": true,
+      "reachedOut": false
+    },
+    "Jane Doe (referral from conference)"
+  ],
+  "sources": ["LinkedIn", "Indeed"],
+  "notes": "Great culture fit. Remote-first company.",
+  "updates": [
+    {
+      "date": "2026-01-20T10:00:00.000Z",
+      "text": "Found via LinkedIn search"
+    },
+    {
+      "timestamp": "2026-01-21T14:30:00.000Z",
+      "type": "Research",
+      "notes": "Looked up company on Glassdoor"
+    }
+  ],
+  "hiringManager": "Sarah Johnson"
+}

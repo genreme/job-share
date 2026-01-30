@@ -1,0 +1,145 @@
+[
+  {
+    "name": "Missing required fields",
+    "job": {
+      "id": 1,
+      "title": "Creative Director"
+    },
+    "expectedErrors": ["company", "fitScore", "status"]
+  },
+  {
+    "name": "Invalid ID (negative)",
+    "job": {
+      "id": -5,
+      "title": "Creative Director",
+      "company": "Acme Corp",
+      "fitScore": 85,
+      "status": "apply-now"
+    },
+    "expectedErrors": ["id"]
+  },
+  {
+    "name": "Invalid ID (zero)",
+    "job": {
+      "id": 0,
+      "title": "Creative Director",
+      "company": "Acme Corp",
+      "fitScore": 85,
+      "status": "apply-now"
+    },
+    "expectedErrors": ["id"]
+  },
+  {
+    "name": "Invalid ID (non-integer)",
+    "job": {
+      "id": 1.5,
+      "title": "Creative Director",
+      "company": "Acme Corp",
+      "fitScore": 85,
+      "status": "apply-now"
+    },
+    "expectedErrors": ["id"]
+  },
+  {
+    "name": "Empty title",
+    "job": {
+      "id": 1,
+      "title": "",
+      "company": "Acme Corp",
+      "fitScore": 85,
+      "status": "apply-now"
+    },
+    "expectedErrors": ["title"]
+  },
+  {
+    "name": "Empty company",
+    "job": {
+      "id": 1,
+      "title": "Creative Director",
+      "company": "",
+      "fitScore": 85,
+      "status": "apply-now"
+    },
+    "expectedErrors": ["company"]
+  },
+  {
+    "name": "Invalid status",
+    "job": {
+      "id": 1,
+      "title": "Creative Director",
+      "company": "Acme Corp",
+      "fitScore": 85,
+      "status": "pending"
+    },
+    "expectedErrors": ["status"]
+  },
+  {
+    "name": "FitScore below minimum (negative)",
+    "job": {
+      "id": 1,
+      "title": "Creative Director",
+      "company": "Acme Corp",
+      "fitScore": -10,
+      "status": "apply-now"
+    },
+    "expectedErrors": ["fitScore"]
+  },
+  {
+    "name": "FitScore above maximum (over 100)",
+    "job": {
+      "id": 1,
+      "title": "Creative Director",
+      "company": "Acme Corp",
+      "fitScore": 150,
+      "status": "apply-now"
+    },
+    "expectedErrors": ["fitScore"]
+  },
+  {
+    "name": "FitScore wrong type (string)",
+    "job": {
+      "id": 1,
+      "title": "Creative Director",
+      "company": "Acme Corp",
+      "fitScore": "high",
+      "status": "apply-now"
+    },
+    "expectedErrors": ["fitScore"]
+  },
+  {
+    "name": "Invalid URL format",
+    "job": {
+      "id": 1,
+      "title": "Creative Director",
+      "company": "Acme Corp",
+      "fitScore": 85,
+      "status": "apply-now",
+      "url": "not-a-valid-url"
+    },
+    "expectedErrors": ["url"]
+  },
+  {
+    "name": "Wrong type for connections (object instead of array)",
+    "job": {
+      "id": 1,
+      "title": "Creative Director",
+      "company": "Acme Corp",
+      "fitScore": 85,
+      "status": "apply-now",
+      "connections": { "name": "John" }
+    },
+    "expectedErrors": ["connections"]
+  },
+  {
+    "name": "Wrong type for symbols (string instead of array)",
+    "job": {
+      "id": 1,
+      "title": "Creative Director",
+      "company": "Acme Corp",
+      "fitScore": 85,
+      "status": "apply-now",
+      "symbols": "emoji"
+    },
+    "expectedErrors": ["symbols"]
+  }
+]
