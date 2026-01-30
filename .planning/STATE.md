@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 2 of 10 (Self-Profile Schema)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-30 - Completed 02-01-PLAN.md (Core Profile Schema)
+Last activity: 2026-01-30 - Completed 02-02-PLAN.md (Experience & Skills Schemas)
 
-Progress: [===-------] ~23% (7 of ~30 plans)
+Progress: [===-------] ~27% (8 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: 4 min
-- Total execution time: 25 min
+- Total execution time: 28 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-qa-layer | 6 | 21 min | ~4 min |
-| 02-self-profile-schema | 1 | 4 min | 4 min |
+| 02-self-profile-schema | 2 | 7 min | ~4 min |
 
 **Recent Trend:**
-- Last 7 plans: 01-01 (5min), 01-02 (5min), 01-03 (3min), 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min)
+- Last 8 plans: 01-01 (5min), 01-02 (5min), 01-03 (3min), 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min)
 - Trend: Consistent ~4 min per plan
 
 *Updated after each plan completion*
@@ -60,6 +60,10 @@ Recent decisions affecting current work:
 - [02-01]: Schema version literal '1.0' for future migration support
 - [02-01]: Immutable history tracking via addHistoryEntry returning new object
 - [02-01]: Atomic writes using write-temp-then-rename pattern
+- [02-02]: Project-centric experience structure (projects as primary unit under roles)
+- [02-02]: Skills require min(1) evidence linking (per RESEARCH.md Pitfall 5)
+- [02-02]: Three-tier proficiency: familiar, proficient, expert
+- [02-02]: Source tracking: explicit vs inferred skills
 
 ### Pending Todos
 
@@ -67,12 +71,12 @@ None yet.
 
 ### Blockers/Concerns
 
-None. Phase 2 Plan 01 complete. Ready for Plan 02-02.
+None. Phase 2 Plan 02 complete. Ready for Plan 02-03.
 
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 02-01-PLAN.md
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -96,3 +100,10 @@ Resume file: None
   - Profile loader with atomic writes and history tracking
   - 58 new tests (38 schema + 20 loader)
   - uuid and date-fns dependencies added
+
+- Plan 02-02: Experience & Skills Schemas — COMPLETE
+  - ExperienceEntrySchema with project-centric structure
+  - ProjectSchema with optional metrics, RoleSchema for context
+  - SkillSchema with hierarchical categories and evidence linking
+  - 45 new tests (total profile schema tests: 83)
+  - Evidence linking enforced with min(1) constraint
