@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 1 of 10 (QA Layer Foundation)
-Plan: 4 of 6 in current phase (gap closure plans)
+Plan: 5 of 6 in current phase (gap closure plans)
 Status: In progress
-Last activity: 2026-01-30 - Completed 01-04-PLAN.md (Validation Wiring)
+Last activity: 2026-01-30 - Completed 01-05-PLAN.md (E2E Dashboard Tests)
 
-Progress: [===-------] ~17% (5 of ~30 plans)
+Progress: [===-------] ~20% (6 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 3 min
-- Total execution time: 17 min
+- Total plans completed: 6
+- Average duration: 4 min
+- Total execution time: 21 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-qa-layer | 5 | 17 min | ~3 min |
+| 01-qa-layer | 6 | 21 min | ~4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5min), 01-02 (5min), 01-03 (3min), 01-06 (2min), 01-04 (2min)
-- Trend: Consistent execution speed, improving
+- Last 5 plans: 01-02 (5min), 01-03 (3min), 01-06 (2min), 01-04 (2min), 01-05 (4min)
+- Trend: Consistent execution speed
 
 *Updated after each plan completion*
 
@@ -56,6 +56,9 @@ Recent decisions affecting current work:
 - [01-06]: Coverage thresholds adjusted to 20% baseline (target 70% by Phase 3)
 - [01-04]: Advisory mode for data loading validation (warns but continues)
 - [01-04]: Validation before status change in all 4 update functions
+- [01-05]: Chromium-only for E2E testing (sufficient for static HTML)
+- [01-05]: file:// protocol for E2E tests (no server required)
+- [01-05]: E2E tests excluded from Vitest to prevent double-running
 
 ### Pending Todos
 
@@ -66,9 +69,10 @@ None yet.
 - Coverage at ~21% overall (jobs.js: 99%, updates.js: 91%, but server.js, index.js, documents.js, resume.js at 0%)
 - RESOLVED: Coverage threshold adjusted from 70% to 20% baseline, phase gate now passes
 - Gap 1 (Validation Wiring) RESOLVED: Schema and workflow validation now wired into application code
+- Gap 2 (E2E Tests) RESOLVED: Playwright E2E tests verify actual index.html renders correctly in browser
 
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 01-04-PLAN.md
+Stopped at: Completed 01-05-PLAN.md
 Resume file: None
