@@ -65,6 +65,20 @@ import {
   getCommunicationPrefs
 } from './tools/profile.js';
 
+import {
+  queueProfileExtraction,
+  getPendingExtractions,
+  confirmExtraction,
+  batchConfirmExtractions,
+  getExtractionHistory
+} from './tools/learning.js';
+
+import {
+  runWeeklyCleanup,
+  getCleanupFindings,
+  dismissCleanupFinding
+} from './tools/cleanup.js';
+
 // Create server
 const server = new Server(
   {
@@ -675,6 +689,57 @@ const TOOLS = [
       type: 'object',
       properties: {}
     }
+  },
+
+  // === Profile Cleanup ===
+  {
+    name: 'run_weekly_cleanup',
+    description: 'Run cleanup analysis on profile to find duplicates (similar skills/stories), stale items (not updated AND not used), and gaps (missing fields, thin evidence). Returns findings for review - never auto-modifies profile.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobContext: {
+          type: 'object',
+          properties: {
+            title: { type: 'string', description: 'Job title being applied for' },
+            company: { type: 'string', description: 'Company name' }
+          },
+          description: 'Optional job context for contextual gap detection'
+        }
+      }
+    }
+  },
+  {
+    name: 'get_cleanup_findings',
+    description: 'Get stored cleanup findings from the most recent run. Returns duplicates, stale items, and gaps with reasons and suggestions.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        filterType: {
+          type: 'string',
+          description: 'Filter findings by type',
+          enum: ['duplicate', 'stale', 'gap']
+        }
+      }
+    }
+  },
+  {
+    name: 'dismiss_finding',
+    description: 'Dismiss a cleanup finding (mark as acknowledged). Dismissed findings won\'t show in future get_cleanup_findings results.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        findingHash: {
+          type: 'string',
+          description: 'Hash identifying the finding (from get_cleanup_findings)'
+        },
+        reason: {
+          type: 'string',
+          description: 'Optional reason for dismissing'
+        }
+      },
+      required: ['findingHash']
+    }
   }
 ];
 
@@ -845,6 +910,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         break;
       case 'get_communication_prefs':
         result = getCommunicationPrefs();
+        break;
+
+      // Profile Cleanup
+      case 'run_weekly_cleanup':
+        result = runWeeklyCleanup({ jobContext: args?.jobContext });
+        break;
+      case 'get_cleanup_findings':
+        result = getCleanupFindings({ filterType: args?.filterType });
+        break;
+      case 'dismiss_finding':
+        result = dismissCleanupFinding({ findingHash: args.findingHash, reason: args?.reason });
         break;
 
       default:
