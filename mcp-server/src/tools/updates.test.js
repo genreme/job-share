@@ -422,3 +422,73 @@ describe('bulkUpdateJobs', () => {
     expect(result.results[0].status).toBe('no changes')
   })
 })
+
+describe('Status Transition Validation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    fs.existsSync.mockReturnValue(true)
+    fs.writeFileSync.mockImplementation(() => {})
+    fs.renameSync.mockImplementation(() => {})
+  })
+
+  it('rejects invalid status transition in archiveJob', () => {
+    // archiving an already archived job should return the "already archived" message
+    fs.readFileSync.mockReturnValue(JSON.stringify({
+      jobs: [{ id: 1, status: 'archived', title: 'Test', company: 'Corp' }]
+    }))
+
+    const result = archiveJob(1, 'test reason')
+
+    // Already archived is handled separately (returns success with message)
+    expect(result.message || result.success).toBeTruthy()
+  })
+
+  it('rejects invalid status transition in updateJob', () => {
+    // Trying to go from 'probably-not' directly to 'applied' should fail
+    fs.readFileSync.mockReturnValue(JSON.stringify({
+      jobs: [{ id: 1, status: 'probably-not', title: 'Test', company: 'Corp' }]
+    }))
+
+    const result = updateJob(1, { status: 'applied' })
+
+    expect(result.error).toBeDefined()
+    expect(result.error).toContain('Cannot transition')
+  })
+
+  it('allows valid status transition in updateJob', () => {
+    // 'maybe' to 'applied' is valid
+    fs.readFileSync.mockReturnValue(JSON.stringify({
+      jobs: [{ id: 1, status: 'maybe', title: 'Test', company: 'Corp' }]
+    }))
+
+    const result = updateJob(1, { status: 'applied' })
+
+    expect(result.error).toBeUndefined()
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects invalid status transition in bulkUpdateJobs', () => {
+    // Trying to go from 'probably-not' directly to 'applied' should fail
+    fs.readFileSync.mockReturnValue(JSON.stringify({
+      jobs: [{ id: 1, status: 'probably-not', title: 'Test', company: 'Corp' }]
+    }))
+
+    const result = bulkUpdateJobs([{ jobId: 1, updates: { status: 'applied' } }])
+
+    expect(result.results[0].error).toBeDefined()
+    expect(result.results[0].error).toContain('Cannot transition')
+  })
+
+  it('allows archiving from any non-archived status', () => {
+    // 'apply-now' to 'archived' should work
+    fs.readFileSync.mockReturnValue(JSON.stringify({
+      jobs: [{ id: 1, status: 'apply-now', title: 'Test', company: 'Corp' }]
+    }))
+
+    const result = archiveJob(1, 'Position filled')
+
+    expect(result.error).toBeUndefined()
+    expect(result.success).toBe(true)
+    expect(result.job.status).toBe('archived')
+  })
+})

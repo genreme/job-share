@@ -192,3 +192,49 @@ describe('saveLearningData', () => {
     expect(console.error).toHaveBeenCalled()
   })
 })
+
+describe('Data Validation Integration', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('logs validation warnings for malformed data', () => {
+    // Mock console.error to capture validation warnings
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    // Mock readFileSync to return data with validation issues
+    vi.mocked(fs.existsSync).mockReturnValue(true)
+    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify({
+      jobs: [{ id: 'not-a-number', title: '', company: '', fitScore: 999, status: 'invalid-status' }]
+    }))
+
+    const result = loadJobsFromDashboard()
+
+    // Should log validation warnings
+    expect(consoleError).toHaveBeenCalledWith(
+      expect.stringContaining('validation warnings'),
+      expect.any(Array)
+    )
+
+    consoleError.mockRestore()
+  })
+
+  it('applies Zod defaults to loaded data', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(fs.existsSync).mockReturnValue(true)
+    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify({
+      jobs: [{ id: 1, title: 'Test', company: 'Corp', fitScore: 50, status: 'apply-now' }]
+      // Missing: searchHistory, settings - should get defaults
+    }))
+
+    const result = loadJobsFromDashboard()
+
+    // Zod should have applied defaults
+    expect(result.searchHistory).toEqual([])
+    expect(result.settings).toEqual({})
+  })
+})
