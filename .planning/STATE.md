@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Present the best version of myself to the right opportunities, informed by a comprehensive understanding of who I am professionally
-**Current focus:** Phase 4: Discovery Core - READY
+**Current focus:** Phase 4: Discovery Core - IN PROGRESS
 
 ## Current Position
 
-Phase: 4 of 10 (Discovery Core) - NOT STARTED
-Plan: 0 of 3 (estimated) in current phase
-Status: Ready to begin
-Last activity: 2026-01-30 - Phase 3 verification passed (15/15 must-haves)
+Phase: 4 of 10 (Discovery Core) - IN PROGRESS
+Plan: 1 of 3 complete in current phase
+Status: In progress
+Last activity: 2026-01-31 - Completed 04-01-PLAN.md
 
-Progress: [=====-----] ~40% (12 of ~30 plans)
+Progress: [=====-----] ~43% (13 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 13
 - Average duration: 6 min
-- Total execution time: 68 min
+- Total execution time: 73 min
 
 **By Phase:**
 
@@ -30,10 +30,11 @@ Progress: [=====-----] ~40% (12 of ~30 plans)
 | 01-qa-layer | 6 | 21 min | ~4 min |
 | 02-self-profile-schema | 3 | 15 min | ~5 min |
 | 03-self-profile-integration | 3 | 32 min | ~11 min |
+| 04-discovery-core | 1 | 5 min | ~5 min |
 
 **Recent Trend:**
-- Last 10 plans: 01-03 (3min), 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min)
-- Trend: Integration plans take longer (~10-14 min) due to cross-module dependencies
+- Last 10 plans: 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min), 04-01 (5min)
+- Trend: Schema/service plans complete faster (~5 min) than integration plans (~10-14 min)
 
 *Updated after each plan completion*
 
@@ -84,6 +85,10 @@ Recent decisions affecting current work:
 - [03-03]: Confidence levels map to percentages: high=90, medium=70, low=50
 - [03-03]: Suggestion system: high->confirm_inline, medium->review_soon, low->batch
 - [03-03]: Queue persistence uses atomic write pattern (temp+rename)
+- [04-01]: Inbox status is first in JobStatusSchema (arrival state before user review)
+- [04-01]: No direct inbox->applied transition (must review and classify first)
+- [04-01]: Fit scorer falls back to defaults with console.warn when profile empty
+- [04-01]: Salary minimum uses highest across all targetRoles for conservative scoring
 
 ### Pending Todos
 
@@ -91,12 +96,12 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 3 complete.
+None. Phase 4 in progress.
 
 ## Session Continuity
 
-Last session: 2026-01-30
-Stopped at: Completed 03-03-PLAN.md (Phase 3 Complete)
+Last session: 2026-01-31
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None
 
 ## Phase 1 Completion Summary
