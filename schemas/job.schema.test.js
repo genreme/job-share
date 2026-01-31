@@ -13,7 +13,9 @@ import {
   JobsDataSchema,
   JobStatusSchema,
   validateJobsData,
-  validateJob
+  validateJob,
+  VALID_TRANSITIONS,
+  isValidTransition
 } from './job.schema.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -24,13 +26,19 @@ const validJob = JSON.parse(readFileSync(join(fixturesDir, 'valid-job.json'), 'u
 const invalidJobs = JSON.parse(readFileSync(join(fixturesDir, 'invalid-jobs.json'), 'utf-8'))
 
 describe('JobStatusSchema', () => {
-  it('accepts all valid statuses', () => {
-    const validStatuses = ['apply-now', 'maybe', 'probably-not', 'applied', 'archived']
+  it('accepts all valid statuses including inbox', () => {
+    const validStatuses = ['inbox', 'apply-now', 'maybe', 'probably-not', 'applied', 'archived']
 
     for (const status of validStatuses) {
       const result = JobStatusSchema.safeParse(status)
       expect(result.success, `Status "${status}" should be valid`).toBe(true)
     }
+  })
+
+  it('accepts inbox as the first status for new jobs', () => {
+    const result = JobStatusSchema.safeParse('inbox')
+    expect(result.success).toBe(true)
+    expect(result.data).toBe('inbox')
   })
 
   it('rejects invalid statuses', () => {
@@ -40,6 +48,66 @@ describe('JobStatusSchema', () => {
       const result = JobStatusSchema.safeParse(status)
       expect(result.success, `Status "${status}" should be invalid`).toBe(false)
     }
+  })
+})
+
+describe('Status Transitions', () => {
+  describe('VALID_TRANSITIONS', () => {
+    it('defines transitions for all statuses', () => {
+      const allStatuses = ['inbox', 'apply-now', 'maybe', 'probably-not', 'applied', 'archived']
+      for (const status of allStatuses) {
+        expect(VALID_TRANSITIONS).toHaveProperty(status)
+        expect(Array.isArray(VALID_TRANSITIONS[status])).toBe(true)
+      }
+    })
+
+    it('inbox can transition to review statuses but not directly to applied', () => {
+      expect(VALID_TRANSITIONS['inbox']).toContain('apply-now')
+      expect(VALID_TRANSITIONS['inbox']).toContain('maybe')
+      expect(VALID_TRANSITIONS['inbox']).toContain('probably-not')
+      expect(VALID_TRANSITIONS['inbox']).toContain('archived')
+      expect(VALID_TRANSITIONS['inbox']).not.toContain('applied')
+    })
+
+    it('archived is a terminal state with no transitions', () => {
+      expect(VALID_TRANSITIONS['archived']).toEqual([])
+    })
+  })
+
+  describe('isValidTransition', () => {
+    it('allows valid inbox transitions', () => {
+      expect(isValidTransition('inbox', 'apply-now')).toBe(true)
+      expect(isValidTransition('inbox', 'maybe')).toBe(true)
+      expect(isValidTransition('inbox', 'probably-not')).toBe(true)
+      expect(isValidTransition('inbox', 'archived')).toBe(true)
+    })
+
+    it('rejects inbox -> applied transition', () => {
+      expect(isValidTransition('inbox', 'applied')).toBe(false)
+    })
+
+    it('allows apply-now -> applied transition', () => {
+      expect(isValidTransition('apply-now', 'applied')).toBe(true)
+    })
+
+    it('allows maybe -> applied transition', () => {
+      expect(isValidTransition('maybe', 'applied')).toBe(true)
+    })
+
+    it('rejects probably-not -> applied transition', () => {
+      expect(isValidTransition('probably-not', 'applied')).toBe(false)
+    })
+
+    it('rejects all transitions from archived', () => {
+      expect(isValidTransition('archived', 'inbox')).toBe(false)
+      expect(isValidTransition('archived', 'apply-now')).toBe(false)
+      expect(isValidTransition('archived', 'maybe')).toBe(false)
+    })
+
+    it('returns false for unknown statuses', () => {
+      expect(isValidTransition('unknown', 'apply-now')).toBe(false)
+      expect(isValidTransition('inbox', 'unknown')).toBe(false)
+    })
   })
 })
 

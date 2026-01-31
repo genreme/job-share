@@ -9,12 +9,34 @@ import { z } from 'zod'
 
 // Valid job statuses
 export const JobStatusSchema = z.enum([
+  'inbox',           // Awaiting user review from extension/manual submission
   'apply-now',
   'maybe',
   'probably-not',
   'applied',
   'archived'
 ])
+
+// Valid status transitions from each status
+export const VALID_TRANSITIONS = {
+  'inbox': ['apply-now', 'maybe', 'probably-not', 'archived'],
+  'apply-now': ['applied', 'maybe', 'probably-not', 'archived'],
+  'maybe': ['apply-now', 'probably-not', 'applied', 'archived'],
+  'probably-not': ['maybe', 'archived'],
+  'applied': ['archived'],
+  'archived': [] // Terminal state
+}
+
+/**
+ * Check if a status transition is valid
+ *
+ * @param {string} from - Current status
+ * @param {string} to - Target status
+ * @returns {boolean} True if transition is allowed
+ */
+export function isValidTransition(from, to) {
+  return VALID_TRANSITIONS[from]?.includes(to) ?? false
+}
 
 // Connection can be legacy string or structured object
 export const ConnectionSchema = z.union([
