@@ -89,12 +89,12 @@ Plans:
   3. Deep research verifies job activity status and enriches with company data
   4. Shortlist displays jobs with reasoning explaining why each was included
   5. User can confirm add to dashboard or defer with notes
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Quick scan and filter pipeline
-- [ ] 04-02: Deep research and activity verification
-- [ ] 04-03: Shortlist presentation and user confirmation
+- [ ] 04-01-PLAN.md - Fix JobStatusSchema for inbox, create profile-based fit scoring service
+- [ ] 04-02-PLAN.md - Discovery MCP tools (research_job_url, get_inbox, confirm_job, defer_job)
+- [ ] 04-03-PLAN.md - Integration tests and end-to-end workflow verification
 
 ### Phase 5: Discovery Management
 **Goal**: Extend discovery with friend submissions, archiving, and job board curation
@@ -205,7 +205,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 1. QA Layer Foundation | 6/6 | Complete | 2026-01-30 |
 | 2. Self-Profile Schema | 3/3 | Complete | 2026-01-30 |
 | 3. Self-Profile Integration | 3/3 | Complete | 2026-01-30 |
-| 4. Discovery Core | 0/3 | Not started | - |
+| 4. Discovery Core | 0/3 | Ready | - |
 | 5. Discovery Management | 0/3 | Not started | - |
 | 6. Application Intelligence | 0/3 | Not started | - |
 | 7. Application Generation | 0/3 | Not started | - |
