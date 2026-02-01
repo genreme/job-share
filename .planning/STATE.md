@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 6 of 10 (Application Intelligence) - IN PROGRESS
-Plan: 2 of 3 in current phase
+Plan: 1 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-01 - Completed 06-02-PLAN.md (Contact Tracking and Job Updates)
+Last activity: 2026-02-01 - Completed 06-01-PLAN.md (Resume-JD Matching Service)
 
-Progress: [======----] ~63% (20 of ~32 plans)
+Progress: [======----] ~60% (19 of ~32 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 20
+- Total plans completed: 19
 - Average duration: 6 min
-- Total execution time: 122 min
+- Total execution time: 108 min
 
 **By Phase:**
 
@@ -32,10 +32,10 @@ Progress: [======----] ~63% (20 of ~32 plans)
 | 03-self-profile-integration | 3 | 32 min | ~11 min |
 | 04-discovery-core | 3 | 21 min | ~7 min |
 | 05-discovery-management | 3 | 15 min | ~5 min |
-| 06-application-intelligence | 2 | 12 min | ~6 min |
+| 06-application-intelligence | 1 | 4 min | ~4 min |
 
 **Recent Trend:**
-- Last 10 plans: 03-03 (14min), 04-01 (5min), 04-02 (12min), 04-03 (4min), 05-01 (5min), 05-02 (5min), 05-03 (5min), 06-01 (6min), 06-02 (6min)
+- Last 10 plans: 03-03 (14min), 04-01 (5min), 04-02 (12min), 04-03 (4min), 05-01 (5min), 05-02 (5min), 05-03 (5min), 06-01 (4min)
 - Trend: Schema/service plans complete faster (~5 min) than integration plans (~10-14 min)
 
 *Updated after each plan completion*
@@ -105,10 +105,11 @@ Recent decisions affecting current work:
 - [05-03]: Fit config cached for session performance with clearFitConfigCache() for testing
 - [05-03]: Default dataCompleteness to 50% when not specified for boards
 - [05-03]: blacklistBoard requires userConfirmed=true for safety
-- [06-02]: ConnectionSchema uses z.union([string, object]) for backward compatibility
-- [06-02]: Contact deduplication by name (case-insensitive) OR LinkedIn URL
-- [06-02]: Contact.interactions array + lastInteraction field for most recent
-- [06-02]: addJobUpdate handles notes, connections, status changes in one call (APPL-07)
+- [06-01]: Regex-based keyword extraction (no external NLP libraries)
+- [06-01]: Skill patterns organized by category (design tools, frontend, backend, etc.)
+- [06-01]: Partial keyword matching for skill name variations
+- [06-01]: Three confidence levels: high (5+), medium (2-4), low (<2)
+- [06-01]: Neutral score (50%) when no keywords extracted
 
 ### Pending Todos
 
@@ -121,7 +122,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-01
-Stopped at: Completed 06-02-PLAN.md
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
 
 ## Phase 1 Completion Summary
