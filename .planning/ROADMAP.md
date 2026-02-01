@@ -123,12 +123,12 @@ Plans:
   3. Follow-up reminders trigger based on days elapsed and application stage
   4. Smart follow-up suggestions adapt based on time and stage context
   5. User can add notes, connections, and status updates to any job entry
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 06-01: Resume-JD matching and gap analysis
-- [ ] 06-02: Contact tracking system
-- [ ] 06-03: Follow-up reminders and suggestions
+- [ ] 06-01-PLAN.md - Resume-JD matching service with gap analysis (APPL-01, APPL-02)
+- [ ] 06-02-PLAN.md - Enhanced contact tracking and job updates (APPL-03, APPL-04, APPL-07)
+- [ ] 06-03-PLAN.md - Follow-up engine with smart suggestions (APPL-05, APPL-06)
 
 ### Phase 7: Application Generation
 **Goal**: Generate tailored application materials informed by deep research
