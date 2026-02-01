@@ -123,12 +123,13 @@ Plans:
   3. Follow-up reminders trigger based on days elapsed and application stage
   4. Smart follow-up suggestions adapt based on time and stage context
   5. User can add notes, connections, and status updates to any job entry
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 06-01-PLAN.md - Resume-JD matching service with gap analysis (APPL-01, APPL-02)
-- [ ] 06-02-PLAN.md - Enhanced contact tracking and job updates (APPL-03, APPL-04, APPL-07)
-- [ ] 06-03-PLAN.md - Follow-up engine with smart suggestions (APPL-05, APPL-06)
+- [x] 06-01-PLAN.md - Resume-JD matching service with gap analysis (APPL-01, APPL-02)
+- [x] 06-02-PLAN.md - Enhanced contact tracking and job updates (APPL-03, APPL-04, APPL-07)
+- [x] 06-03-PLAN.md - Follow-up engine with smart suggestions (APPL-05, APPL-06)
+- [ ] 06-04-PLAN.md - Gap closure: Register MCP tools and reconcile schema conflict
 
 ### Phase 7: Application Generation
 **Goal**: Generate tailored application materials informed by deep research
@@ -207,7 +208,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 3. Self-Profile Integration | 3/3 | Complete | 2026-01-30 |
 | 4. Discovery Core | 3/3 | Complete | 2026-01-31 |
 | 5. Discovery Management | 3/3 | Complete | 2026-02-01 |
-| 6. Application Intelligence | 0/3 | Ready | - |
+| 6. Application Intelligence | 3/4 | Gap closure | - |
 | 7. Application Generation | 0/3 | Not started | - |
 | 8. Interview Preparation | 0/3 | Not started | - |
 | 9. Interview Learning | 0/2 | Not started | - |

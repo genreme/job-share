@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Present the best version of myself to the right opportunities, informed by a comprehensive understanding of who I am professionally
-**Current focus:** Phase 6: Application Intelligence - IN PROGRESS
+**Current focus:** Phase 6: Application Intelligence - COMPLETE
 
 ## Current Position
 
-Phase: 6 of 10 (Application Intelligence) - IN PROGRESS
-Plan: 1 of 3 in current phase
-Status: In progress
-Last activity: 2026-02-01 - Completed 06-01-PLAN.md (Resume-JD Matching Service)
+Phase: 6 of 10 (Application Intelligence) - COMPLETE
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-02-01 - Completed 06-03-PLAN.md (Follow-up Engine)
 
-Progress: [======----] ~60% (19 of ~32 plans)
+Progress: [=======---] ~69% (22 of ~32 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
+- Total plans completed: 22
 - Average duration: 6 min
-- Total execution time: 108 min
+- Total execution time: 123 min
 
 **By Phase:**
 
@@ -32,10 +32,10 @@ Progress: [======----] ~60% (19 of ~32 plans)
 | 03-self-profile-integration | 3 | 32 min | ~11 min |
 | 04-discovery-core | 3 | 21 min | ~7 min |
 | 05-discovery-management | 3 | 15 min | ~5 min |
-| 06-application-intelligence | 1 | 4 min | ~4 min |
+| 06-application-intelligence | 3 | 15 min | ~5 min |
 
 **Recent Trend:**
-- Last 10 plans: 03-03 (14min), 04-01 (5min), 04-02 (12min), 04-03 (4min), 05-01 (5min), 05-02 (5min), 05-03 (5min), 06-01 (4min)
+- Last 10 plans: 04-02 (12min), 04-03 (4min), 05-01 (5min), 05-02 (5min), 05-03 (5min), 06-01 (4min), 06-02 (6min), 06-03 (5min)
 - Trend: Schema/service plans complete faster (~5 min) than integration plans (~10-14 min)
 
 *Updated after each plan completion*
@@ -110,6 +110,14 @@ Recent decisions affecting current work:
 - [06-01]: Partial keyword matching for skill name variations
 - [06-01]: Three confidence levels: high (5+), medium (2-4), low (<2)
 - [06-01]: Neutral score (50%) when no keywords extracted
+- [06-02]: Contact schema uses z.union([string, object]) for backward compatibility
+- [06-02]: Duplicate detection by name (case-insensitive) OR LinkedIn URL
+- [06-02]: Contact.interactions array + lastInteraction field for most recent
+- [06-02]: Single addJobUpdate function handles notes, connections, status changes (APPL-07)
+- [06-03]: Rule boundaries use exclusive upper bounds (7-13 for low, 14-20 for medium)
+- [06-03]: Recent interview detection triggers within 2 days for thank-you reminder
+- [06-03]: Default limit of 10 for getFollowupQueue, 1000 for summary
+- [06-03]: Suggestions only consider structured contacts, not legacy strings
 
 ### Pending Todos
 
@@ -122,7 +130,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-01
-Stopped at: Completed 06-01-PLAN.md
+Stopped at: Completed 06-03-PLAN.md (Phase 6 complete)
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -381,3 +389,59 @@ Resume file: None
 | DISC-12 Test new boards | addTestBoard tool | Complete |
 | DISC-13 Prioritize quality boards | getBoardsForScan sorts by quality | Complete |
 | DISC-14 Blacklist requires confirmation | blacklistBoard needs userConfirmed=true | Complete |
+
+## Phase 6 Completion Summary
+
+**Phase 6: Application Intelligence** - COMPLETE
+
+- 3 plans executed
+- 152 new tests (47 + 82 + 70 service+schema, but tool tests overlap)
+- Resume-JD matching with gap analysis
+- Enhanced contact tracking with interaction history
+- Time-based follow-up engine with smart suggestions
+
+### Plans Completed:
+
+- **Plan 06-01: Resume-JD Matching Service** (4 min)
+  - Keyword extraction from job descriptions
+  - Profile skill matching with partial matches
+  - Gap analysis identifying missing skills
+  - 47 new tests
+
+- **Plan 06-02: Contact Tracking and Job Updates** (6 min)
+  - EnhancedConnectionSchema with LinkedIn URLs
+  - Interaction history tracking
+  - MCP tools: addJobContact, logContactInteraction, getJobContacts, addJobUpdate
+  - 82 new tests (43 schema + 39 tools)
+
+- **Plan 06-03: Follow-up Engine with Smart Suggestions** (5 min)
+  - FOLLOWUP_RULES define timing by status
+  - calculateFollowupStatus determines priority (APPL-05)
+  - generateFollowupSuggestion with contact awareness (APPL-06)
+  - MCP tools: getFollowups, getJobFollowupStatus, getFollowupSummary
+  - 70 new tests (47 engine + 23 tools)
+
+### New MCP Tools (Phase 6):
+
+| Tool | Purpose |
+|------|---------|
+| getResumeMatch | Get match score with gap analysis |
+| addJobContact | Add/update structured contact |
+| logContactInteraction | Log interaction, update lastInteraction |
+| getJobContacts | Get contacts (structured + legacy) |
+| addJobUpdate | Comprehensive update (note, contact, status) |
+| getFollowups | Prioritized follow-up queue |
+| getJobFollowupStatus | Detailed follow-up for specific job |
+| getFollowupSummary | Dashboard-level overview |
+
+### Requirements Status:
+
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| APPL-01 Resume-JD match score | getResumeMatch tool | Complete |
+| APPL-02 Gap analysis | gaps array in match result | Complete |
+| APPL-03 Contact tracking | addJobContact, getJobContacts | Complete |
+| APPL-04 LinkedIn URLs, last interaction | EnhancedConnectionSchema | Complete |
+| APPL-05 Time-based follow-up | calculateFollowupStatus | Complete |
+| APPL-06 Smart suggestions | generateFollowupSuggestion | Complete |
+| APPL-07 Add notes/updates | addJobUpdate tool | Complete |
