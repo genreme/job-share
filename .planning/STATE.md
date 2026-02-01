@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Present the best version of myself to the right opportunities, informed by a comprehensive understanding of who I am professionally
-**Current focus:** Phase 4: Discovery Core - IN PROGRESS
+**Current focus:** Phase 5: Discovery Management - READY
 
 ## Current Position
 
-Phase: 4 of 10 (Discovery Core) - IN PROGRESS
-Plan: 2 of 3 complete in current phase
-Status: In progress
-Last activity: 2026-01-31 - Completed 04-02-PLAN.md
+Phase: 5 of 10 (Discovery Management) - NOT STARTED
+Plan: 0 of 3 (estimated) in current phase
+Status: Ready to begin
+Last activity: 2026-01-31 - Phase 4 verification passed (5/5 must-haves)
 
-Progress: [=====-----] ~47% (14 of ~30 plans)
+Progress: [=====-----] ~50% (15 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration: 6 min
-- Total execution time: 85 min
+- Total execution time: 89 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [=====-----] ~47% (14 of ~30 plans)
 | 01-qa-layer | 6 | 21 min | ~4 min |
 | 02-self-profile-schema | 3 | 15 min | ~5 min |
 | 03-self-profile-integration | 3 | 32 min | ~11 min |
-| 04-discovery-core | 2 | 17 min | ~9 min |
+| 04-discovery-core | 3 | 21 min | ~7 min |
 
 **Recent Trend:**
-- Last 10 plans: 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min), 04-01 (5min), 04-02 (12min)
+- Last 10 plans: 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min), 04-01 (5min), 04-02 (12min), 04-03 (4min)
 - Trend: Schema/service plans complete faster (~5 min) than integration plans (~10-14 min)
 
 *Updated after each plan completion*
@@ -99,12 +99,12 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 4 in progress.
+None. Phase 4 complete.
 
 ## Session Continuity
 
 Last session: 2026-01-31
-Stopped at: Completed 04-02-PLAN.md
+Stopped at: Phase 4 Complete
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -245,14 +245,15 @@ Resume file: None
 | PROF-13 Confirm before update | confirm_extraction workflow | Complete |
 | PROF-14 Cleanup workflow | run_weekly_cleanup + dismiss_finding | Complete |
 
-## Phase 4 Progress Summary
+## Phase 4 Completion Summary
 
-**Phase 4: Discovery Core** — IN PROGRESS (2 of 3 plans complete)
+**Phase 4: Discovery Core** — COMPLETE
 
-- 859 total tests passing (50 new in 04-02)
-- Fit scoring with profile integration
-- Reasoning generator for human-readable fit explanations
-- 4 discovery MCP tools registered
+- 3 plans executed
+- 868 total tests passing (117 new in Phase 4)
+- Complete discovery funnel from URL submission to dashboard confirmation
+- Profile-based fit scoring with fallback to defaults
+- Human-readable reasoning for fit scores
 
 ### Plans Completed:
 
@@ -269,6 +270,13 @@ Resume file: None
   - Graceful fallback when Cloudflare Worker unavailable
   - 50 new tests
 
+- **Plan 04-03: Integration Tests + Human Verification**
+  - Full workflow integration tests (research → inbox → confirm)
+  - Reasoning wiring verification
+  - Fallback behavior tests
+  - Human verification checkpoint passed
+  - 9 new tests
+
 ### New MCP Tools (Discovery):
 
 | Tool | Purpose |
@@ -278,6 +286,15 @@ Resume file: None
 | confirm_job | Move inbox job to dashboard with status |
 | defer_job | Defer job with reason and optional review date |
 
-### Remaining:
+### Requirements Status:
 
-- **Plan 04-03: Extension Integration** - Wire extension to discovery tools
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| DISC-01 Quick scan | Jobs arrive via extension or research_job_url | Complete |
+| DISC-02 Filter | Fit scoring with profile integration | Complete |
+| DISC-03 Deep research | research_job_url with Worker fallback | Complete |
+| DISC-04 Shortlist | get_inbox + reasoning (Claude presents) | Complete |
+| DISC-05 Confirm/defer | confirm_job, defer_job tools | Complete |
+| DISC-06 Manual submission | research_job_url tool | Complete |
+| DISC-06a With context | notes parameter preserved | Complete |
+| DISC-06b Confirm flow | confirm_job moves to dashboard | Complete |

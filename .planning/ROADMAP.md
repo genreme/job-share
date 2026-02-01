@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: QA Layer Foundation** - Self-testing framework that validates each component before proceeding
 - [x] **Phase 2: Self-Profile Schema** - Centralized professional identity data structure
 - [x] **Phase 3: Self-Profile Integration** - Profile feeds into outputs and learns from interactions
-- [ ] **Phase 4: Discovery Core** - Scan, filter, research, and present job opportunities
+- [x] **Phase 4: Discovery Core** - Scan, filter, research, and present job opportunities
 - [ ] **Phase 5: Discovery Management** - Friend submissions, archiving, and job board curation
 - [ ] **Phase 6: Application Intelligence** - Matching, contacts, and follow-up tracking
 - [ ] **Phase 7: Application Generation** - Deep research and document generation
@@ -92,9 +92,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md - Fix JobStatusSchema for inbox, create profile-based fit scoring service
-- [ ] 04-02-PLAN.md - Discovery MCP tools (research_job_url, get_inbox, confirm_job, defer_job)
-- [ ] 04-03-PLAN.md - Integration tests and end-to-end workflow verification
+- [x] 04-01-PLAN.md - Fix JobStatusSchema for inbox, create profile-based fit scoring service
+- [x] 04-02-PLAN.md - Discovery MCP tools (research_job_url, get_inbox, confirm_job, defer_job)
+- [x] 04-03-PLAN.md - Integration tests and end-to-end workflow verification
 
 ### Phase 5: Discovery Management
 **Goal**: Extend discovery with friend submissions, archiving, and job board curation
@@ -205,8 +205,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 1. QA Layer Foundation | 6/6 | Complete | 2026-01-30 |
 | 2. Self-Profile Schema | 3/3 | Complete | 2026-01-30 |
 | 3. Self-Profile Integration | 3/3 | Complete | 2026-01-30 |
-| 4. Discovery Core | 0/3 | Ready | - |
-| 5. Discovery Management | 0/3 | Not started | - |
+| 4. Discovery Core | 3/3 | Complete | 2026-01-31 |
+| 5. Discovery Management | 0/3 | Ready | - |
 | 6. Application Intelligence | 0/3 | Not started | - |
 | 7. Application Generation | 0/3 | Not started | - |
 | 8. Interview Preparation | 0/3 | Not started | - |
