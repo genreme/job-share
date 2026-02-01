@@ -2,14 +2,32 @@
  * Data Loader - Reads from dashboard HTML and resume JSON files
  */
 
-import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, renameSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { tmpdir } from 'os';
 import { validateJobsData } from '../../../schemas/job.schema.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..', '..', '..');
 const RESUME_ROOT = '/Users/genre/Claude/resume';
+const JOBS_JSON_PATH = join(PROJECT_ROOT, 'mcp-server', 'data', 'jobs.json');
+
+/**
+ * Atomic file write using temp file + rename pattern
+ * Prevents data corruption if process crashes mid-write
+ */
+function atomicWriteSync(filePath, data) {
+  const tempPath = join(tmpdir(), `jscc-mcp-${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`);
+  try {
+    writeFileSync(tempPath, data, 'utf-8');
+    renameSync(tempPath, filePath);
+  } catch (err) {
+    // Clean up temp file if rename failed
+    try { unlinkSync(tempPath); } catch (e) { /* ignore */ }
+    throw err;
+  }
+}
 
 /**
  * Load jobs data from the extracted JSON file
@@ -39,6 +57,16 @@ export function loadJobsFromDashboard() {
     console.error('Error loading jobs.json:', e.message);
     return { jobs: [], searchHistory: [], settings: {} };
   }
+}
+
+/**
+ * Write jobs data back to JSON file (atomic)
+ * @param {object} data - Jobs data object to save
+ */
+export function writeJobsData(data) {
+  data.lastUpdated = new Date().toISOString();
+  data.version = (data.version || 0) + 1;
+  atomicWriteSync(JOBS_JSON_PATH, JSON.stringify(data, null, 2));
 }
 
 /**
