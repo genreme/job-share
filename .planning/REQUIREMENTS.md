@@ -179,13 +179,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISC-12 | Phase 5 | Complete |
 | DISC-13 | Phase 5 | Complete |
 | DISC-14 | Phase 5 | Complete |
-| APPL-01 | Phase 6 | Pending |
-| APPL-02 | Phase 6 | Pending |
-| APPL-03 | Phase 6 | Pending |
-| APPL-04 | Phase 6 | Pending |
-| APPL-05 | Phase 6 | Pending |
-| APPL-06 | Phase 6 | Pending |
-| APPL-07 | Phase 6 | Pending |
+| APPL-01 | Phase 6 | Complete |
+| APPL-02 | Phase 6 | Complete |
+| APPL-03 | Phase 6 | Complete |
+| APPL-04 | Phase 6 | Complete |
+| APPL-05 | Phase 6 | Complete |
+| APPL-06 | Phase 6 | Complete |
+| APPL-07 | Phase 6 | Complete |
 | APPL-08 | Phase 7 | Pending |
 | APPL-09 | Phase 7 | Pending |
 | APPL-10 | Phase 7 | Pending |
@@ -216,4 +216,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-29*
-*Last updated: 2026-01-29 after roadmap creation*
+*Last updated: 2026-02-01 after Phase 6 completion*

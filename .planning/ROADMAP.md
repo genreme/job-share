@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Self-Profile Integration** - Profile feeds into outputs and learns from interactions
 - [x] **Phase 4: Discovery Core** - Scan, filter, research, and present job opportunities
 - [x] **Phase 5: Discovery Management** - Friend submissions, archiving, and job board curation
-- [ ] **Phase 6: Application Intelligence** - Matching, contacts, and follow-up tracking
+- [x] **Phase 6: Application Intelligence** - Matching, contacts, and follow-up tracking
 - [ ] **Phase 7: Application Generation** - Deep research and document generation
 - [ ] **Phase 8: Interview Preparation** - Research, question generation, and practice
 - [ ] **Phase 9: Interview Learning** - History persistence and profile evolution
@@ -129,7 +129,7 @@ Plans:
 - [x] 06-01-PLAN.md - Resume-JD matching service with gap analysis (APPL-01, APPL-02)
 - [x] 06-02-PLAN.md - Enhanced contact tracking and job updates (APPL-03, APPL-04, APPL-07)
 - [x] 06-03-PLAN.md - Follow-up engine with smart suggestions (APPL-05, APPL-06)
-- [ ] 06-04-PLAN.md - Gap closure: Register MCP tools and reconcile schema conflict
+- [x] 06-04-PLAN.md - Gap closure: Register MCP tools and reconcile schema conflict
 
 ### Phase 7: Application Generation
 **Goal**: Generate tailored application materials informed by deep research
@@ -208,7 +208,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 3. Self-Profile Integration | 3/3 | Complete | 2026-01-30 |
 | 4. Discovery Core | 3/3 | Complete | 2026-01-31 |
 | 5. Discovery Management | 3/3 | Complete | 2026-02-01 |
-| 6. Application Intelligence | 3/4 | Gap closure | - |
+| 6. Application Intelligence | 4/4 | Complete | 2026-02-01 |
 | 7. Application Generation | 0/3 | Not started | - |
 | 8. Interview Preparation | 0/3 | Not started | - |
 | 9. Interview Learning | 0/2 | Not started | - |
