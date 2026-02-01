@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Present the best version of myself to the right opportunities, informed by a comprehensive understanding of who I am professionally
-**Current focus:** Phase 5: Discovery Management - READY
+**Current focus:** Phase 5: Discovery Management - IN PROGRESS
 
 ## Current Position
 
-Phase: 5 of 10 (Discovery Management) - NOT STARTED
-Plan: 0 of 3 (estimated) in current phase
-Status: Ready to begin
-Last activity: 2026-01-31 - Phase 4 verification passed (5/5 must-haves)
+Phase: 5 of 10 (Discovery Management) - IN PROGRESS
+Plan: 2 of 3 (estimated) in current phase
+Status: Plan 05-02 complete
+Last activity: 2026-02-01 - Completed 05-02-PLAN.md
 
-Progress: [=====-----] ~50% (15 of ~30 plans)
+Progress: [=====-----] ~53% (17 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
+- Total plans completed: 17
 - Average duration: 6 min
-- Total execution time: 89 min
+- Total execution time: 99 min
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [=====-----] ~50% (15 of ~30 plans)
 | 02-self-profile-schema | 3 | 15 min | ~5 min |
 | 03-self-profile-integration | 3 | 32 min | ~11 min |
 | 04-discovery-core | 3 | 21 min | ~7 min |
+| 05-discovery-management | 2 | 10 min | ~5 min |
 
 **Recent Trend:**
-- Last 10 plans: 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min), 04-01 (5min), 04-02 (12min), 04-03 (4min)
+- Last 10 plans: 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min), 04-01 (5min), 04-02 (12min), 04-03 (4min), 05-01 (5min), 05-02 (5min)
 - Trend: Schema/service plans complete faster (~5 min) than integration plans (~10-14 min)
 
 *Updated after each plan completion*
@@ -92,6 +93,11 @@ Recent decisions affecting current work:
 - [04-02]: Reasoning thresholds 90/80/70/60 for Excellent/Strong/Good/Moderate
 - [04-02]: Worker fallback returns partial_research with requiresManualEntry flag
 - [04-02]: writeJobsData added to loader.js with atomic write pattern
+- [05-02]: Browser always closed in finally block (prevents resource leaks)
+- [05-02]: PDF fallback to generated HTML when URL fetch fails
+- [05-02]: Closed jobs marked with closedAt timestamp and closedReason
+- [05-02]: Fit scores recalculated only when job data actually changes
+- [05-02]: 30-second timeout for Worker requests
 
 ### Pending Todos
 
@@ -99,12 +105,12 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 4 complete.
+None.
 
 ## Session Continuity
 
-Last session: 2026-01-31
-Stopped at: Phase 4 Complete
+Last session: 2026-02-01
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -298,3 +304,36 @@ Resume file: None
 | DISC-06 Manual submission | research_job_url tool | Complete |
 | DISC-06a With context | notes parameter preserved | Complete |
 | DISC-06b Confirm flow | confirm_job moves to dashboard | Complete |
+
+## Phase 5 Progress
+
+**Phase 5: Discovery Management** — IN PROGRESS
+
+### Plans Completed:
+
+- **Plan 05-01: Source Tracker Service** (5 min)
+  - Source tracking for job discovery channels
+  - Friend referral tracking
+  - Source statistics and analytics
+
+- **Plan 05-02: PDF Archiving and Staleness Verification** (5 min)
+  - Puppeteer-based PDF archiving for job descriptions
+  - Worker-based job status verification
+  - Automatic fit score refresh on data changes
+  - 56 new tests
+
+### New MCP Tools (Phase 5):
+
+| Tool | Purpose |
+|------|---------|
+| archive_job | Archive job as PDF for pattern analysis |
+| list_archives | List all archived job PDFs |
+| verify_jobs | Verify active jobs, detect closed, refresh scores |
+
+### Requirements Status:
+
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| DISC-08 Archive job descriptions | archive_job tool with Puppeteer | Complete |
+| DISC-09 Staleness verification | verify_jobs detects closed jobs | Complete |
+| DISC-09 Fit score refresh | Automatic on data changes | Complete |
