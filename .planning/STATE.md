@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 4 of 10 (Discovery Core) - IN PROGRESS
-Plan: 1 of 3 complete in current phase
+Plan: 2 of 3 complete in current phase
 Status: In progress
-Last activity: 2026-01-31 - Completed 04-01-PLAN.md
+Last activity: 2026-01-31 - Completed 04-02-PLAN.md
 
-Progress: [=====-----] ~43% (13 of ~30 plans)
+Progress: [=====-----] ~47% (14 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
+- Total plans completed: 14
 - Average duration: 6 min
-- Total execution time: 73 min
+- Total execution time: 85 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [=====-----] ~43% (13 of ~30 plans)
 | 01-qa-layer | 6 | 21 min | ~4 min |
 | 02-self-profile-schema | 3 | 15 min | ~5 min |
 | 03-self-profile-integration | 3 | 32 min | ~11 min |
-| 04-discovery-core | 1 | 5 min | ~5 min |
+| 04-discovery-core | 2 | 17 min | ~9 min |
 
 **Recent Trend:**
-- Last 10 plans: 01-04 (2min), 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min), 04-01 (5min)
+- Last 10 plans: 01-05 (4min), 01-06 (2min), 02-01 (4min), 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min), 04-01 (5min), 04-02 (12min)
 - Trend: Schema/service plans complete faster (~5 min) than integration plans (~10-14 min)
 
 *Updated after each plan completion*
@@ -89,6 +89,9 @@ Recent decisions affecting current work:
 - [04-01]: No direct inbox->applied transition (must review and classify first)
 - [04-01]: Fit scorer falls back to defaults with console.warn when profile empty
 - [04-01]: Salary minimum uses highest across all targetRoles for conservative scoring
+- [04-02]: Reasoning thresholds 90/80/70/60 for Excellent/Strong/Good/Moderate
+- [04-02]: Worker fallback returns partial_research with requiresManualEntry flag
+- [04-02]: writeJobsData added to loader.js with atomic write pattern
 
 ### Pending Todos
 
@@ -101,7 +104,7 @@ None. Phase 4 in progress.
 ## Session Continuity
 
 Last session: 2026-01-31
-Stopped at: Completed 04-01-PLAN.md
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -241,3 +244,40 @@ Resume file: None
 | PROF-12 Passive learning | queue_profile_extraction tool | Complete |
 | PROF-13 Confirm before update | confirm_extraction workflow | Complete |
 | PROF-14 Cleanup workflow | run_weekly_cleanup + dismiss_finding | Complete |
+
+## Phase 4 Progress Summary
+
+**Phase 4: Discovery Core** — IN PROGRESS (2 of 3 plans complete)
+
+- 859 total tests passing (50 new in 04-02)
+- Fit scoring with profile integration
+- Reasoning generator for human-readable fit explanations
+- 4 discovery MCP tools registered
+
+### Plans Completed:
+
+- **Plan 04-01: Job Status Schema + Fit Scorer**
+  - Inbox status added to JobStatusSchema
+  - Status transition validation (inbox cannot go directly to applied)
+  - Fit scorer service with profile-based scoring
+  - Fallback to hardcoded defaults when profile empty
+  - 60 new tests
+
+- **Plan 04-02: Reasoning Generator + Discovery Tools**
+  - Reasoning generator for fit score explanations
+  - 4 MCP tools: research_job_url, get_inbox, confirm_job, defer_job
+  - Graceful fallback when Cloudflare Worker unavailable
+  - 50 new tests
+
+### New MCP Tools (Discovery):
+
+| Tool | Purpose |
+|------|---------|
+| research_job_url | Research job URL, score, generate reasoning |
+| get_inbox | List inbox jobs for Claude to present |
+| confirm_job | Move inbox job to dashboard with status |
+| defer_job | Defer job with reason and optional review date |
+
+### Remaining:
+
+- **Plan 04-03: Extension Integration** - Wire extension to discovery tools
