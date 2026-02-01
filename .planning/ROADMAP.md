@@ -106,12 +106,12 @@ Plans:
   3. Periodic verification detects stale/closed jobs and refreshes fit scores
   4. Fit criteria are configurable and can evolve based on outcomes
   5. Job board registry exists with quality ratings that influence scan priority
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Friend submission workflow with context
-- [ ] 05-02: Job archiving and status verification
-- [ ] 05-03: Job board registry and quality management
+- [ ] 05-01-PLAN.md - Server-side Supabase integration for friend submissions with context preservation
+- [ ] 05-02-PLAN.md - PDF archiving for job descriptions and periodic staleness verification
+- [ ] 05-03-PLAN.md - Configurable fit criteria and job board quality registry
 
 ### Phase 6: Application Intelligence
 **Goal**: Enhance applications with matching, contact tracking, and follow-up systems
