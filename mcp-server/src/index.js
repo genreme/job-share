@@ -86,6 +86,25 @@ import {
   deferJob
 } from './tools/discovery.js';
 
+// Phase 6: Application Intelligence tools
+import {
+  getResumeMatch,
+  getMatchScoresForActiveJobs
+} from './tools/matching.js';
+
+import {
+  addJobContact,
+  logContactInteraction,
+  getJobContacts,
+  addJobUpdate
+} from './tools/contacts.js';
+
+import {
+  getFollowups,
+  getJobFollowupStatus,
+  getFollowupSummary
+} from './tools/followup.js';
+
 // Create server
 const server = new Server(
   {
@@ -924,6 +943,185 @@ const TOOLS = [
       },
       required: ['jobId', 'reason']
     }
+  },
+
+  // === Application Intelligence (Phase 6) ===
+
+  // Resume Matching (APPL-01, APPL-02)
+  {
+    name: 'get_resume_match',
+    description: 'Get resume-JD match score for a job with gap analysis. Shows how well your profile matches the job requirements and identifies missing skills to add. Use before applying to understand fit.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: {
+          type: 'number',
+          description: 'Job ID to match against (uses job notes/description)'
+        },
+        jobDescription: {
+          type: 'string',
+          description: 'Direct job description text (alternative to jobId)'
+        }
+      }
+    }
+  },
+  {
+    name: 'get_match_scores_for_active_jobs',
+    description: 'Get resume match scores for all active jobs (apply-now, maybe, inbox). Helps prioritize which jobs to apply to based on profile fit.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum number of jobs to return'
+        }
+      }
+    }
+  },
+
+  // Contact Tracking (APPL-03, APPL-04, APPL-07)
+  {
+    name: 'add_job_contact',
+    description: 'Add or update a contact (recruiter, hiring manager, referral) for a job. Supports structured format with LinkedIn URL, title, and interaction tracking.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: {
+          type: 'number',
+          description: 'Job ID to add contact to'
+        },
+        contact: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Contact name (required)' },
+            role: {
+              type: 'string',
+              description: 'Contact role',
+              enum: ['recruiter', 'hiring_manager', 'referral', 'internal_contact', 'other']
+            },
+            title: { type: 'string', description: 'Job title (e.g., "Senior Technical Recruiter")' },
+            linkedInUrl: { type: 'string', description: 'LinkedIn profile URL' },
+            email: { type: 'string', description: 'Email address' },
+            notes: { type: 'string', description: 'Notes about the contact' },
+            isPrimary: { type: 'boolean', description: 'Mark as primary contact for this job' }
+          },
+          required: ['name']
+        }
+      },
+      required: ['jobId', 'contact']
+    }
+  },
+  {
+    name: 'log_contact_interaction',
+    description: 'Log an interaction with a contact (email, LinkedIn message, call, meeting). Updates lastInteraction and adds to interaction history.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: {
+          type: 'number',
+          description: 'Job ID'
+        },
+        contactId: {
+          type: 'string',
+          description: 'Contact UUID (from get_job_contacts)'
+        },
+        interaction: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              description: 'Interaction type',
+              enum: ['email', 'linkedin', 'call', 'meeting', 'other']
+            },
+            notes: { type: 'string', description: 'Notes about the interaction' }
+          },
+          required: ['type']
+        }
+      },
+      required: ['jobId', 'contactId', 'interaction']
+    }
+  },
+  {
+    name: 'get_job_contacts',
+    description: 'Get all contacts for a job. Returns structured contacts with full details and legacy string contacts separately.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: {
+          type: 'number',
+          description: 'Job ID'
+        }
+      },
+      required: ['jobId']
+    }
+  },
+  {
+    name: 'add_job_update',
+    description: 'Add a comprehensive update to a job: note, contact, status change, or append to notes field. Handles all update types in one call.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: {
+          type: 'number',
+          description: 'Job ID'
+        },
+        update: {
+          type: 'object',
+          properties: {
+            note: { type: 'string', description: 'Note to add to job history' },
+            type: { type: 'string', description: 'Type of update (e.g., "Interview", "Research")' },
+            connection: {
+              type: 'object',
+              description: 'Contact to add (same format as add_job_contact)'
+            },
+            status: {
+              type: 'string',
+              description: 'New status (validated transition)',
+              enum: ['inbox', 'apply-now', 'maybe', 'probably-not', 'applied', 'archived']
+            },
+            appendToNotes: { type: 'string', description: 'Text to append to notes field with timestamp' }
+          }
+        }
+      },
+      required: ['jobId', 'update']
+    }
+  },
+
+  // Follow-up Engine (APPL-05, APPL-06)
+  {
+    name: 'get_followups',
+    description: 'Get prioritized follow-up queue. Returns jobs needing follow-up sorted by priority (high/medium/low) with smart suggestions based on status and elapsed time.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum items to return (default: 10)'
+        }
+      }
+    }
+  },
+  {
+    name: 'get_job_followup_status',
+    description: 'Get detailed follow-up status for a specific job including priority, suggestions, and contact information.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: {
+          type: 'number',
+          description: 'Job ID'
+        }
+      },
+      required: ['jobId']
+    }
+  },
+  {
+    name: 'get_followup_summary',
+    description: 'Get summary of all follow-up needs: counts by priority and status, top actions to take. Dashboard-level overview.',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
   }
 ];
 
@@ -1156,6 +1354,47 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         break;
       case 'defer_job':
         result = deferJob(args);
+        break;
+
+      // Application Intelligence (Phase 6)
+      // Resume Matching
+      case 'get_resume_match':
+        result = getResumeMatch({
+          jobId: args?.jobId,
+          jobDescription: args?.jobDescription
+        });
+        break;
+      case 'get_match_scores_for_active_jobs':
+        result = getMatchScoresForActiveJobs({
+          limit: args?.limit
+        });
+        break;
+
+      // Contact Tracking
+      case 'add_job_contact':
+        result = addJobContact(args.jobId, args.contact);
+        break;
+      case 'log_contact_interaction':
+        result = logContactInteraction(args.jobId, args.contactId, args.interaction);
+        break;
+      case 'get_job_contacts':
+        result = getJobContacts(args.jobId);
+        break;
+      case 'add_job_update':
+        result = addJobUpdate(args.jobId, args.update);
+        break;
+
+      // Follow-up Engine
+      case 'get_followups':
+        result = getFollowups({
+          limit: args?.limit
+        });
+        break;
+      case 'get_job_followup_status':
+        result = getJobFollowupStatus(args.jobId);
+        break;
+      case 'get_followup_summary':
+        result = getFollowupSummary();
         break;
 
       default:
