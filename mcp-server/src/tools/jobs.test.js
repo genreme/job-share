@@ -108,6 +108,38 @@ const createMockJobs = () => [
       { date: '2026-01-20', type: 'Applied', notes: 'Submitted' },
       { date: '2026-01-28', type: 'Phone Screen', notes: 'Scheduled for tomorrow' }
     ]
+  },
+  {
+    id: 6,
+    title: 'VP of Design',
+    company: 'Inbox Corp',
+    industry: 'Technology',
+    location: 'Boston, MA',
+    salary: '$180k - $220k',
+    fitScore: 88,
+    status: 'inbox',
+    url: 'https://inboxcorp.com/jobs/6',
+    found: '2026-01-29',
+    applied: null,
+    symbols: [],
+    connections: [],
+    updates: []
+  },
+  {
+    id: 7,
+    title: 'Head of Creative',
+    company: 'Pending Review Inc',
+    industry: 'Healthcare',
+    location: 'Remote',
+    salary: '$170k - $200k',
+    fitScore: 82,
+    status: 'inbox',
+    url: 'https://pendingreview.com/jobs/7',
+    found: '2026-01-30',
+    applied: null,
+    symbols: ['🏠'],
+    connections: [],
+    updates: []
   }
 ]
 
@@ -129,7 +161,7 @@ describe('getJobs', () => {
 
     const result = getJobs()
 
-    expect(result).toHaveLength(5)
+    expect(result).toHaveLength(7)
   })
 
   it('filters by status correctly', () => {
@@ -149,16 +181,28 @@ describe('getJobs', () => {
     expect(maybe[0].status).toBe('maybe')
   })
 
+  it('filters by inbox status correctly', () => {
+    loadJobsFromDashboard.mockReturnValue({ jobs: createMockJobs() })
+
+    const inbox = getJobs({ status: 'inbox' })
+
+    expect(inbox).toHaveLength(2) // Jobs 6 and 7 are in inbox
+    expect(inbox.every(j => j.status === 'inbox')).toBe(true)
+    // Should be sorted by fitScore descending
+    expect(inbox[0].fitScore).toBe(88) // VP of Design
+    expect(inbox[1].fitScore).toBe(82) // Head of Creative
+  })
+
   it('filters by minFitScore correctly', () => {
     loadJobsFromDashboard.mockReturnValue({ jobs: createMockJobs() })
 
     const highFit = getJobs({ minFitScore: 80 })
     const mediumFit = getJobs({ minFitScore: 60 })
 
-    expect(highFit).toHaveLength(2) // fitScores 85 and 90
+    expect(highFit).toHaveLength(4) // fitScores 85, 90, 88, 82
     expect(highFit.every(j => j.fitScore >= 80)).toBe(true)
 
-    expect(mediumFit).toHaveLength(4) // fitScores 60, 72, 85, 90
+    expect(mediumFit).toHaveLength(6) // fitScores 60, 72, 82, 85, 88, 90
     expect(mediumFit.every(j => j.fitScore >= 60)).toBe(true)
   })
 
@@ -167,12 +211,14 @@ describe('getJobs', () => {
 
     const result = getJobs()
 
-    // Should be sorted: 90, 85, 72, 60, 45
+    // Should be sorted: 90, 88, 85, 82, 72, 60, 45
     expect(result[0].fitScore).toBe(90)
-    expect(result[1].fitScore).toBe(85)
-    expect(result[2].fitScore).toBe(72)
-    expect(result[3].fitScore).toBe(60)
-    expect(result[4].fitScore).toBe(45)
+    expect(result[1].fitScore).toBe(88)
+    expect(result[2].fitScore).toBe(85)
+    expect(result[3].fitScore).toBe(82)
+    expect(result[4].fitScore).toBe(72)
+    expect(result[5].fitScore).toBe(60)
+    expect(result[6].fitScore).toBe(45)
   })
 
   it('respects maxResults limit', () => {
@@ -181,9 +227,9 @@ describe('getJobs', () => {
     const result = getJobs({ maxResults: 2 })
 
     expect(result).toHaveLength(2)
-    // Should get top 2 by fitScore
+    // Should get top 2 by fitScore (90 and 88)
     expect(result[0].fitScore).toBe(90)
-    expect(result[1].fitScore).toBe(85)
+    expect(result[1].fitScore).toBe(88)
   })
 
   it('returns correct summary fields', () => {
@@ -364,7 +410,7 @@ describe('getApplicationStats', () => {
 
     const result = getApplicationStats()
 
-    expect(result.total).toBe(5)
+    expect(result.total).toBe(7)
   })
 
   it('groups by status correctly', () => {
@@ -375,6 +421,7 @@ describe('getApplicationStats', () => {
     expect(result.byStatus['apply-now']).toBe(2)
     expect(result.byStatus['applied']).toBe(2)
     expect(result.byStatus['maybe']).toBe(1)
+    expect(result.byStatus['inbox']).toBe(2)
   })
 
   it('groups by industry correctly', () => {
@@ -382,9 +429,9 @@ describe('getApplicationStats', () => {
 
     const result = getApplicationStats()
 
-    expect(result.byIndustry['Technology']).toBe(3)
-    expect(result.byIndustry['Healthcare']).toBe(1)
-    expect(result.byIndustry['Fintech']).toBe(1)
+    expect(result.byIndustry['Technology']).toBe(4) // Jobs 1, 2, 4, 6
+    expect(result.byIndustry['Healthcare']).toBe(2) // Jobs 3, 7
+    expect(result.byIndustry['Fintech']).toBe(1)    // Job 5
   })
 
   it('calculates fit score distribution (high/medium/low)', () => {
@@ -392,10 +439,10 @@ describe('getApplicationStats', () => {
 
     const result = getApplicationStats()
 
-    // High: 85, 90 (75+)
+    // High: 85, 90, 88, 82 (75+)
     // Medium: 72, 60 (55-74)
     // Low: 45 (<55)
-    expect(result.fitScoreDistribution.high).toBe(2)
+    expect(result.fitScoreDistribution.high).toBe(4)
     expect(result.fitScoreDistribution.medium).toBe(2)
     expect(result.fitScoreDistribution.low).toBe(1)
   })
@@ -405,8 +452,8 @@ describe('getApplicationStats', () => {
 
     const result = getApplicationStats()
 
-    // (85 + 72 + 90 + 45 + 60) / 5 = 70.4 -> rounded to 70
-    expect(result.averageFitScore).toBe(70)
+    // (85 + 72 + 90 + 45 + 60 + 88 + 82) / 7 = 74.57 -> rounded to 75
+    expect(result.averageFitScore).toBe(75)
   })
 
   it('calculates response rate correctly', () => {
