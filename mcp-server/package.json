@@ -1,0 +1,18 @@
+{
+  "name": "jscc-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for Job Search Command Center - exposes job data, resume context, and generation tools to Claude",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@supabase/supabase-js": "^2.93.3",
+    "puppeteer": "^24.36.1"
+  },
+  "author": "John Ra",
+  "license": "MIT"
+}
