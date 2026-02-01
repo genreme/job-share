@@ -57,7 +57,7 @@ import {
 
 import {
   getProfile,
-  getExperienceByTheme,
+  getExperienceByTheme as getProfileExperienceByTheme,
   getStoriesByCategory,
   getSkillsByCategory,
   getSummaryBlocksByAudience,
@@ -78,6 +78,13 @@ import {
   getCleanupFindings,
   dismissCleanupFinding
 } from './tools/cleanup.js';
+
+import {
+  researchJobUrl,
+  getInboxForReview,
+  confirmJobToDashboard,
+  deferJob
+} from './tools/discovery.js';
 
 // Create server
 const server = new Server(
@@ -867,6 +874,56 @@ const TOOLS = [
         }
       }
     }
+  },
+
+  // === Discovery ===
+  {
+    name: 'research_job_url',
+    description: 'Research a job posting URL to extract details, calculate fit score, and generate reasoning. Returns job data ready for user confirmation. Use this for manual job submissions.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        url: { type: 'string', description: 'Full URL of the job posting' },
+        notes: { type: 'string', description: 'Optional notes about the submission' }
+      },
+      required: ['url']
+    }
+  },
+  {
+    name: 'get_inbox',
+    description: 'Get jobs awaiting review in the inbox. Returns jobs sorted by fit score with summary stats.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        sortBy: { type: 'string', enum: ['fitScore', 'found'], description: 'Sort order (default: fitScore)' }
+      }
+    }
+  },
+  {
+    name: 'confirm_job',
+    description: 'Confirm an inbox job and add it to the dashboard with a status. Valid statuses: apply-now, maybe, probably-not.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'ID of the job to confirm' },
+        status: { type: 'string', enum: ['apply-now', 'maybe', 'probably-not'], description: 'Target status' },
+        notes: { type: 'string', description: 'Optional confirmation notes' }
+      },
+      required: ['jobId', 'status']
+    }
+  },
+  {
+    name: 'defer_job',
+    description: 'Defer an inbox job for later review. Job stays in inbox but is marked with reason and optional review date.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'ID of the job to defer' },
+        reason: { type: 'string', description: 'Why deferring (e.g., "waiting for more info")' },
+        reviewAfter: { type: 'string', description: 'ISO date to review again (optional)' }
+      },
+      required: ['jobId', 'reason']
+    }
   }
 ];
 
@@ -1021,7 +1078,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         result = getProfile();
         break;
       case 'get_experience_by_theme':
-        result = getExperienceByTheme({ theme: args.theme });
+        result = getProfileExperienceByTheme({ theme: args.theme });
         break;
       case 'get_stories_by_category':
         result = getStoriesByCategory({ category: args.category });
@@ -1085,6 +1142,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           status: args?.status,
           limit: args?.limit
         });
+        break;
+
+      // Discovery
+      case 'research_job_url':
+        result = await researchJobUrl(args);
+        break;
+      case 'get_inbox':
+        result = getInboxForReview(args);
+        break;
+      case 'confirm_job':
+        result = confirmJobToDashboard(args);
+        break;
+      case 'defer_job':
+        result = deferJob(args);
         break;
 
       default:
