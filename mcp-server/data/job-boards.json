@@ -1,0 +1,105 @@
+{
+  "version": "1.0",
+  "createdAt": "2026-02-01T15:00:00Z",
+  "updatedAt": "2026-02-01T15:00:00Z",
+  "boards": [
+    {
+      "id": "lever",
+      "name": "Lever",
+      "domain": "jobs.lever.co",
+      "status": "active",
+      "quality": {
+        "rating": 95,
+        "dataCompleteness": 90,
+        "lastUpdated": "2026-02-01"
+      },
+      "metrics": {
+        "totalScanned": 0,
+        "successfulExtractions": 0,
+        "failedExtractions": 0,
+        "lastScanDate": null
+      },
+      "selectors": {
+        "title": "[data-qa='posting-name']",
+        "company": "[data-qa='company-name']",
+        "location": "[data-qa='posting-categories'] .location",
+        "description": "[data-qa='job-description']"
+      },
+      "notes": "Excellent structured data, consistent selectors across companies"
+    },
+    {
+      "id": "greenhouse",
+      "name": "Greenhouse",
+      "domain": "boards.greenhouse.io",
+      "status": "active",
+      "quality": {
+        "rating": 90,
+        "dataCompleteness": 85,
+        "lastUpdated": "2026-02-01"
+      },
+      "metrics": {
+        "totalScanned": 0,
+        "successfulExtractions": 0,
+        "failedExtractions": 0,
+        "lastScanDate": null
+      },
+      "selectors": {
+        "title": ".app-title",
+        "company": ".company-name",
+        "location": ".location",
+        "description": "#content"
+      },
+      "notes": "Good structured data, some variation in custom themes"
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn Jobs",
+      "domain": "linkedin.com/jobs",
+      "status": "active",
+      "quality": {
+        "rating": 75,
+        "dataCompleteness": 70,
+        "lastUpdated": "2026-02-01"
+      },
+      "metrics": {
+        "totalScanned": 0,
+        "successfulExtractions": 0,
+        "failedExtractions": 0,
+        "lastScanDate": null
+      },
+      "selectors": {
+        "title": ".job-details-jobs-unified-top-card__job-title",
+        "company": ".job-details-jobs-unified-top-card__company-name",
+        "location": ".job-details-jobs-unified-top-card__bullet",
+        "description": ".jobs-description__content"
+      },
+      "notes": "Dynamic loading, requires authentication for full data"
+    },
+    {
+      "id": "indeed",
+      "name": "Indeed",
+      "domain": "indeed.com",
+      "status": "active",
+      "quality": {
+        "rating": 70,
+        "dataCompleteness": 65,
+        "lastUpdated": "2026-02-01"
+      },
+      "metrics": {
+        "totalScanned": 0,
+        "successfulExtractions": 0,
+        "failedExtractions": 0,
+        "lastScanDate": null
+      },
+      "selectors": {
+        "title": "[data-testid='jobsearch-JobInfoHeader-title']",
+        "company": "[data-testid='inlineHeader-companyName']",
+        "location": "[data-testid='job-location']",
+        "description": "#jobDescriptionText"
+      },
+      "notes": "High volume, variable data quality, frequent selector changes"
+    }
+  ],
+  "blacklist": [],
+  "testingBoards": []
+}
