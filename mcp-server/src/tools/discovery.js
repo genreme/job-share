@@ -419,17 +419,16 @@ export async function getFriendSubmissions() {
     }
   }
 
-  const supabase = getSupabaseClient()
-  if (!supabase) {
-    return {
-      status: 'error',
-      error: 'Failed to initialize Supabase client',
-      submissions: [],
-      count: 0
-    }
-  }
-
   try {
+    const supabase = getSupabaseClient()
+    if (!supabase) {
+      return {
+        status: 'error',
+        error: 'Failed to initialize Supabase client',
+        submissions: [],
+        count: 0
+      }
+    }
     const { data, error } = await supabase
       .from('job_submissions')
       .select('*')
