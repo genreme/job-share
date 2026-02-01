@@ -6,11 +6,15 @@
  * - get_inbox: Review inbox jobs for Claude to present
  * - confirm_job: Confirm job to dashboard with status
  * - defer_job: Defer job for later review
+ * - get_friend_submissions: List friend-submitted jobs from Supabase
+ * - process_friend_submission: Research a friend submission
+ * - accept_friend_submission: Accept and add to dashboard
  */
 
 import { loadJobsFromDashboard, writeJobsData } from '../data/loader.js'
 import { calculateFitScore } from '../services/fit-scorer.js'
 import { generateReasoning } from '../services/reasoning-generator.js'
+import { getSupabaseClient, isSupabaseConfigured } from '../services/supabase-client.js'
 
 /**
  * Validate URL format
@@ -391,5 +395,312 @@ export function deferJob({ jobId, reason, reviewAfter }) {
     jobId,
     deferredUntil: reviewAfter || null,
     message: `Job deferred: ${reason.trim()}`
+  }
+}
+
+// =============================================================================
+// Friend Submission Tools (DISC-07)
+// =============================================================================
+
+/**
+ * Get pending friend submissions from Supabase
+ * DISC-07: Friend submissions accessible via MCP tools
+ *
+ * @returns {object} List of pending submissions with friend context
+ */
+export async function getFriendSubmissions() {
+  // Check if Supabase is configured
+  if (!isSupabaseConfigured()) {
+    return {
+      status: 'not_configured',
+      error: 'Supabase not configured. Set SUPABASE_URL and SUPABASE_SERVICE_KEY environment variables.',
+      submissions: [],
+      count: 0
+    }
+  }
+
+  const supabase = getSupabaseClient()
+  if (!supabase) {
+    return {
+      status: 'error',
+      error: 'Failed to initialize Supabase client',
+      submissions: [],
+      count: 0
+    }
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('job_submissions')
+      .select('*')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      return {
+        status: 'error',
+        error: `Supabase query failed: ${error.message}`,
+        submissions: [],
+        count: 0
+      }
+    }
+
+    // Map results to include friendContext object
+    const submissions = (data || []).map(sub => ({
+      id: sub.id,
+      url: sub.job_url,
+      createdAt: sub.created_at,
+      friendContext: {
+        submittedBy: sub.submitted_by,
+        connection: sub.connection_notes,
+        benefits: sub.benefits_notes,
+        reasoning: sub.reasoning
+      }
+    }))
+
+    return {
+      status: 'success',
+      count: submissions.length,
+      submissions,
+      message: submissions.length > 0
+        ? `${submissions.length} friend submission(s) pending review`
+        : 'No pending friend submissions'
+    }
+  } catch (e) {
+    return {
+      status: 'error',
+      error: `Unexpected error: ${e.message}`,
+      submissions: [],
+      count: 0
+    }
+  }
+}
+
+/**
+ * Process a friend submission by researching the URL
+ * DISC-07a: Friend context captured and combined with research
+ *
+ * @param {object} params - Tool parameters
+ * @param {string} params.submissionId - ID of the submission to process
+ * @returns {object} Research result combined with friend context
+ */
+export async function processFriendSubmission({ submissionId }) {
+  // Validate required parameter
+  if (!submissionId) {
+    return {
+      status: 'error',
+      error: 'submissionId is required'
+    }
+  }
+
+  // Check if Supabase is configured
+  if (!isSupabaseConfigured()) {
+    return {
+      status: 'not_configured',
+      error: 'Supabase not configured. Set SUPABASE_URL and SUPABASE_SERVICE_KEY environment variables.'
+    }
+  }
+
+  const supabase = getSupabaseClient()
+  if (!supabase) {
+    return {
+      status: 'error',
+      error: 'Failed to initialize Supabase client'
+    }
+  }
+
+  try {
+    // Fetch submission from Supabase
+    const { data: submission, error } = await supabase
+      .from('job_submissions')
+      .select('*')
+      .eq('id', submissionId)
+      .single()
+
+    if (error || !submission) {
+      return {
+        status: 'error',
+        error: `Submission not found: ${error?.message || 'No data returned'}`
+      }
+    }
+
+    // Build friend context
+    const friendContext = {
+      submittedBy: submission.submitted_by,
+      connection: submission.connection_notes,
+      benefits: submission.benefits_notes,
+      reasoning: submission.reasoning
+    }
+
+    // Research the job URL
+    const researchResult = await researchJobUrl({
+      url: submission.job_url,
+      notes: `Friend submission from ${submission.submitted_by}`
+    })
+
+    // Combine research with friend context
+    return {
+      status: researchResult.status,
+      submissionId,
+      friendContext,
+      research: researchResult,
+      nextStep: researchResult.status === 'ready_for_review'
+        ? 'Call accept_friend_submission to add to dashboard with friend context preserved'
+        : researchResult.status === 'duplicate'
+          ? 'This job already exists in your system'
+          : 'Review research result and decide next action'
+    }
+  } catch (e) {
+    return {
+      status: 'error',
+      error: `Unexpected error: ${e.message}`
+    }
+  }
+}
+
+/**
+ * Accept a friend submission and add to dashboard
+ * DISC-07b: Friend context preserved in job data
+ *
+ * @param {object} params - Tool parameters
+ * @param {string} params.submissionId - ID of the submission to accept
+ * @param {string} params.status - Target status (apply-now, maybe, probably-not)
+ * @param {string} [params.notes] - Additional notes
+ * @returns {object} Result with job data and friend context
+ */
+export async function acceptFriendSubmission({ submissionId, status, notes }) {
+  // Validate required parameters
+  if (!submissionId) {
+    return { success: false, error: 'submissionId is required' }
+  }
+
+  const validStatuses = ['apply-now', 'maybe', 'probably-not']
+  if (!status || !validStatuses.includes(status)) {
+    return {
+      success: false,
+      error: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+    }
+  }
+
+  // Check if Supabase is configured
+  if (!isSupabaseConfigured()) {
+    return {
+      success: false,
+      error: 'Supabase not configured. Set SUPABASE_URL and SUPABASE_SERVICE_KEY environment variables.'
+    }
+  }
+
+  const supabase = getSupabaseClient()
+  if (!supabase) {
+    return { success: false, error: 'Failed to initialize Supabase client' }
+  }
+
+  try {
+    // Fetch submission from Supabase
+    const { data: submission, error: fetchError } = await supabase
+      .from('job_submissions')
+      .select('*')
+      .eq('id', submissionId)
+      .single()
+
+    if (fetchError || !submission) {
+      return {
+        success: false,
+        error: `Submission not found: ${fetchError?.message || 'No data returned'}`
+      }
+    }
+
+    // Load current jobs data
+    const data = loadJobsFromDashboard()
+    const jobs = data.jobs || []
+
+    // Check for duplicate by URL
+    const existingJob = findDuplicateByUrl(submission.job_url, jobs)
+    if (existingJob) {
+      return {
+        success: false,
+        error: 'duplicate',
+        existingJob: {
+          id: existingJob.id,
+          title: existingJob.title,
+          company: existingJob.company,
+          status: existingJob.status
+        },
+        message: `This job already exists in your ${existingJob.status} list`
+      }
+    }
+
+    // Build friend context
+    const friendContext = {
+      submittedBy: submission.submitted_by,
+      connection: submission.connection_notes,
+      benefits: submission.benefits_notes,
+      reasoning: submission.reasoning
+    }
+
+    // Build notes with friend context
+    const friendNotes = [
+      `Friend submission from ${submission.submitted_by}`,
+      submission.reasoning ? `Reason: ${submission.reasoning}` : null,
+      notes
+    ].filter(Boolean).join('\n')
+
+    // Create new job entry
+    const newJob = {
+      id: getNextJobId(jobs),
+      title: submission.job_title || 'Unknown Title',
+      company: submission.company_name || 'Unknown Company',
+      location: '',
+      salary: '',
+      industry: '',
+      description: '',
+      url: submission.job_url,
+      found: new Date().toISOString().split('T')[0],
+      status: status,
+      source: 'friend-submission',
+      notes: friendNotes,
+      friendContext: friendContext,
+      updates: [{
+        date: new Date().toISOString().split('T')[0],
+        type: 'Friend Submission',
+        notes: `Submitted by ${submission.submitted_by}${submission.reasoning ? ': ' + submission.reasoning : ''}`
+      }],
+      symbols: []
+    }
+
+    // Add to jobs array
+    jobs.push(newJob)
+    data.jobs = jobs
+
+    // Persist to jobs.json
+    writeJobsData(data)
+
+    // Update Supabase status to accepted
+    const { error: updateError } = await supabase
+      .from('job_submissions')
+      .update({ status: 'accepted', processed_at: new Date().toISOString() })
+      .eq('id', submissionId)
+
+    if (updateError) {
+      console.warn(`Warning: Job added but Supabase status update failed: ${updateError.message}`)
+    }
+
+    return {
+      success: true,
+      job: {
+        id: newJob.id,
+        title: newJob.title,
+        company: newJob.company,
+        status: newJob.status,
+        url: newJob.url
+      },
+      friendContext,
+      message: `Job from ${submission.submitted_by} added to ${status} list`
+    }
+  } catch (e) {
+    return {
+      success: false,
+      error: `Unexpected error: ${e.message}`
+    }
   }
 }
