@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Present the best version of myself to the right opportunities, informed by a comprehensive understanding of who I am professionally
-**Current focus:** Phase 5: Discovery Management - IN PROGRESS
+**Current focus:** Phase 5: Discovery Management - COMPLETE
 
 ## Current Position
 
-Phase: 5 of 10 (Discovery Management) - IN PROGRESS
+Phase: 5 of 10 (Discovery Management) - COMPLETE
 Plan: 3 of 3 in current phase
-Status: All 3 plans complete (05-01, 05-02, 05-03 interleaved)
-Last activity: 2026-02-01 - Completed 05-01-PLAN.md
+Status: Phase complete
+Last activity: 2026-02-01 - Completed 05-03-PLAN.md
 
 Progress: [======----] ~60% (18 of ~30 plans)
 
@@ -101,6 +101,9 @@ Recent decisions affecting current work:
 - [05-01]: Service key (not anon key) for server-side Supabase access to bypass RLS
 - [05-01]: Lazy initialization with single warning log for missing config
 - [05-01]: Friend context preserved as separate object in job data (friendContext field)
+- [05-03]: Fit config cached for session performance with clearFitConfigCache() for testing
+- [05-03]: Default dataCompleteness to 50% when not specified for boards
+- [05-03]: blacklistBoard requires userConfirmed=true for safety
 
 ### Pending Todos
 
@@ -113,7 +116,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-01
-Stopped at: Completed 05-01-PLAN.md (Phase 5 complete)
+Stopped at: Completed 05-03-PLAN.md (Phase 5 complete)
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -308,9 +311,15 @@ Resume file: None
 | DISC-06a With context | notes parameter preserved | Complete |
 | DISC-06b Confirm flow | confirm_job moves to dashboard | Complete |
 
-## Phase 5 Progress
+## Phase 5 Completion Summary
 
-**Phase 5: Discovery Management** — IN PROGRESS
+**Phase 5: Discovery Management** — COMPLETE
+
+- 3 plans executed
+- 147 new tests (27 + 56 + 64)
+- Configurable fit criteria with evolution tracking
+- Job board registry with quality-based prioritization
+- Friend submissions, PDF archiving, staleness verification
 
 ### Plans Completed:
 
@@ -326,6 +335,13 @@ Resume file: None
   - Automatic fit score refresh on data changes
   - 56 new tests
 
+- **Plan 05-03: Configurable Fit Criteria and Board Registry** (6 min)
+  - fit-config.json with criteria, weights, evolutionLog
+  - job-boards.json with Lever, Greenhouse, LinkedIn, Indeed
+  - MCP tools: getFitConfig, updateFitConfig, logJobOutcome
+  - MCP tools: getJobBoards, addTestBoard, blacklistBoard, recordScanResults
+  - 64 new tests
+
 ### New MCP Tools (Phase 5):
 
 | Tool | Purpose |
@@ -336,6 +352,13 @@ Resume file: None
 | archive_job | Archive job as PDF for pattern analysis |
 | list_archives | List all archived job PDFs |
 | verify_jobs | Verify active jobs, detect closed, refresh scores |
+| getFitConfig | Get current fit criteria and weights |
+| updateFitConfig | Update fit criteria with reason |
+| logJobOutcome | Log outcome for evolution tracking |
+| getJobBoards | Get active boards by quality |
+| addTestBoard | Add new board for testing |
+| blacklistBoard | Blacklist with confirmation |
+| recordScanResults | Update board metrics |
 
 ### Requirements Status:
 
@@ -347,3 +370,8 @@ Resume file: None
 | DISC-08 Archive job descriptions | archive_job tool with Puppeteer | Complete |
 | DISC-09 Staleness verification | verify_jobs detects closed jobs | Complete |
 | DISC-09 Fit score refresh | Automatic on data changes | Complete |
+| DISC-10 Configurable fit criteria | fit-config.json + updateFitConfig | Complete |
+| DISC-11 Board registry | job-boards.json with quality ratings | Complete |
+| DISC-12 Test new boards | addTestBoard tool | Complete |
+| DISC-13 Prioritize quality boards | getBoardsForScan sorts by quality | Complete |
+| DISC-14 Blacklist requires confirmation | blacklistBoard needs userConfirmed=true | Complete |
