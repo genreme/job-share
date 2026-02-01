@@ -1,0 +1,79 @@
+{
+  "version": "1.0",
+  "createdAt": "2026-02-01T15:00:00Z",
+  "updatedAt": "2026-02-01T15:00:00Z",
+  "criteria": {
+    "titles": {
+      "exact": [
+        "Creative Director",
+        "VP of Creative",
+        "VP Creative Services",
+        "Director of Creative Services",
+        "Head of Creative",
+        "Head of Design",
+        "Design Director",
+        "Executive Creative Director",
+        "Senior Creative Director",
+        "Creative Operations Director"
+      ],
+      "partial": [
+        "Creative",
+        "Design",
+        "Brand",
+        "Visual",
+        "Art Director",
+        "UX Director"
+      ]
+    },
+    "industries": {
+      "preferred": [
+        "healthcare",
+        "health",
+        "nonprofit",
+        "non-profit",
+        "education",
+        "social impact",
+        "mission-driven",
+        "public health",
+        "mental health",
+        "wellness"
+      ],
+      "acceptable": [
+        "technology",
+        "saas",
+        "startup",
+        "b2b"
+      ]
+    },
+    "locations": {
+      "preferred": [
+        "boston",
+        "massachusetts",
+        "ma",
+        "remote",
+        "hybrid"
+      ],
+      "acceptable": [
+        "new york",
+        "ny",
+        "northeast",
+        "east coast"
+      ]
+    },
+    "salaryMin": 120000
+  },
+  "weights": {
+    "BASE": 50,
+    "ROLE_EXACT": 25,
+    "ROLE_PARTIAL": 15,
+    "INDUSTRY_PREFERRED": 20,
+    "INDUSTRY_ACCEPTABLE": 10,
+    "LOCATION_PREFERRED": 15,
+    "LOCATION_ACCEPTABLE": 8,
+    "SALARY_MEETS": 15,
+    "SKILL_MATCH": 2,
+    "MAX_SKILL_MATCHES": 5,
+    "MAX_TOTAL": 100
+  },
+  "evolutionLog": []
+}

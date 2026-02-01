@@ -2,50 +2,65 @@
  * Fit Scorer Service - Calculate job fit scores using profile preferences
  *
  * Provides profile-based scoring when targetRoles is populated,
- * falls back to hardcoded defaults (matching worker/job-validator.js pattern)
- * when profile is empty.
+ * falls back to configurable defaults (from fit-config.json) when profile is empty.
+ *
+ * Fallback chain:
+ * 1. Profile targetRoles (if populated)
+ * 2. fit-config.json (if exists)
+ * 3. Hardcoded defaults (final fallback)
  */
 
 import { loadProfile } from '../data/profile-loader.js'
+import { loadFitConfig, getDefaultCriteria, getDefaultWeights } from './fit-config.js'
 
-// Default fit criteria (fallback when profile.preferences.targetRoles is empty)
-// Matches pattern from worker/job-validator.js
-const DEFAULT_FIT_CRITERIA = {
-  titles: {
-    exact: [
-      'Creative Director', 'VP of Creative', 'VP Creative Services', 'Director of Creative Services',
-      'Head of Creative', 'Head of Design', 'Design Director', 'Executive Creative Director',
-      'Senior Creative Director', 'Creative Operations Director'
-    ],
-    partial: ['Creative', 'Design', 'Brand', 'Visual', 'Art Director', 'UX Director']
-  },
-  industries: {
-    preferred: [
-      'healthcare', 'health', 'nonprofit', 'non-profit', 'education', 'social impact',
-      'mission-driven', 'public health', 'mental health', 'wellness'
-    ],
-    acceptable: ['technology', 'saas', 'startup', 'b2b']
-  },
-  locations: {
-    preferred: ['boston', 'massachusetts', 'ma', 'remote', 'hybrid'],
-    acceptable: ['new york', 'ny', 'northeast', 'east coast']
-  },
-  salaryMin: 120000
+/**
+ * Get effective fit criteria and weights
+ *
+ * Loads from fit-config.json if available, otherwise uses hardcoded defaults.
+ *
+ * @returns {{ criteria: object, weights: object }}
+ */
+function getEffectiveFitConfig() {
+  try {
+    const config = loadFitConfig()
+    return {
+      criteria: config.criteria,
+      weights: config.weights
+    }
+  } catch (e) {
+    console.warn('Failed to load fit config, using hardcoded defaults:', e.message)
+    return {
+      criteria: getDefaultCriteria(),
+      weights: getDefaultWeights()
+    }
+  }
 }
 
-// Scoring weights
-const SCORES = {
-  BASE: 50,
-  ROLE_EXACT: 25,
-  ROLE_PARTIAL: 15,
-  INDUSTRY_PREFERRED: 20,
-  INDUSTRY_ACCEPTABLE: 10,
-  LOCATION_PREFERRED: 15,
-  LOCATION_ACCEPTABLE: 8,
-  SALARY_MEETS: 15,
-  SKILL_MATCH: 2,
-  MAX_SKILL_MATCHES: 5,
-  MAX_TOTAL: 100
+// Load effective config (cached for session performance)
+let cachedConfig = null
+
+function getFitConfig() {
+  if (!cachedConfig) {
+    cachedConfig = getEffectiveFitConfig()
+  }
+  return cachedConfig
+}
+
+/**
+ * Clear cached config (useful for testing)
+ */
+export function clearFitConfigCache() {
+  cachedConfig = null
+}
+
+// Backward compatibility: expose DEFAULT_FIT_CRITERIA getter
+export function getDefaultFitCriteria() {
+  return getFitConfig().criteria
+}
+
+// Backward compatibility: expose SCORES getter
+export function getScores() {
+  return getFitConfig().weights
 }
 
 /**
@@ -97,20 +112,22 @@ function matchesKeywords(text, keywords) {
  *
  * @param {string|null|undefined} text - Text to search (job description)
  * @param {string[]} skillNames - Skill names to look for
+ * @param {object} weights - Scoring weights
  * @returns {number} Count of matching skills (max 5)
  */
-function countSkillMatches(text, skillNames) {
+function countSkillMatches(text, skillNames, weights) {
   if (!text || typeof text !== 'string' || !skillNames || skillNames.length === 0) {
     return 0
   }
 
   const lowerText = text.toLowerCase()
   let matches = 0
+  const maxMatches = weights.MAX_SKILL_MATCHES || 5
 
   for (const skill of skillNames) {
     if (lowerText.includes(skill.toLowerCase())) {
       matches++
-      if (matches >= SCORES.MAX_SKILL_MATCHES) {
+      if (matches >= maxMatches) {
         break
       }
     }
@@ -120,14 +137,16 @@ function countSkillMatches(text, skillNames) {
 }
 
 /**
- * Calculate fit score using default criteria
+ * Calculate fit score using default criteria (from config)
  *
  * @param {object} job - Job data with title, company, industry, location, salary, description
  * @returns {{ score: number, breakdown: object, usingDefaults: true }}
  */
 export function calculateDefaultFitScore(job) {
+  const { criteria, weights } = getFitConfig()
+
   const breakdown = {
-    base: SCORES.BASE,
+    base: weights.BASE,
     role: 0,
     industry: 0,
     location: 0,
@@ -141,34 +160,34 @@ export function calculateDefaultFitScore(job) {
   const salary = parseSalaryFromText(job.salary)
 
   // Role matching
-  if (DEFAULT_FIT_CRITERIA.titles.exact.some(t => title.toLowerCase().includes(t.toLowerCase()))) {
-    breakdown.role = SCORES.ROLE_EXACT
-  } else if (DEFAULT_FIT_CRITERIA.titles.partial.some(t => title.toLowerCase().includes(t.toLowerCase()))) {
-    breakdown.role = SCORES.ROLE_PARTIAL
+  if (criteria.titles.exact.some(t => title.toLowerCase().includes(t.toLowerCase()))) {
+    breakdown.role = weights.ROLE_EXACT
+  } else if (criteria.titles.partial.some(t => title.toLowerCase().includes(t.toLowerCase()))) {
+    breakdown.role = weights.ROLE_PARTIAL
   }
 
   // Industry matching
-  if (matchesKeywords(industry, DEFAULT_FIT_CRITERIA.industries.preferred)) {
-    breakdown.industry = SCORES.INDUSTRY_PREFERRED
-  } else if (matchesKeywords(industry, DEFAULT_FIT_CRITERIA.industries.acceptable)) {
-    breakdown.industry = SCORES.INDUSTRY_ACCEPTABLE
+  if (matchesKeywords(industry, criteria.industries.preferred)) {
+    breakdown.industry = weights.INDUSTRY_PREFERRED
+  } else if (matchesKeywords(industry, criteria.industries.acceptable)) {
+    breakdown.industry = weights.INDUSTRY_ACCEPTABLE
   }
 
   // Location matching
-  if (matchesKeywords(location, DEFAULT_FIT_CRITERIA.locations.preferred)) {
-    breakdown.location = SCORES.LOCATION_PREFERRED
-  } else if (matchesKeywords(location, DEFAULT_FIT_CRITERIA.locations.acceptable)) {
-    breakdown.location = SCORES.LOCATION_ACCEPTABLE
+  if (matchesKeywords(location, criteria.locations.preferred)) {
+    breakdown.location = weights.LOCATION_PREFERRED
+  } else if (matchesKeywords(location, criteria.locations.acceptable)) {
+    breakdown.location = weights.LOCATION_ACCEPTABLE
   }
 
   // Salary matching
-  if (salary >= DEFAULT_FIT_CRITERIA.salaryMin) {
-    breakdown.salary = SCORES.SALARY_MEETS
+  if (salary >= criteria.salaryMin) {
+    breakdown.salary = weights.SALARY_MEETS
   }
 
   // Calculate total (cap at 100)
   const score = Math.min(
-    SCORES.MAX_TOTAL,
+    weights.MAX_TOTAL,
     breakdown.base + breakdown.role + breakdown.industry + breakdown.location + breakdown.salary + breakdown.skills
   )
 
@@ -183,8 +202,10 @@ export function calculateDefaultFitScore(job) {
  * @returns {{ score: number, breakdown: object, usingDefaults: false }}
  */
 function calculateProfileBasedScore(job, profile) {
+  const { weights } = getFitConfig()
+
   const breakdown = {
-    base: SCORES.BASE,
+    base: weights.BASE,
     role: 0,
     industry: 0,
     location: 0,
@@ -243,41 +264,41 @@ function calculateProfileBasedScore(job, profile) {
 
   // Role matching
   if (exactTitles.some(t => title.toLowerCase().includes(t.toLowerCase()))) {
-    breakdown.role = SCORES.ROLE_EXACT
+    breakdown.role = weights.ROLE_EXACT
   } else if (partialTitles.some(t => title.toLowerCase().includes(t.toLowerCase()))) {
-    breakdown.role = SCORES.ROLE_PARTIAL
+    breakdown.role = weights.ROLE_PARTIAL
   }
 
   // Industry matching
   if (matchesKeywords(industry, preferredIndustries)) {
-    breakdown.industry = SCORES.INDUSTRY_PREFERRED
+    breakdown.industry = weights.INDUSTRY_PREFERRED
   } else if (matchesKeywords(industry, acceptableIndustries)) {
-    breakdown.industry = SCORES.INDUSTRY_ACCEPTABLE
+    breakdown.industry = weights.INDUSTRY_ACCEPTABLE
   }
 
   // Location matching
   if (matchesKeywords(location, preferredLocations)) {
-    breakdown.location = SCORES.LOCATION_PREFERRED
+    breakdown.location = weights.LOCATION_PREFERRED
   } else if (matchesKeywords(location, acceptableLocations)) {
-    breakdown.location = SCORES.LOCATION_ACCEPTABLE
+    breakdown.location = weights.LOCATION_ACCEPTABLE
   }
 
   // Salary matching
   if (minSalary > 0 && salary >= minSalary) {
-    breakdown.salary = SCORES.SALARY_MEETS
+    breakdown.salary = weights.SALARY_MEETS
   } else if (minSalary === 0 && salary > 0) {
     // If no minimum set in profile but salary exists, give partial credit
-    breakdown.salary = Math.floor(SCORES.SALARY_MEETS / 2)
+    breakdown.salary = Math.floor(weights.SALARY_MEETS / 2)
   }
 
   // Skills matching (2 points per skill, max 5 skills = 10 points)
   const skillNames = skills.map(s => s.name)
-  const matchCount = countSkillMatches(description, skillNames)
-  breakdown.skills = matchCount * SCORES.SKILL_MATCH
+  const matchCount = countSkillMatches(description, skillNames, weights)
+  breakdown.skills = matchCount * weights.SKILL_MATCH
 
   // Calculate total (cap at 100)
   const score = Math.min(
-    SCORES.MAX_TOTAL,
+    weights.MAX_TOTAL,
     breakdown.base + breakdown.role + breakdown.industry + breakdown.location + breakdown.salary + breakdown.skills
   )
 
