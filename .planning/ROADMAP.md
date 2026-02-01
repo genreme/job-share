@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Self-Profile Schema** - Centralized professional identity data structure
 - [x] **Phase 3: Self-Profile Integration** - Profile feeds into outputs and learns from interactions
 - [x] **Phase 4: Discovery Core** - Scan, filter, research, and present job opportunities
-- [ ] **Phase 5: Discovery Management** - Friend submissions, archiving, and job board curation
+- [x] **Phase 5: Discovery Management** - Friend submissions, archiving, and job board curation
 - [ ] **Phase 6: Application Intelligence** - Matching, contacts, and follow-up tracking
 - [ ] **Phase 7: Application Generation** - Deep research and document generation
 - [ ] **Phase 8: Interview Preparation** - Research, question generation, and practice
@@ -109,9 +109,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01-PLAN.md - Server-side Supabase integration for friend submissions with context preservation
-- [ ] 05-02-PLAN.md - PDF archiving for job descriptions and periodic staleness verification
-- [ ] 05-03-PLAN.md - Configurable fit criteria and job board quality registry
+- [x] 05-01-PLAN.md - Server-side Supabase integration for friend submissions with context preservation
+- [x] 05-02-PLAN.md - PDF archiving for job descriptions and periodic staleness verification
+- [x] 05-03-PLAN.md - Configurable fit criteria and job board quality registry
 
 ### Phase 6: Application Intelligence
 **Goal**: Enhance applications with matching, contact tracking, and follow-up systems
@@ -206,8 +206,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 2. Self-Profile Schema | 3/3 | Complete | 2026-01-30 |
 | 3. Self-Profile Integration | 3/3 | Complete | 2026-01-30 |
 | 4. Discovery Core | 3/3 | Complete | 2026-01-31 |
-| 5. Discovery Management | 0/3 | Ready | - |
-| 6. Application Intelligence | 0/3 | Not started | - |
+| 5. Discovery Management | 3/3 | Complete | 2026-02-01 |
+| 6. Application Intelligence | 0/3 | Ready | - |
 | 7. Application Generation | 0/3 | Not started | - |
 | 8. Interview Preparation | 0/3 | Not started | - |
 | 9. Interview Learning | 0/2 | Not started | - |

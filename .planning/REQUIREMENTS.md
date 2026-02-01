@@ -28,24 +28,24 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Discovery
 
-- [ ] **DISC-01**: Discovery funnel scans configured job boards (quick scan stage)
-- [ ] **DISC-02**: Quick scan filters hundreds of jobs to top candidates (filter stage)
-- [ ] **DISC-03**: Deep research on shortlisted jobs verifies activity status and fit (research stage)
-- [ ] **DISC-04**: Shortlist presented with reasoning for user review (present stage)
-- [ ] **DISC-05**: User can confirm add to dashboard or defer
-- [ ] **DISC-06**: User can manually submit jobs via URL for deep research
-- [ ] **DISC-06a**: Manual submissions go through full research -> score -> reasoning flow
-- [ ] **DISC-06b**: User confirms add to dashboard or defer with notes
-- [ ] **DISC-07**: Friend job submission flows through same research process
-- [ ] **DISC-07a**: Friends can include context (connections, benefits, why they thought of you)
-- [ ] **DISC-07b**: Friend context displayed alongside research findings
-- [ ] **DISC-08**: Job descriptions archived in PDF format for pattern analysis
-- [ ] **DISC-09**: Periodic job status verification (still active, fit score refresh)
-- [ ] **DISC-10**: Fit criteria are configurable and evolve based on outcomes
-- [ ] **DISC-11**: Job board registry maintains list of sources with quality ratings
-- [ ] **DISC-12**: New job boards can be tested and quality-assessed
-- [ ] **DISC-13**: High-quality boards prioritized in scans
-- [ ] **DISC-14**: Low-quality boards can be blacklisted after user confirmation
+- [x] **DISC-01**: Discovery funnel scans configured job boards (quick scan stage)
+- [x] **DISC-02**: Quick scan filters hundreds of jobs to top candidates (filter stage)
+- [x] **DISC-03**: Deep research on shortlisted jobs verifies activity status and fit (research stage)
+- [x] **DISC-04**: Shortlist presented with reasoning for user review (present stage)
+- [x] **DISC-05**: User can confirm add to dashboard or defer
+- [x] **DISC-06**: User can manually submit jobs via URL for deep research
+- [x] **DISC-06a**: Manual submissions go through full research -> score -> reasoning flow
+- [x] **DISC-06b**: User confirms add to dashboard or defer with notes
+- [x] **DISC-07**: Friend job submission flows through same research process
+- [x] **DISC-07a**: Friends can include context (connections, benefits, why they thought of you)
+- [x] **DISC-07b**: Friend context displayed alongside research findings
+- [x] **DISC-08**: Job descriptions archived in PDF format for pattern analysis
+- [x] **DISC-09**: Periodic job status verification (still active, fit score refresh)
+- [x] **DISC-10**: Fit criteria are configurable and evolve based on outcomes
+- [x] **DISC-11**: Job board registry maintains list of sources with quality ratings
+- [x] **DISC-12**: New job boards can be tested and quality-assessed
+- [x] **DISC-13**: High-quality boards prioritized in scans
+- [x] **DISC-14**: Low-quality boards can be blacklisted after user confirmation
 
 ### Application
 
@@ -161,24 +161,24 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROF-12 | Phase 3 | Complete |
 | PROF-13 | Phase 3 | Complete |
 | PROF-14 | Phase 3 | Complete |
-| DISC-01 | Phase 4 | Pending |
-| DISC-02 | Phase 4 | Pending |
-| DISC-03 | Phase 4 | Pending |
-| DISC-04 | Phase 4 | Pending |
-| DISC-05 | Phase 4 | Pending |
-| DISC-06 | Phase 4 | Pending |
-| DISC-06a | Phase 4 | Pending |
-| DISC-06b | Phase 4 | Pending |
-| DISC-07 | Phase 5 | Pending |
-| DISC-07a | Phase 5 | Pending |
-| DISC-07b | Phase 5 | Pending |
-| DISC-08 | Phase 5 | Pending |
-| DISC-09 | Phase 5 | Pending |
-| DISC-10 | Phase 5 | Pending |
-| DISC-11 | Phase 5 | Pending |
-| DISC-12 | Phase 5 | Pending |
-| DISC-13 | Phase 5 | Pending |
-| DISC-14 | Phase 5 | Pending |
+| DISC-01 | Phase 4 | Complete |
+| DISC-02 | Phase 4 | Complete |
+| DISC-03 | Phase 4 | Complete |
+| DISC-04 | Phase 4 | Complete |
+| DISC-05 | Phase 4 | Complete |
+| DISC-06 | Phase 4 | Complete |
+| DISC-06a | Phase 4 | Complete |
+| DISC-06b | Phase 4 | Complete |
+| DISC-07 | Phase 5 | Complete |
+| DISC-07a | Phase 5 | Complete |
+| DISC-07b | Phase 5 | Complete |
+| DISC-08 | Phase 5 | Complete |
+| DISC-09 | Phase 5 | Complete |
+| DISC-10 | Phase 5 | Complete |
+| DISC-11 | Phase 5 | Complete |
+| DISC-12 | Phase 5 | Complete |
+| DISC-13 | Phase 5 | Complete |
+| DISC-14 | Phase 5 | Complete |
 | APPL-01 | Phase 6 | Pending |
 | APPL-02 | Phase 6 | Pending |
 | APPL-03 | Phase 6 | Pending |
