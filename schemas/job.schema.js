@@ -6,6 +6,7 @@
  */
 
 import { z } from 'zod'
+import { EnhancedConnectionSchema } from './contact.schema.js'
 
 // Valid job statuses
 export const JobStatusSchema = z.enum([
@@ -38,17 +39,26 @@ export function isValidTransition(from, to) {
   return VALID_TRANSITIONS[from]?.includes(to) ?? false
 }
 
-// Connection can be legacy string or structured object
+// Legacy connection object format (simpler, for backward compatibility)
+// Accepts any string for role, uses linkedIn instead of linkedInUrl
+const LegacyConnectionObjectSchema = z.object({
+  name: z.string(),
+  role: z.string().optional().default(''),
+  linkedIn: z.string().optional().default(''),
+  notes: z.string().optional().default(''),
+  isPrimary: z.boolean().optional().default(false),
+  reachedOut: z.boolean().optional().default(false)
+})
+
+// Connection can be:
+// 1. Legacy string format: "Name (notes)"
+// 2. Legacy object format: { name, role?, linkedIn?, notes?, isPrimary?, reachedOut? }
+// 3. Enhanced format from contact.schema.js: full EnhancedConnectionSchema
+//    (id, interactions, lastInteraction, linkedInUrl, email, role enum, etc.)
 export const ConnectionSchema = z.union([
-  z.string(), // Legacy format: "Name (notes)"
-  z.object({
-    name: z.string(),
-    role: z.string().optional().default(''),
-    linkedIn: z.string().optional().default(''),
-    notes: z.string().optional().default(''),
-    isPrimary: z.boolean().optional().default(false),
-    reachedOut: z.boolean().optional().default(false)
-  })
+  z.string(), // Legacy string format
+  EnhancedConnectionSchema, // New enhanced format (tried first for objects)
+  LegacyConnectionObjectSchema // Legacy object format (fallback)
 ])
 
 // Update entry in job history
