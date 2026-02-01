@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 5 of 10 (Discovery Management) - IN PROGRESS
-Plan: 2 of 3 (estimated) in current phase
-Status: Plan 05-02 complete
-Last activity: 2026-02-01 - Completed 05-02-PLAN.md
+Plan: 3 of 3 in current phase
+Status: All 3 plans complete (05-01, 05-02, 05-03 interleaved)
+Last activity: 2026-02-01 - Completed 05-01-PLAN.md
 
-Progress: [=====-----] ~53% (17 of ~30 plans)
+Progress: [======----] ~60% (18 of ~30 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
+- Total plans completed: 18
 - Average duration: 6 min
-- Total execution time: 99 min
+- Total execution time: 104 min
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: [=====-----] ~53% (17 of ~30 plans)
 | 02-self-profile-schema | 3 | 15 min | ~5 min |
 | 03-self-profile-integration | 3 | 32 min | ~11 min |
 | 04-discovery-core | 3 | 21 min | ~7 min |
-| 05-discovery-management | 2 | 10 min | ~5 min |
+| 05-discovery-management | 3 | 15 min | ~5 min |
 
 **Recent Trend:**
-- Last 10 plans: 02-02 (3min), 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min), 04-01 (5min), 04-02 (12min), 04-03 (4min), 05-01 (5min), 05-02 (5min)
+- Last 10 plans: 02-03 (8min), 03-02 (10min), 03-01 (8min), 03-03 (14min), 04-01 (5min), 04-02 (12min), 04-03 (4min), 05-01 (5min), 05-02 (5min), 05-03 (5min)
 - Trend: Schema/service plans complete faster (~5 min) than integration plans (~10-14 min)
 
 *Updated after each plan completion*
@@ -98,6 +98,9 @@ Recent decisions affecting current work:
 - [05-02]: Closed jobs marked with closedAt timestamp and closedReason
 - [05-02]: Fit scores recalculated only when job data actually changes
 - [05-02]: 30-second timeout for Worker requests
+- [05-01]: Service key (not anon key) for server-side Supabase access to bypass RLS
+- [05-01]: Lazy initialization with single warning log for missing config
+- [05-01]: Friend context preserved as separate object in job data (friendContext field)
 
 ### Pending Todos
 
@@ -110,7 +113,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-01
-Stopped at: Completed 05-02-PLAN.md
+Stopped at: Completed 05-01-PLAN.md (Phase 5 complete)
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -311,10 +314,11 @@ Resume file: None
 
 ### Plans Completed:
 
-- **Plan 05-01: Source Tracker Service** (5 min)
-  - Source tracking for job discovery channels
-  - Friend referral tracking
-  - Source statistics and analytics
+- **Plan 05-01: Friend Submissions via Supabase** (5 min)
+  - Supabase server client with lazy initialization
+  - Three MCP tools: getFriendSubmissions, processFriendSubmission, acceptFriendSubmission
+  - Friend context preservation end-to-end
+  - 27 new tests
 
 - **Plan 05-02: PDF Archiving and Staleness Verification** (5 min)
   - Puppeteer-based PDF archiving for job descriptions
@@ -326,6 +330,9 @@ Resume file: None
 
 | Tool | Purpose |
 |------|---------|
+| get_friend_submissions | List pending friend submissions from Supabase |
+| process_friend_submission | Research friend submission URL |
+| accept_friend_submission | Accept and add to dashboard with context |
 | archive_job | Archive job as PDF for pattern analysis |
 | list_archives | List all archived job PDFs |
 | verify_jobs | Verify active jobs, detect closed, refresh scores |
@@ -334,6 +341,9 @@ Resume file: None
 
 | Requirement | Implementation | Status |
 |-------------|----------------|--------|
+| DISC-07 Friend submissions | get_friend_submissions tool | Complete |
+| DISC-07a Friend context captured | processFriendSubmission extracts context | Complete |
+| DISC-07b Friend context preserved | acceptFriendSubmission stores friendContext | Complete |
 | DISC-08 Archive job descriptions | archive_job tool with Puppeteer | Complete |
 | DISC-09 Staleness verification | verify_jobs detects closed jobs | Complete |
 | DISC-09 Fit score refresh | Automatic on data changes | Complete |
