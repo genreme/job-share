@@ -241,7 +241,7 @@ const ScoreHistoryEntrySchema = z.object({
  */
 const ReadinessSchema = z.object({
   overall: z.number().min(0).max(100),
-  byCategory: z.record(z.number()).default({}), // Category name -> score
+  byCategory: z.record(z.string(), z.number()).default({}), // Category name -> score
   confidenceLevel: ReadinessLevel
 })
 
