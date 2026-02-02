@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 8 of 10 (Interview Preparation) - IN PROGRESS
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-02 - Completed 08-02-PLAN.md (Question Generation & Practice Sessions)
+Last activity: 2026-02-02 - Completed 08-03-PLAN.md (Scoring, Progress Tracking & MCP Tools)
 
-Progress: [=========-] ~88% (28 of ~32 plans)
+Progress: [=========-] ~91% (29 of ~32 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 28
+- Total plans completed: 29
 - Average duration: 6 min
-- Total execution time: 157 min
+- Total execution time: 175 min
 
 **By Phase:**
 
@@ -34,11 +34,11 @@ Progress: [=========-] ~88% (28 of ~32 plans)
 | 05-discovery-management | 3 | 15 min | ~5 min |
 | 06-application-intelligence | 4 | 20 min | ~5 min |
 | 07-application-generation | 3 | 34 min | ~11 min |
-| 08-interview-preparation | 2 | 19 min | ~10 min |
+| 08-interview-preparation | 3 | 37 min | ~12 min |
 
 **Recent Trend:**
-- Last 10 plans: 06-01 (4min), 06-02 (6min), 06-03 (5min), 06-04 (5min), 07-01 (10min), 07-02 (10min), 07-03 (14min), 08-01 (9min), 08-02 (10min)
-- Trend: Schema/service plans complete faster (~5-9 min) than integration/tool wiring plans (~10-14 min)
+- Last 10 plans: 06-02 (6min), 06-03 (5min), 06-04 (5min), 07-01 (10min), 07-02 (10min), 07-03 (14min), 08-01 (9min), 08-02 (10min), 08-03 (18min)
+- Trend: Tool wiring with comprehensive tests takes longer (~14-18 min) than pure schema/service plans (~5-10 min)
 
 *Updated after each plan completion*
 
@@ -146,6 +146,11 @@ Recent decisions affecting current work:
 - [08-02]: Session schema uses optional completedAt/summary (undefined until completed)
 - [08-02]: UUID validation for questionId enforces proper format in PracticeAnswerSchema
 - [08-02]: No timer implementation per CONTEXT.md - focus on content quality over speed
+- [08-03]: Weighted scoring: 30% relevance, 25% structure, 25% coverage, 20% clarity
+- [08-03]: STAR detection via keyword indicator lists for each component
+- [08-03]: Readiness thresholds: not-ready (0-50), needs-work (51-70), ready (71-85), well-prepared (86-100)
+- [08-03]: Focus areas identified from both low scores AND limited practice per category
+- [08-03]: Pre-interview checklist aggregates company research, interviewer briefs, top stories
 
 ### Pending Todos
 
@@ -158,7 +163,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 08-02-PLAN.md (Question Generation & Practice Sessions)
+Stopped at: Completed 08-03-PLAN.md (Scoring, Progress Tracking & MCP Tools)
 Resume file: None
 
 ## Phase 1 Completion Summary
