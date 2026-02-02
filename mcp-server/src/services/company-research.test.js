@@ -11,11 +11,19 @@ import { fileURLToPath } from 'url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const RESEARCH_DIR = join(__dirname, '..', '..', 'data', 'job-research')
 
+// Use unique job ID range for this test file (10000-10999) to avoid conflicts
+// with other test files when running in parallel
+let testJobIdCounter = 10000
+
+function getNextTestJobId() {
+  return testJobIdCounter++
+}
+
 // Helper to create valid research data
 function createValidResearchData(overrides = {}) {
   return {
     id: '550e8400-e29b-41d4-a716-446655440000',
-    jobId: 123,
+    jobId: overrides.jobId || 10000,
     companyName: 'TechCorp',
     researchedAt: '2026-02-02T00:00:00Z',
     firmographics: {
@@ -62,26 +70,36 @@ function createValidResearchData(overrides = {}) {
 }
 
 describe('Company Research Service', () => {
+  // Track created files for cleanup
+  const createdFiles = []
+
+  // Reset counter before each test
+  beforeEach(() => {
+    testJobIdCounter = 10000 + Math.floor(Math.random() * 100) * 10
+  })
+
   // Clean up test files after each test
   afterEach(() => {
-    const testFiles = [
-      join(RESEARCH_DIR, '123-company.json'),
-      join(RESEARCH_DIR, '123-company.md'),
-      join(RESEARCH_DIR, '456-company.json'),
-      join(RESEARCH_DIR, '456-company.md'),
-      join(RESEARCH_DIR, '999-company.json'),
-      join(RESEARCH_DIR, '999-company.md')
-    ]
-    testFiles.forEach(file => {
-      if (existsSync(file)) {
-        rmSync(file)
-      }
+    // Clean up files in the 10000-10999 range
+    const baseFiles = [10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009]
+    baseFiles.forEach(id => {
+      const jsonPath = join(RESEARCH_DIR, `${id}-company.json`)
+      const mdPath = join(RESEARCH_DIR, `${id}-company.md`)
+      if (existsSync(jsonPath)) rmSync(jsonPath)
+      if (existsSync(mdPath)) rmSync(mdPath)
+    })
+    // Also clean specific IDs used in tests
+    ;[10123, 10456, 10999].forEach(id => {
+      const jsonPath = join(RESEARCH_DIR, `${id}-company.json`)
+      const mdPath = join(RESEARCH_DIR, `${id}-company.md`)
+      if (existsSync(jsonPath)) rmSync(jsonPath)
+      if (existsSync(mdPath)) rmSync(mdPath)
     })
   })
 
   describe('researchCompany', () => {
     it('should return template with status template_ready', () => {
-      const result = researchCompany(123, 'TechCorp')
+      const result = researchCompany(10000, 'TechCorp')
 
       expect(result.status).toBe('template_ready')
       expect(result.research).toBeDefined()
@@ -89,9 +107,9 @@ describe('Company Research Service', () => {
     })
 
     it('should include job ID and company name in template', () => {
-      const result = researchCompany(456, 'AnotherCorp')
+      const result = researchCompany(10001, 'AnotherCorp')
 
-      expect(result.research.jobId).toBe(456)
+      expect(result.research.jobId).toBe(10001)
       expect(result.research.companyName).toBe('AnotherCorp')
     })
 
@@ -105,14 +123,14 @@ describe('Company Research Service', () => {
     })
 
     it('should include timestamp', () => {
-      const result = researchCompany(123, 'TechCorp')
+      const result = researchCompany(10002, 'TechCorp')
 
       expect(result.research.researchedAt).toBeDefined()
       expect(new Date(result.research.researchedAt)).toBeInstanceOf(Date)
     })
 
     it('should provide instructions for all research areas', () => {
-      const result = researchCompany(123, 'TechCorp')
+      const result = researchCompany(10003, 'TechCorp')
 
       expect(result.instructions).toContain('Firmographics')
       expect(result.instructions).toContain('Funding')
@@ -124,7 +142,7 @@ describe('Company Research Service', () => {
     })
 
     it('should initialize with default arrays', () => {
-      const result = researchCompany(123, 'TechCorp')
+      const result = researchCompany(10004, 'TechCorp')
 
       expect(result.research.funding.investors).toEqual([])
       expect(result.research.funding.signals).toEqual([])
@@ -138,7 +156,7 @@ describe('Company Research Service', () => {
   describe('updateCompanyResearch', () => {
     it('should save valid research to JSON file', () => {
       const data = createValidResearchData()
-      const result = updateCompanyResearch(123, data)
+      const result = updateCompanyResearch(10000, data)
 
       expect(result.success).toBe(true)
       expect(result.saved).toBeDefined()
@@ -147,7 +165,7 @@ describe('Company Research Service', () => {
 
     it('should save markdown file', () => {
       const data = createValidResearchData()
-      const result = updateCompanyResearch(123, data)
+      const result = updateCompanyResearch(10000, data)
 
       expect(result.saved.markdown).toBeDefined()
       expect(existsSync(result.saved.markdown)).toBe(true)
@@ -155,25 +173,25 @@ describe('Company Research Service', () => {
 
     it('should return highlights from saved data', () => {
       const data = createValidResearchData()
-      const result = updateCompanyResearch(123, data)
+      const result = updateCompanyResearch(10000, data)
 
       expect(result.highlights).toEqual(data.highlights)
     })
 
     it('should persist data that can be read back', () => {
       const data = createValidResearchData()
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
-      const savedData = JSON.parse(readFileSync(join(RESEARCH_DIR, '123-company.json'), 'utf-8'))
+      const savedData = JSON.parse(readFileSync(join(RESEARCH_DIR, '10000-company.json'), 'utf-8'))
       expect(savedData.companyName).toBe('TechCorp')
       expect(savedData.funding.stage).toBe('Series B')
     })
 
     it('should generate markdown with all sections', () => {
       const data = createValidResearchData()
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
-      const markdown = readFileSync(join(RESEARCH_DIR, '123-company.md'), 'utf-8')
+      const markdown = readFileSync(join(RESEARCH_DIR, '10000-company.md'), 'utf-8')
       expect(markdown).toContain('# TechCorp - Company Research')
       expect(markdown).toContain('## Quick Highlights')
       expect(markdown).toContain('## Firmographics')
@@ -191,7 +209,7 @@ describe('Company Research Service', () => {
         companyName: 'TechCorp'
       }
 
-      const result = updateCompanyResearch(123, invalidData)
+      const result = updateCompanyResearch(10000, invalidData)
 
       expect(result.error).toBe('Invalid research format')
       expect(result.details).toBeDefined()
@@ -200,7 +218,7 @@ describe('Company Research Service', () => {
 
     it('should reject invalid confidence level', () => {
       const data = createValidResearchData({ confidence: 'invalid' })
-      const result = updateCompanyResearch(123, data)
+      const result = updateCompanyResearch(10000, data)
 
       expect(result.error).toBe('Invalid research format')
     })
@@ -214,16 +232,16 @@ describe('Company Research Service', () => {
         confidence: 'low'
       }
 
-      const result = updateCompanyResearch(123, minimalData)
+      const result = updateCompanyResearch(10000, minimalData)
       expect(result.success).toBe(true)
     })
 
     it('should override jobId from parameter', () => {
       const data = createValidResearchData({ jobId: 999 })
-      updateCompanyResearch(456, data)
+      updateCompanyResearch(10001, data)
 
-      const savedData = JSON.parse(readFileSync(join(RESEARCH_DIR, '456-company.json'), 'utf-8'))
-      expect(savedData.jobId).toBe(456)
+      const savedData = JSON.parse(readFileSync(join(RESEARCH_DIR, '10001-company.json'), 'utf-8'))
+      expect(savedData.jobId).toBe(10001)
     })
   })
 
@@ -235,7 +253,7 @@ describe('Company Research Service', () => {
 
     it('should find existing research by company name (case-insensitive)', () => {
       const data = createValidResearchData()
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
       const result = checkForExistingCompanyResearch('techcorp')
       expect(result.found).toBe(true)
@@ -244,15 +262,15 @@ describe('Company Research Service', () => {
 
     it('should return job ID of existing research', () => {
       const data = createValidResearchData()
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
       const result = checkForExistingCompanyResearch('TechCorp')
-      expect(result.existingJobId).toBe(123)
+      expect(result.existingJobId).toBe(10000)
     })
 
     it('should return research date and days since', () => {
       const data = createValidResearchData({ researchedAt: new Date().toISOString() })
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
       const result = checkForExistingCompanyResearch('TechCorp')
       expect(result.researchedAt).toBeDefined()
@@ -261,7 +279,7 @@ describe('Company Research Service', () => {
 
     it('should return highlights from existing research', () => {
       const data = createValidResearchData()
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
       const result = checkForExistingCompanyResearch('TechCorp')
       expect(result.highlights).toEqual(data.highlights)
@@ -269,7 +287,7 @@ describe('Company Research Service', () => {
 
     it('should suggest reuse for recent research (<30 days)', () => {
       const data = createValidResearchData({ researchedAt: new Date().toISOString() })
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
       const result = checkForExistingCompanyResearch('TechCorp')
       expect(result.suggestion).toBe('Recent research available. Reuse?')
@@ -279,7 +297,7 @@ describe('Company Research Service', () => {
       const oldDate = new Date()
       oldDate.setDate(oldDate.getDate() - 35)
       const data = createValidResearchData({ researchedAt: oldDate.toISOString() })
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
       const result = checkForExistingCompanyResearch('TechCorp')
       expect(result.suggestion).toBe('Older research available. Refresh recommended.')
@@ -289,53 +307,53 @@ describe('Company Research Service', () => {
       const data1 = createValidResearchData({ companyName: 'FirstCorp' })
       const data2 = createValidResearchData({ companyName: 'SecondCorp', id: '550e8400-e29b-41d4-a716-446655440001' })
 
-      updateCompanyResearch(123, data1)
-      updateCompanyResearch(456, data2)
+      updateCompanyResearch(10000, data1)
+      updateCompanyResearch(10001, data2)
 
       const result = checkForExistingCompanyResearch('SecondCorp')
       expect(result.found).toBe(true)
-      expect(result.existingJobId).toBe(456)
+      expect(result.existingJobId).toBe(10001)
     })
   })
 
   describe('Markdown Generation', () => {
     it('should format leadership quotes correctly', () => {
       const data = createValidResearchData()
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
-      const markdown = readFileSync(join(RESEARCH_DIR, '123-company.md'), 'utf-8')
+      const markdown = readFileSync(join(RESEARCH_DIR, '10000-company.md'), 'utf-8')
       expect(markdown).toContain('> "We build products that matter" - CEO Jane Smith')
     })
 
     it('should handle news with different relevance levels', () => {
       const data = createValidResearchData()
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
-      const markdown = readFileSync(join(RESEARCH_DIR, '123-company.md'), 'utf-8')
+      const markdown = readFileSync(join(RESEARCH_DIR, '10000-company.md'), 'utf-8')
       expect(markdown).toContain('[high]')
     })
 
     it('should handle empty optional fields gracefully', () => {
       const minimalData = {
         id: '550e8400-e29b-41d4-a716-446655440000',
-        jobId: 999,
+        jobId: 10002,
         companyName: 'MinimalCorp',
         researchedAt: '2026-02-02T00:00:00Z',
         confidence: 'low'
       }
 
-      updateCompanyResearch(999, minimalData)
+      updateCompanyResearch(10002, minimalData)
 
-      const markdown = readFileSync(join(RESEARCH_DIR, '999-company.md'), 'utf-8')
+      const markdown = readFileSync(join(RESEARCH_DIR, '10002-company.md'), 'utf-8')
       expect(markdown).toContain('Unknown') // Should show Unknown for missing fields
       expect(markdown).toContain('None identified') // For empty challenges/competitors
     })
 
     it('should include products with descriptions', () => {
       const data = createValidResearchData()
-      updateCompanyResearch(123, data)
+      updateCompanyResearch(10000, data)
 
-      const markdown = readFileSync(join(RESEARCH_DIR, '123-company.md'), 'utf-8')
+      const markdown = readFileSync(join(RESEARCH_DIR, '10000-company.md'), 'utf-8')
       expect(markdown).toContain('**MainProduct:** Core SaaS platform')
     })
   })
