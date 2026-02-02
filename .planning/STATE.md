@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 8 of 10 (Interview Preparation) - IN PROGRESS
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-02 - Completed 08-01-PLAN.md (Interview Schemas & Research Service)
+Last activity: 2026-02-02 - Completed 08-02-PLAN.md (Question Generation & Practice Sessions)
 
-Progress: [=========-] ~84% (27 of ~32 plans)
+Progress: [=========-] ~88% (28 of ~32 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 27
+- Total plans completed: 28
 - Average duration: 6 min
-- Total execution time: 147 min
+- Total execution time: 157 min
 
 **By Phase:**
 
@@ -34,10 +34,10 @@ Progress: [=========-] ~84% (27 of ~32 plans)
 | 05-discovery-management | 3 | 15 min | ~5 min |
 | 06-application-intelligence | 4 | 20 min | ~5 min |
 | 07-application-generation | 3 | 34 min | ~11 min |
-| 08-interview-preparation | 1 | 9 min | ~9 min |
+| 08-interview-preparation | 2 | 19 min | ~10 min |
 
 **Recent Trend:**
-- Last 10 plans: 05-03 (5min), 06-01 (4min), 06-02 (6min), 06-03 (5min), 06-04 (5min), 07-01 (10min), 07-02 (10min), 07-03 (14min), 08-01 (9min)
+- Last 10 plans: 06-01 (4min), 06-02 (6min), 06-03 (5min), 06-04 (5min), 07-01 (10min), 07-02 (10min), 07-03 (14min), 08-01 (9min), 08-02 (10min)
 - Trend: Schema/service plans complete faster (~5-9 min) than integration/tool wiring plans (~10-14 min)
 
 *Updated after each plan completion*
@@ -140,6 +140,12 @@ Recent decisions affecting current work:
 - [08-01]: Markdown prioritizes talking points first, then style, then background
 - [08-01]: sanitizeName collapses multiple spaces to single dash for cleaner filenames
 - [08-01]: z.record(z.string(), z.number()) for byCategory map (explicit key type)
+- [08-02]: 5 question sources: jd-requirement, profile-gap, profile-strength, company-research, interviewer-style
+- [08-02]: Difficulty mapping by source: gaps=hard (weaker areas), strengths=easy (let them shine)
+- [08-02]: linkQuestionToStories uses getRelevantStories with keywords extracted from question text
+- [08-02]: Session schema uses optional completedAt/summary (undefined until completed)
+- [08-02]: UUID validation for questionId enforces proper format in PracticeAnswerSchema
+- [08-02]: No timer implementation per CONTEXT.md - focus on content quality over speed
 
 ### Pending Todos
 
@@ -152,7 +158,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 08-01-PLAN.md (Interview Schemas & Research Service)
+Stopped at: Completed 08-02-PLAN.md (Question Generation & Practice Sessions)
 Resume file: None
 
 ## Phase 1 Completion Summary
