@@ -141,12 +141,12 @@ Plans:
   3. Custom resume generation uses profile + job research + playbook templates
   4. Generated materials pass format and grammar review before use
   5. Research outputs persist per job for reference in later communications
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 07-01: Company deep research workflow
-- [ ] 07-02: Resume and cover letter generation pipeline
-- [ ] 07-03: Email assistance and research persistence
+- [ ] 07-01-PLAN.md - Research infrastructure (schemas, company/manager research services, persistence)
+- [ ] 07-02-PLAN.md - Document review and keyword optimization services
+- [ ] 07-03-PLAN.md - MCP tools for research, generation, and review workflows
 
 ### Phase 8: Interview Preparation
 **Goal**: Prepare for interviews with research, generated questions, and practice
