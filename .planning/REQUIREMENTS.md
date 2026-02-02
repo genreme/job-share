@@ -56,22 +56,22 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **APPL-05**: Follow-up reminders based on date and status
 - [ ] **APPL-06**: Smart follow-up suggestions based on time elapsed and stage
 - [ ] **APPL-07**: User can add updates to job entries (notes, connections, status changes)
-- [ ] **APPL-08**: Deep research workflow for company (culture, recent news, funding, challenges)
-- [ ] **APPL-09**: Deep research workflow for hiring manager (background, interests, interview style)
-- [ ] **APPL-10**: Custom resume generation using profile + job research + playbook
-- [ ] **APPL-11**: Custom cover letter generation using profile + job research + playbook
-- [ ] **APPL-12**: Generated materials reviewed for format, grammar, match score before use
-- [ ] **APPL-13**: Email response assistance references job research + hiring manager intel + profile
-- [ ] **APPL-14**: Playbook research outputs stored per job for reference in later communications
+- [x] **APPL-08**: Deep research workflow for company (culture, recent news, funding, challenges)
+- [x] **APPL-09**: Deep research workflow for hiring manager (background, interests, interview style)
+- [x] **APPL-10**: Custom resume generation using profile + job research + playbook
+- [x] **APPL-11**: Custom cover letter generation using profile + job research + playbook
+- [x] **APPL-12**: Generated materials reviewed for format, grammar, match score before use
+- [x] **APPL-13**: Email response assistance references job research + hiring manager intel + profile
+- [x] **APPL-14**: Playbook research outputs stored per job for reference in later communications
 
 ### Interview
 
-- [ ] **INTV-01**: Interviewer research workflow (background, interests, interview style signals)
-- [ ] **INTV-02**: Interview questions generated from JD + profile + company/HM research
-- [ ] **INTV-03**: Practice mode allows recording/writing answers
-- [ ] **INTV-04**: Self-scoring against profile stories and target talking points
-- [ ] **INTV-05**: Gap identification ("You mentioned X but didn't quantify the result")
-- [ ] **INTV-06**: Role-specific positioning customizes foundation positioning per opportunity
+- [x] **INTV-01**: Interviewer research workflow (background, interests, interview style signals)
+- [x] **INTV-02**: Interview questions generated from JD + profile + company/HM research
+- [x] **INTV-03**: Practice mode allows recording/writing answers
+- [x] **INTV-04**: Self-scoring against profile stories and target talking points
+- [x] **INTV-05**: Gap identification ("You mentioned X but didn't quantify the result")
+- [ ] **INTV-06**: Role-specific positioning customizes foundation positioning per opportunity (Deferred - external calendar out of MCP scope)
 - [ ] **INTV-07**: Interview prep outputs remember conversation history per job
 - [ ] **INTV-08**: Practice session transcripts/notes added to self-profile database
 - [ ] **INTV-09**: Real interview transcripts/notes added to self-profile database
@@ -186,19 +186,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | APPL-05 | Phase 6 | Complete |
 | APPL-06 | Phase 6 | Complete |
 | APPL-07 | Phase 6 | Complete |
-| APPL-08 | Phase 7 | Pending |
-| APPL-09 | Phase 7 | Pending |
-| APPL-10 | Phase 7 | Pending |
-| APPL-11 | Phase 7 | Pending |
-| APPL-12 | Phase 7 | Pending |
-| APPL-13 | Phase 7 | Pending |
-| APPL-14 | Phase 7 | Pending |
-| INTV-01 | Phase 8 | Pending |
-| INTV-02 | Phase 8 | Pending |
-| INTV-03 | Phase 8 | Pending |
-| INTV-04 | Phase 8 | Pending |
-| INTV-05 | Phase 8 | Pending |
-| INTV-06 | Phase 8 | Pending |
+| APPL-08 | Phase 7 | Complete |
+| APPL-09 | Phase 7 | Complete |
+| APPL-10 | Phase 7 | Complete |
+| APPL-11 | Phase 7 | Complete |
+| APPL-12 | Phase 7 | Complete |
+| APPL-13 | Phase 7 | Complete |
+| APPL-14 | Phase 7 | Complete |
+| INTV-01 | Phase 8 | Complete |
+| INTV-02 | Phase 8 | Complete |
+| INTV-03 | Phase 8 | Complete |
+| INTV-04 | Phase 8 | Complete |
+| INTV-05 | Phase 8 | Complete |
+| INTV-06 | Phase 8 | Deferred |
 | INTV-07 | Phase 9 | Pending |
 | INTV-08 | Phase 9 | Pending |
 | INTV-09 | Phase 9 | Pending |
@@ -216,4 +216,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-29*
-*Last updated: 2026-02-01 after Phase 6 completion*
+*Last updated: 2026-02-02 after Phase 8 completion*
