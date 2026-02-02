@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 7 of 10 (Application Generation) - IN PROGRESS
-Plan: 1 of 3 in current phase
+Plan: 3 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-02 - Completed 07-01-PLAN.md (Research Infrastructure)
+Last activity: 2026-02-02 - Completed 07-03-PLAN.md (MCP Tools Wiring)
 
-Progress: [=======---] ~75% (24 of ~32 plans)
+Progress: [========--] ~81% (26 of ~32 plans)
 
 ## Performance Metrics
 
@@ -33,11 +33,11 @@ Progress: [=======---] ~75% (24 of ~32 plans)
 | 04-discovery-core | 3 | 21 min | ~7 min |
 | 05-discovery-management | 3 | 15 min | ~5 min |
 | 06-application-intelligence | 4 | 20 min | ~5 min |
-| 07-application-generation | 1 | 10 min | ~10 min |
+| 07-application-generation | 3 | 34 min | ~11 min |
 
 **Recent Trend:**
-- Last 10 plans: 05-01 (5min), 05-02 (5min), 05-03 (5min), 06-01 (4min), 06-02 (6min), 06-03 (5min), 06-04 (5min), 07-01 (10min)
-- Trend: Schema/service plans complete faster (~5 min) than integration plans (~10-14 min)
+- Last 10 plans: 05-02 (5min), 05-03 (5min), 06-01 (4min), 06-02 (6min), 06-03 (5min), 06-04 (5min), 07-01 (10min), 07-02 (10min), 07-03 (14min)
+- Trend: Schema/service plans complete faster (~5 min) than integration/tool wiring plans (~10-14 min)
 
 *Updated after each plan completion*
 
@@ -127,6 +127,13 @@ Recent decisions affecting current work:
 - [07-01]: Manager research prioritizes style and connection over background
 - [07-01]: 30-day threshold for suggesting research refresh vs reuse
 - [07-01]: Unique test job ID ranges per file for parallel test isolation
+- [07-02]: LanguageTool API for grammar checking (free public API)
+- [07-02]: ATS checks for non-ASCII, HTML tags, pipe characters
+- [07-02]: Factual checking against profile experience dates and companies
+- [07-02]: Tone analysis with formal/casual indicator detection
+- [07-03]: Email tone variations: professional, warm, direct (3 options per request)
+- [07-03]: Research retrieval defaults to highlights only per CONTEXT.md
+- [07-03]: Approval gate: approve_document required before document marked ready
 
 ### Pending Todos
 
@@ -139,7 +146,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 07-01-PLAN.md (Research Infrastructure)
+Stopped at: Completed 07-03-PLAN.md (MCP Tools Wiring)
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -462,3 +469,65 @@ Resume file: None
 | APPL-05 Time-based follow-up | calculateFollowupStatus | Complete |
 | APPL-06 Smart suggestions | generateFollowupSuggestion | Complete |
 | APPL-07 Add notes/updates | add_job_update tool | Complete |
+
+## Phase 7 Progress
+
+**Phase 7: Application Generation** - IN PROGRESS
+
+- 3 plans executed
+- 51 new tests in plan 03
+- Research infrastructure with company and manager research
+- Document review with grammar, ATS, tone, and factual checks
+- 10 MCP tools for research, generation, and review workflows
+
+### Plans Completed:
+
+- **Plan 07-01: Research Infrastructure** (10 min)
+  - Research schemas: CompanyResearchSchema, HiringManagerResearchSchema
+  - Company research service with existing research detection
+  - Manager research service focused on style and connection
+  - Research persistence (JSON + markdown per job)
+  - Highlights extraction for quick surfacing
+  - 38 new tests
+
+- **Plan 07-02: Document Review Services** (10 min)
+  - Review schema with grammar, ATS, tone, length sections
+  - Grammar checking via LanguageTool API
+  - ATS compatibility analysis
+  - Factual accuracy against profile
+  - Tone consistency checking
+  - 52 new tests
+
+- **Plan 07-03: MCP Tools Wiring** (14 min)
+  - Research tools: start_company_research, save_company_research, start_manager_research, save_manager_research, get_research
+  - Generation tools: generate_optimized_resume, generate_researched_cover_letter, generate_email_response
+  - Review tools: review_generated_document, approve_document
+  - Email generator service with 3 tone variations
+  - 51 new tests
+
+### New MCP Tools (Phase 7):
+
+| Tool | Purpose |
+|------|---------|
+| start_company_research | Start deep company investigation (APPL-08) |
+| save_company_research | Persist company research findings |
+| start_manager_research | Start hiring manager style research (APPL-09) |
+| save_manager_research | Persist manager research findings |
+| get_research | Get highlights (default) or full research (APPL-14) |
+| generate_optimized_resume | Keyword-optimized resume (APPL-10) |
+| generate_researched_cover_letter | Research-integrated cover letter (APPL-11) |
+| generate_email_response | Email with tone variations (APPL-13) |
+| review_generated_document | Full review with issues (APPL-12) |
+| approve_document | Explicit approval gate (APPL-12) |
+
+### Requirements Status (Phase 7):
+
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| APPL-08 Company research | start_company_research + save | Complete |
+| APPL-09 Manager research | start_manager_research + save | Complete |
+| APPL-10 Keyword optimization | generate_optimized_resume | Complete |
+| APPL-11 Research-integrated cover letter | generate_researched_cover_letter | Complete |
+| APPL-12 Document review | review_generated_document + approve_document | Complete |
+| APPL-13 Email variations | generate_email_response (3 tones) | Complete |
+| APPL-14 Research persistence | get_research (highlights/full) | Complete |
