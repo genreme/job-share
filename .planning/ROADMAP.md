@@ -158,12 +158,12 @@ Plans:
   3. Practice mode allows recording or writing answers
   4. Self-scoring compares answers against profile stories and target points
   5. Role-specific positioning customizes foundation positioning per opportunity
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 08-01: Interviewer research workflow
-- [ ] 08-02: Question generation and practice mode
-- [ ] 08-03: Self-scoring and positioning
+- [ ] 08-01-PLAN.md — Schemas and interviewer research service (INTV-01)
+- [ ] 08-02-PLAN.md — Question generation and practice session services (INTV-02, INTV-03)
+- [ ] 08-03-PLAN.md — Scoring, progress tracking, and MCP tools wiring (INTV-04, INTV-05)
 
 ### Phase 9: Interview Learning
 **Goal**: Capture interview learnings and feed them back into the system
