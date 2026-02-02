@@ -125,6 +125,20 @@ import {
   approveDocument
 } from './tools/review.js';
 
+// Phase 8: Interview Preparation tools
+import {
+  startInterviewerResearch,
+  saveInterviewerResearch,
+  getInterviewerResearch,
+  generateInterviewQuestions,
+  startPracticeSession,
+  submitPracticeAnswer,
+  scoreSessionAnswer,
+  getSessionFeedback,
+  getInterviewProgress,
+  getPreInterviewChecklist
+} from './tools/interview-tools.js';
+
 // Create server
 const server = new Server(
   {
@@ -1274,6 +1288,156 @@ const TOOLS = [
       },
       required: ['documentType', 'jobId']
     }
+  },
+
+  // === Interview Preparation (Phase 8) ===
+
+  // Interviewer Research (INTV-01)
+  {
+    name: 'start_interviewer_research',
+    description: 'Start research on a specific interviewer. Returns template for Claude to populate with LinkedIn, Glassdoor patterns, talking points. INTV-01.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        interviewerName: { type: 'string', description: 'Interviewer name' },
+        interviewerTitle: { type: 'string', description: 'Interviewer title (optional)' },
+        interviewRound: { type: 'string', description: 'Interview round (e.g., "phone screen", "onsite", "final")' }
+      },
+      required: ['jobId', 'interviewerName']
+    }
+  },
+  {
+    name: 'save_interviewer_research',
+    description: 'Save interviewer research findings after investigation. Validates and persists as JSON + markdown. INTV-01.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        findings: { type: 'object', description: 'Completed research object matching InterviewerResearchSchema' }
+      },
+      required: ['jobId', 'findings']
+    }
+  },
+  {
+    name: 'get_interviewer_research',
+    description: 'Retrieve existing interviewer research by job and interviewer name.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        interviewerName: { type: 'string', description: 'Interviewer name' }
+      },
+      required: ['jobId', 'interviewerName']
+    }
+  },
+
+  // Question Generation (INTV-02)
+  {
+    name: 'generate_interview_questions',
+    description: 'Generate personalized interview questions from JD + profile + company/interviewer research. Questions link to STAR stories and talking points. INTV-02.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID to generate questions for' },
+        categories: {
+          type: 'array',
+          items: { type: 'string', enum: ['behavioral', 'technical', 'system-design', 'culture-fit'] },
+          description: 'Categories to include (default: all)'
+        },
+        count: { type: 'number', description: 'Number of questions to generate (default: 10)' },
+        difficulty: { type: 'string', enum: ['easy', 'medium', 'hard', 'mixed'], description: 'Difficulty level (default: mixed)' }
+      },
+      required: ['jobId']
+    }
+  },
+
+  // Practice Sessions (INTV-03)
+  {
+    name: 'start_practice_session',
+    description: 'Start a practice session with generated questions. Choose session type and feedback timing. INTV-03.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        sessionType: {
+          type: 'string',
+          enum: ['full-interview', 'category-focus', 'single-question'],
+          description: 'Session type (default: full-interview)'
+        },
+        feedbackTiming: {
+          type: 'string',
+          enum: ['immediate', 'batched'],
+          description: 'When to provide feedback (default: batched)'
+        },
+        categoryFilter: { type: 'string', description: 'Category to focus on (for category-focus sessions)' }
+      },
+      required: ['jobId']
+    }
+  },
+  {
+    name: 'submit_practice_answer',
+    description: 'Submit an answer for a practice question. Supports text or voice transcription. INTV-03.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        sessionId: { type: 'string', description: 'Session ID' },
+        questionId: { type: 'string', description: 'Question ID being answered' },
+        answerText: { type: 'string', description: 'The answer text (or transcription for voice)' },
+        inputMethod: { type: 'string', enum: ['text', 'voice'], description: 'Input method (default: text)' },
+        duration: { type: 'number', description: 'Duration in seconds (for voice answers)' }
+      },
+      required: ['sessionId', 'questionId', 'answerText']
+    }
+  },
+
+  // Scoring and Feedback (INTV-04)
+  {
+    name: 'score_session_answer',
+    description: 'Score a practice answer with comprehensive evaluation: story coverage, STAR structure, relevance, clarity. Includes specific rewrite suggestions. INTV-04.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        sessionId: { type: 'string', description: 'Session ID' },
+        questionId: { type: 'string', description: 'Question ID to score' }
+      },
+      required: ['sessionId', 'questionId']
+    }
+  },
+  {
+    name: 'get_session_feedback',
+    description: 'Get all scores and feedback for a practice session. Use for end-of-session review.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        sessionId: { type: 'string', description: 'Session ID' }
+      },
+      required: ['sessionId']
+    }
+  },
+  {
+    name: 'get_interview_progress',
+    description: 'Get interview preparation progress and readiness score. Shows trends and focus areas. INTV-04.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' }
+      },
+      required: ['jobId']
+    }
+  },
+
+  // Pre-Interview Checklist (INTV-05)
+  {
+    name: 'get_pre_interview_checklist',
+    description: 'Get comprehensive pre-interview checklist with company talking points, interviewer briefs, top stories, and focus areas. INTV-05.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' }
+      },
+      required: ['jobId']
+    }
   }
 ];
 
@@ -1603,6 +1767,83 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           documentType: args.documentType,
           jobId: args.jobId,
           documentPath: args?.documentPath
+        });
+        break;
+
+      // Interview Preparation (Phase 8)
+      // Interviewer Research
+      case 'start_interviewer_research':
+        result = startInterviewerResearch({
+          jobId: args.jobId,
+          interviewerName: args.interviewerName,
+          interviewerTitle: args?.interviewerTitle,
+          interviewRound: args?.interviewRound
+        });
+        break;
+      case 'save_interviewer_research':
+        result = saveInterviewerResearch({
+          jobId: args.jobId,
+          findings: args.findings
+        });
+        break;
+      case 'get_interviewer_research':
+        result = getInterviewerResearch({
+          jobId: args.jobId,
+          interviewerName: args.interviewerName
+        });
+        break;
+
+      // Question Generation
+      case 'generate_interview_questions':
+        result = generateInterviewQuestions({
+          jobId: args.jobId,
+          categories: args?.categories,
+          count: args?.count,
+          difficulty: args?.difficulty
+        });
+        break;
+
+      // Practice Sessions
+      case 'start_practice_session':
+        result = startPracticeSession({
+          jobId: args.jobId,
+          sessionType: args?.sessionType,
+          feedbackTiming: args?.feedbackTiming,
+          categoryFilter: args?.categoryFilter
+        });
+        break;
+      case 'submit_practice_answer':
+        result = submitPracticeAnswer({
+          sessionId: args.sessionId,
+          questionId: args.questionId,
+          answerText: args.answerText,
+          inputMethod: args?.inputMethod,
+          duration: args?.duration
+        });
+        break;
+
+      // Scoring and Feedback
+      case 'score_session_answer':
+        result = scoreSessionAnswer({
+          sessionId: args.sessionId,
+          questionId: args.questionId
+        });
+        break;
+      case 'get_session_feedback':
+        result = getSessionFeedback({
+          sessionId: args.sessionId
+        });
+        break;
+      case 'get_interview_progress':
+        result = getInterviewProgress({
+          jobId: args.jobId
+        });
+        break;
+
+      // Pre-Interview Checklist
+      case 'get_pre_interview_checklist':
+        result = getPreInterviewChecklist({
+          jobId: args.jobId
         });
         break;
 
