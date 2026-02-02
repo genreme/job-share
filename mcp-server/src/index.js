@@ -105,6 +105,26 @@ import {
   getFollowupSummary
 } from './tools/followup.js';
 
+// Phase 7: Application Generation tools
+import {
+  startCompanyResearch,
+  saveCompanyResearch,
+  startManagerResearch,
+  saveManagerResearch,
+  getResearch
+} from './tools/research.js';
+
+import {
+  generateOptimizedResume,
+  generateResearchedCoverLetter,
+  generateEmailResponse
+} from './tools/generation.js';
+
+import {
+  reviewGeneratedDocument,
+  approveDocument
+} from './tools/review.js';
+
 // Create server
 const server = new Server(
   {
@@ -1122,6 +1142,138 @@ const TOOLS = [
       type: 'object',
       properties: {}
     }
+  },
+
+  // === Application Generation (Phase 7) ===
+
+  // Research (APPL-08, APPL-09, APPL-14)
+  {
+    name: 'start_company_research',
+    description: 'Start deep research on a company. Returns existing research if available (with reuse option) or template for Claude to populate. Covers: culture, news, funding, challenges, competitors. APPL-08.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID to research company for' }
+      },
+      required: ['jobId']
+    }
+  },
+  {
+    name: 'save_company_research',
+    description: 'Save company research findings after investigation. Validates and persists as JSON + markdown.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        findings: { type: 'object', description: 'Completed research object matching CompanyResearchSchema' }
+      },
+      required: ['jobId', 'findings']
+    }
+  },
+  {
+    name: 'start_manager_research',
+    description: 'Start research on hiring manager. Focus: interview style, communication patterns, shared interests, talking points. APPL-09.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        managerName: { type: 'string', description: 'Hiring manager name (optional, uses job.hiringManager if not provided)' }
+      },
+      required: ['jobId']
+    }
+  },
+  {
+    name: 'save_manager_research',
+    description: 'Save hiring manager research findings. Validates and persists as JSON + markdown.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        findings: { type: 'object', description: 'Completed research object matching HiringManagerResearchSchema' }
+      },
+      required: ['jobId', 'findings']
+    }
+  },
+  {
+    name: 'get_research',
+    description: 'Get research for a job. Default returns highlights only (per CONTEXT.md). Use type=full for complete research. APPL-14.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        type: { type: 'string', enum: ['highlights', 'company', 'manager', 'all'], description: 'What to return (default: highlights)' }
+      },
+      required: ['jobId']
+    }
+  },
+
+  // Document Generation (APPL-10, APPL-11, APPL-13)
+  {
+    name: 'generate_optimized_resume',
+    description: 'Generate keyword-optimized resume for a job. Reorders skills and bullets by relevance, preserves structure. APPL-10.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID to optimize for' },
+        includeResearchReferences: { type: 'boolean', description: 'Include research-informed suggestions (default: false)' }
+      },
+      required: ['jobId']
+    }
+  },
+  {
+    name: 'generate_researched_cover_letter',
+    description: 'Generate cover letter with research integration. Fixed structure, fresh content using profile + research + JD. APPL-11.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        includeCompanyReferences: { type: 'boolean', description: 'Include company-specific references (default: true)' },
+        toneVariation: { type: 'string', description: 'Override profile tone (optional)' }
+      },
+      required: ['jobId']
+    }
+  },
+  {
+    name: 'generate_email_response',
+    description: 'Generate email response with 2-3 tone variations. User picks and edits. APPL-13.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        emailType: { type: 'string', enum: ['followup', 'thank_you', 'inquiry', 'response'], description: 'Type of email' },
+        context: { type: 'string', description: 'Additional context about the email' },
+        toneCount: { type: 'number', description: 'Number of variations (default: 3, max: 3)' }
+      },
+      required: ['jobId', 'emailType']
+    }
+  },
+
+  // Document Review (APPL-12)
+  {
+    name: 'review_generated_document',
+    description: 'Review document for grammar, ATS compatibility, tone, length, and factual accuracy. Returns issues with suggested fixes. APPL-12.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        documentType: { type: 'string', enum: ['resume', 'cover_letter', 'email'], description: 'Document type' },
+        content: { type: 'string', description: 'Document content to review' },
+        jobId: { type: 'number', description: 'Job ID for keyword and factual checking (optional)' }
+      },
+      required: ['documentType', 'content']
+    }
+  },
+  {
+    name: 'approve_document',
+    description: 'Approve document for use after review. Required before document is marked ready. APPL-12.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        documentType: { type: 'string', enum: ['resume', 'cover_letter', 'email'], description: 'Document type' },
+        jobId: { type: 'number', description: 'Job ID to record approval for' },
+        documentPath: { type: 'string', description: 'Optional path to saved document' }
+      },
+      required: ['documentType', 'jobId']
+    }
   }
 ];
 
@@ -1395,6 +1547,63 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         break;
       case 'get_followup_summary':
         result = getFollowupSummary();
+        break;
+
+      // Application Generation (Phase 7)
+      // Research
+      case 'start_company_research':
+        result = startCompanyResearch({ jobId: args.jobId });
+        break;
+      case 'save_company_research':
+        result = saveCompanyResearch({ jobId: args.jobId, findings: args.findings });
+        break;
+      case 'start_manager_research':
+        result = startManagerResearch({ jobId: args.jobId, managerName: args?.managerName });
+        break;
+      case 'save_manager_research':
+        result = saveManagerResearch({ jobId: args.jobId, findings: args.findings });
+        break;
+      case 'get_research':
+        result = getResearch({ jobId: args.jobId, type: args?.type || 'highlights' });
+        break;
+
+      // Document Generation
+      case 'generate_optimized_resume':
+        result = generateOptimizedResume({
+          jobId: args.jobId,
+          includeResearchReferences: args?.includeResearchReferences
+        });
+        break;
+      case 'generate_researched_cover_letter':
+        result = generateResearchedCoverLetter({
+          jobId: args.jobId,
+          includeCompanyReferences: args?.includeCompanyReferences,
+          toneVariation: args?.toneVariation
+        });
+        break;
+      case 'generate_email_response':
+        result = generateEmailResponse({
+          jobId: args.jobId,
+          emailType: args.emailType,
+          context: args?.context,
+          toneCount: args?.toneCount
+        });
+        break;
+
+      // Document Review
+      case 'review_generated_document':
+        result = await reviewGeneratedDocument({
+          documentType: args.documentType,
+          content: args.content,
+          jobId: args?.jobId
+        });
+        break;
+      case 'approve_document':
+        result = approveDocument({
+          documentType: args.documentType,
+          jobId: args.jobId,
+          documentPath: args?.documentPath
+        });
         break;
 
       default:
