@@ -80,6 +80,7 @@ import {
 } from './tools/cleanup.js';
 
 import {
+  getExistingJobs,
   researchJobUrl,
   addJobManual,
   getInboxForReview,
@@ -961,6 +962,14 @@ const TOOLS = [
   },
 
   // === Discovery ===
+  {
+    name: 'get_existing_jobs',
+    description: 'Get all jobs currently tracked in the system. Call this FIRST before browsing job boards so you know which companies/URLs to skip. Returns list of companies, URLs, and job summaries.',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
+  },
   {
     name: 'research_job_url',
     description: 'Research a job posting URL to extract details, calculate fit score, and generate reasoning. Returns job data ready for user confirmation. Use this for manual job submissions.',
@@ -2020,6 +2029,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         break;
 
       // Discovery
+      case 'get_existing_jobs':
+        result = getExistingJobs();
+        break;
       case 'research_job_url':
         result = await researchJobUrl(args);
         break;

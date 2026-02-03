@@ -2,7 +2,9 @@
  * Discovery MCP Tools
  *
  * Tools for the discovery funnel workflow:
+ * - get_existing_jobs: Check what jobs are already tracked (call FIRST before researching)
  * - research_job_url: Research a job posting URL
+ * - add_job_manual: Add job with extracted data (for auth-required pages)
  * - get_inbox: Review inbox jobs for Claude to present
  * - confirm_job: Confirm job to dashboard with status
  * - defer_job: Defer job for later review
@@ -56,6 +58,51 @@ function getNextJobId(jobs) {
   if (!jobs || jobs.length === 0) return 1
   const maxId = Math.max(...jobs.map(j => j.id || 0))
   return maxId + 1
+}
+
+/**
+ * Get existing jobs to avoid duplicates during research
+ * Call this FIRST before browsing job boards so you know what to skip
+ *
+ * @returns {object} Summary of existing jobs with URLs and companies
+ */
+export function getExistingJobs() {
+  const data = loadJobsFromDashboard()
+  const jobs = data.jobs || []
+
+  // Group by status
+  const byStatus = {}
+  jobs.forEach(job => {
+    const status = job.status || 'unknown'
+    if (!byStatus[status]) byStatus[status] = []
+    byStatus[status].push({
+      id: job.id,
+      title: job.title,
+      company: job.company,
+      url: job.url
+    })
+  })
+
+  // Extract just company names and URLs for quick duplicate checking
+  const companies = [...new Set(jobs.map(j => j.company).filter(Boolean))]
+  const urls = jobs.map(j => j.url).filter(Boolean)
+
+  return {
+    total: jobs.length,
+    byStatus: Object.fromEntries(
+      Object.entries(byStatus).map(([status, list]) => [status, list.length])
+    ),
+    companies,
+    urls,
+    jobs: jobs.map(j => ({
+      id: j.id,
+      title: j.title,
+      company: j.company,
+      status: j.status,
+      url: j.url
+    })),
+    message: `You have ${jobs.length} jobs tracked. Skip any URLs in the 'urls' list and companies in the 'companies' list unless it's a different role.`
+  }
 }
 
 /**
