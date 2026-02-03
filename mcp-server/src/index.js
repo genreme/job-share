@@ -139,6 +139,20 @@ import {
   getPreInterviewChecklist
 } from './tools/interview-tools.js';
 
+// Phase 9: Interview Learning tools
+import {
+  captureInterviewTranscript,
+  getInterviewHistory,
+  searchTranscripts,
+  proposeInterviewLearnings,
+  reviewInterviewLearning,
+  linkLearningToProfile,
+  confirmProfileLink,
+  getProfileUpdateSuggestions,
+  getInterviewPatterns,
+  getCaptureReminders
+} from './tools/interview-learning.js';
+
 // Create server
 const server = new Server(
   {
@@ -1438,6 +1452,156 @@ const TOOLS = [
       },
       required: ['jobId']
     }
+  },
+
+  // === Interview Learning (Phase 9) ===
+
+  // Transcript Capture (INTV-09)
+  {
+    name: 'capture_interview_transcript',
+    description: 'Capture interview transcript with metadata. Store practice and real interviews with date, type, interviewer, confidence level, and overall vibe. INTV-09.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        sessionType: { type: 'string', enum: ['practice', 'real-interview'], description: 'Type of interview session' },
+        interviewDate: { type: 'string', description: 'Interview date (ISO format)' },
+        interviewType: { type: 'string', enum: ['phone', 'video', 'onsite'], description: 'Interview format' },
+        rawTranscript: { type: 'string', description: 'Full transcript text' },
+        interviewerName: { type: 'string', description: 'Interviewer name (optional)' },
+        confidenceLevel: { type: 'string', enum: ['high', 'medium', 'low'], description: 'How confident you felt' },
+        overallVibe: { type: 'string', enum: ['went-well', 'neutral', 'rough'], description: 'How the interview went' },
+        highlights: { type: 'array', items: { type: 'string' }, description: 'Key highlights/takeaways' },
+        duration: { type: 'number', description: 'Duration in minutes' },
+        practiceSessionId: { type: 'string', description: 'Link to Phase 8 practice session (UUID)' }
+      },
+      required: ['jobId', 'sessionType', 'interviewDate', 'interviewType', 'rawTranscript']
+    }
+  },
+  {
+    name: 'get_interview_history',
+    description: 'Get interview transcript history. Primary view by job (all rounds grouped), or chronological timeline across all jobs.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID for per-job view (optional)' },
+        limit: { type: 'number', description: 'Max results (default: 50)' },
+        chronological: { type: 'boolean', description: 'If true, return timeline across all jobs' }
+      }
+    }
+  },
+  {
+    name: 'search_transcripts',
+    description: 'Full-text search across all interview transcripts. Returns matches with context snippets.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: 'Search query (all words must match)' },
+        jobId: { type: 'number', description: 'Filter by job (optional)' },
+        sessionType: { type: 'string', enum: ['practice', 'real-interview'], description: 'Filter by session type' },
+        limit: { type: 'number', description: 'Max results (default: 20)' }
+      },
+      required: ['query']
+    }
+  },
+
+  // Learning Extraction (INTV-10)
+  {
+    name: 'propose_interview_learnings',
+    description: 'Propose learnings extracted from an interview transcript. Each learning tagged with topic (technical, behavioral, company-specific, compensation) AND outcome (worked, needs-work, neutral). User reviews before applying. INTV-10.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Job ID' },
+        transcriptId: { type: 'string', description: 'Transcript ID the learnings came from' },
+        learnings: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              content: { type: 'string', description: 'The learning/insight' },
+              topic: { type: 'string', enum: ['technical', 'behavioral', 'company-specific', 'compensation'] },
+              outcome: { type: 'string', enum: ['worked', 'needs-work', 'neutral'] },
+              sourceQuote: { type: 'string', description: 'Supporting quote from transcript (optional)' }
+            },
+            required: ['content', 'topic', 'outcome']
+          },
+          description: 'Array of learnings to propose'
+        }
+      },
+      required: ['jobId', 'transcriptId', 'learnings']
+    }
+  },
+  {
+    name: 'review_interview_learning',
+    description: 'User accepts or rejects a proposed interview learning. Accepted learnings update profile confidence scores. INTV-10.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        learningId: { type: 'string', description: 'Learning ID to review' },
+        decision: { type: 'string', enum: ['accept', 'reject'], description: 'Accept or reject the learning' }
+      },
+      required: ['learningId', 'decision']
+    }
+  },
+
+  // Profile Linking (INTV-11)
+  {
+    name: 'link_learning_to_profile',
+    description: 'Get suggested profile links for an accepted learning. Returns STAR stories, skills, or summaries that match the learning content. INTV-11.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        learningId: { type: 'string', description: 'Learning ID to get suggestions for' }
+      },
+      required: ['learningId']
+    }
+  },
+  {
+    name: 'confirm_profile_link',
+    description: 'User confirms linking an accepted learning to a profile item (story, skill, or summary). Enables confidence tracking. INTV-11.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        learningId: { type: 'string', description: 'Learning ID' },
+        entityType: { type: 'string', enum: ['story', 'skill', 'summary'], description: 'Profile item type' },
+        entityId: { type: 'string', description: 'Profile item ID (UUID)' }
+      },
+      required: ['learningId', 'entityType', 'entityId']
+    }
+  },
+
+  // Profile Feedback (INTV-12)
+  {
+    name: 'get_profile_update_suggestions',
+    description: 'Get suggestions for profile updates based on accepted interview learnings. Flags conflicts (mixed results) for review. INTV-12.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        mode: { type: 'string', enum: ['batch', 'aggregate'], description: 'batch=after interview, aggregate=weekly review (default: batch)' }
+      }
+    }
+  },
+  {
+    name: 'get_interview_patterns',
+    description: 'Detect recurring patterns across interviews (e.g., "This question comes up a lot"). Requires 3+ occurrences across 2+ different companies. INTV-12.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        minOccurrences: { type: 'number', description: 'Minimum occurrences to be a pattern (default: 3)' },
+        minCompanies: { type: 'number', description: 'Minimum different companies (default: 2)' }
+      }
+    }
+  },
+  {
+    name: 'get_capture_reminders',
+    description: 'Check for interviews that need transcript capture (>24 hours without notes). Returns jobs needing attention. INTV-12.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'Check specific job (optional, omit to check all active jobs)' }
+      }
+    }
   }
 ];
 
@@ -1845,6 +2009,45 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         result = getPreInterviewChecklist({
           jobId: args.jobId
         });
+        break;
+
+      // Interview Learning (Phase 9)
+      // Transcript Capture
+      case 'capture_interview_transcript':
+        result = captureInterviewTranscript(args);
+        break;
+      case 'get_interview_history':
+        result = getInterviewHistory(args || {});
+        break;
+      case 'search_transcripts':
+        result = searchTranscripts(args);
+        break;
+
+      // Learning Extraction
+      case 'propose_interview_learnings':
+        result = proposeInterviewLearnings(args);
+        break;
+      case 'review_interview_learning':
+        result = reviewInterviewLearning(args);
+        break;
+
+      // Profile Linking
+      case 'link_learning_to_profile':
+        result = linkLearningToProfile(args);
+        break;
+      case 'confirm_profile_link':
+        result = confirmProfileLink(args);
+        break;
+
+      // Profile Feedback
+      case 'get_profile_update_suggestions':
+        result = getProfileUpdateSuggestions(args || {});
+        break;
+      case 'get_interview_patterns':
+        result = getInterviewPatterns(args || {});
+        break;
+      case 'get_capture_reminders':
+        result = getCaptureReminders(args || {});
         break;
 
       default:
