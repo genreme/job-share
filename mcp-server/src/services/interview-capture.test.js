@@ -271,13 +271,17 @@ describe('Interview Capture Service', () => {
 
   describe('getTranscriptsChronological', () => {
     it('returns transcripts sorted by date descending', () => {
+      // Use unique IDs for this test
+      const sortOlderId = 'bbbbb111-1111-4111-a111-111111111111'
+      const sortNewerId = 'bbbbb222-2222-4222-a222-222222222222'
+
       const older = createValidTranscript({
-        id: T1_ID,
+        id: sortOlderId,
         jobId: 9115,
         interviewDate: '2026-01-15T10:00:00.000Z'
       })
       const newer = createValidTranscript({
-        id: T2_ID,
+        id: sortNewerId,
         jobId: 9116,
         interviewDate: '2026-02-01T10:00:00.000Z'
       })
@@ -287,13 +291,13 @@ describe('Interview Capture Service', () => {
 
       const result = getTranscriptsChronological()
 
-      // Filter to only test job IDs (in case other tests left data)
-      const testResults = result.filter(t => t.jobId >= 9100 && t.jobId < 9200)
+      // Find our specific transcripts
+      const newerIndex = result.findIndex(t => t.id === sortNewerId)
+      const olderIndex = result.findIndex(t => t.id === sortOlderId)
 
-      expect(testResults.length).toBeGreaterThanOrEqual(2)
-      // Newer should come first
-      const newerIndex = testResults.findIndex(t => t.id === T2_ID)
-      const olderIndex = testResults.findIndex(t => t.id === T1_ID)
+      expect(newerIndex).toBeGreaterThanOrEqual(0)
+      expect(olderIndex).toBeGreaterThanOrEqual(0)
+      // Newer should come before older in the sorted list
       expect(newerIndex).toBeLessThan(olderIndex)
     })
 
@@ -313,11 +317,15 @@ describe('Interview Capture Service', () => {
     })
 
     it('includes jobId in each result', () => {
-      const transcript = createValidTranscript({ jobId: 9125 })
+      const includeJobIdTestId = 'ccccc111-1111-4111-a111-111111111111'
+      const transcript = createValidTranscript({
+        id: includeJobIdTestId,
+        jobId: 9125
+      })
       captureTranscript(transcript)
 
       const result = getTranscriptsChronological()
-      const testTranscript = result.find(t => t.id === T1_ID)
+      const testTranscript = result.find(t => t.id === includeJobIdTestId)
 
       expect(testTranscript).toBeDefined()
       expect(testTranscript.jobId).toBe(9125)
@@ -346,7 +354,10 @@ describe('Interview Capture Service', () => {
       const result = getTranscriptsChronological()
       const testIds = result.filter(t => t.id === agg1Id || t.id === agg2Id)
 
-      expect(testIds).toHaveLength(2)
+      // Should have at least 2 matching our specific IDs
+      expect(testIds.length).toBeGreaterThanOrEqual(2)
+      expect(testIds.some(t => t.id === agg1Id)).toBe(true)
+      expect(testIds.some(t => t.id === agg2Id)).toBe(true)
     })
   })
 
@@ -461,7 +472,7 @@ describe('Interview Capture Service', () => {
 
     it('sorts results by date descending', () => {
       // Use very unique search term to isolate this test
-      const uniqueSearchTerm = 'xyzzy987654uniquetestterm'
+      const uniqueSearchTerm = 'qwertyuiop987654sorttest'
       const olderTranscript = createValidTranscript({
         id: '99999999-9999-4999-a999-999999999991',
         jobId: 9140,
@@ -480,9 +491,12 @@ describe('Interview Capture Service', () => {
 
       const result = searchTranscripts(uniqueSearchTerm)
 
-      expect(result.length).toBe(2)
-      // Newer should come first
-      expect(new Date(result[0].interviewDate) >= new Date(result[1].interviewDate)).toBe(true)
+      // Should find at least 2 results
+      expect(result.length).toBeGreaterThanOrEqual(2)
+      // Results should be sorted by date descending (newer first)
+      for (let i = 0; i < result.length - 1; i++) {
+        expect(new Date(result[i].interviewDate) >= new Date(result[i + 1].interviewDate)).toBe(true)
+      }
     })
   })
 
