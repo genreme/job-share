@@ -1,3 +1,13 @@
+# Requirements Archive: v1 Job Search Operating System MVP
+
+**Archived:** 2026-02-03
+**Status:** SHIPPED
+
+This is the archived requirements specification for v1.
+For current requirements, see `.planning/REQUIREMENTS.md` (created for next milestone).
+
+---
+
 # Requirements: Job Search Operating System
 
 **Defined:** 2026-01-29
@@ -71,7 +81,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **INTV-03**: Practice mode allows recording/writing answers
 - [x] **INTV-04**: Self-scoring against profile stories and target talking points
 - [x] **INTV-05**: Gap identification ("You mentioned X but didn't quantify the result")
-- [ ] **INTV-06**: Role-specific positioning customizes foundation positioning per opportunity (Deferred - external calendar out of MCP scope)
+- [x] **INTV-06**: DEFERRED — External calendar integration out of MCP scope (moved to v2)
 - [x] **INTV-07**: Interview prep outputs remember conversation history per job
 - [x] **INTV-08**: Practice session transcripts/notes added to self-profile database
 - [x] **INTV-09**: Real interview transcripts/notes added to self-profile database
@@ -94,48 +104,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **QALY-05**: QA runs automatically on each phase completion
 - [x] **QALY-06**: QA failures block proceeding to next phase
 
-## v2 Requirements
-
-Deferred to future release. Tracked but not in current roadmap.
-
-### Automation
-
-- **AUTO-01**: Browser automation for LinkedIn with user session
-- **AUTO-02**: Connections visibility at target companies
-- **AUTO-03**: Automated job board monitoring with alerts
-
-### Integration
-
-- **INTG-01**: LinkedIn profile sync (auto-import profile data)
-- **INTG-02**: Calendar integration (interview events, prep time blocking)
-- **INTG-03**: Email tracking (know when recruiters open emails)
-
-### Advanced
-
-- **ADVN-01**: Network mapping (visualize who you know at targets)
-- **ADVN-02**: Application playbook templates (codified workflows)
-- **ADVN-03**: Salary intelligence (market rate comparison)
-- **ADVN-04**: Predictive analytics (which applications likely to convert)
-
-## Out of Scope
-
-Explicitly excluded. Documented to prevent scope creep.
-
-| Feature | Reason |
-|---------|--------|
-| Mass auto-apply | Recruiters flag these; fundamentally misaligned with "present best version" philosophy |
-| White-font keyword stuffing | Integrity concern; ATS systems detect; damages trust |
-| Social media aggregation | Privacy concerns; scope creep; mixing personal/professional |
-| Gamification / Streaks | Job search is stressful; adding pressure increases anxiety |
-| Aggressive notifications | Push fatigue; job search already anxiety-inducing |
-| Complex pricing tiers | Single-user system; not monetizing |
-| Multi-user collaboration | Friends can submit leads only; full collab adds complexity |
-| Cloud-hosted profile | Security risk; keeping local-first |
-| Mobile app | Web-first; responsive design sufficient initially |
-
 ## Traceability
-
-Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
@@ -198,7 +167,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INTV-03 | Phase 8 | Complete |
 | INTV-04 | Phase 8 | Complete |
 | INTV-05 | Phase 8 | Complete |
-| INTV-06 | Phase 8 | Deferred |
+| INTV-06 | Phase 8 | Deferred → v2 |
 | INTV-07 | Phase 9 | Complete |
 | INTV-08 | Phase 9 | Complete |
 | INTV-09 | Phase 9 | Complete |
@@ -209,11 +178,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ANLT-04 | Phase 10 | Complete |
 | ANLT-05 | Phase 10 | Complete |
 
-**Coverage:**
-- v1 requirements: 69 total
-- Mapped to phases: 69
-- Unmapped: 0
+---
+
+## Milestone Summary
+
+**Shipped:** 68 of 69 v1 requirements
+**Deferred:** 1 (INTV-06 — external calendar integration)
+**Dropped:** 0
 
 ---
-*Requirements defined: 2026-01-29*
-*Last updated: 2026-02-03 after Phase 10 completion (MILESTONE COMPLETE)*
+*Archived: 2026-02-03 as part of v1 milestone completion*

@@ -1,29 +1,14 @@
-# Roadmap: Job Search Operating System
+# Milestone v1: Job Search Operating System MVP
+
+**Status:** SHIPPED 2026-02-03
+**Phases:** 1-10
+**Total Plans:** 35
 
 ## Overview
 
 This roadmap transforms the existing Job Search Command Center into a comprehensive operating system for job searching. The journey begins with a QA layer that gates all subsequent work, followed by building the self-profile foundation that powers all AI features. With stable foundations, we implement the discovery funnel for proactive opportunity finding, then enhance application workflows with intelligence and generation capabilities. Interview preparation and learning follow, culminating in analytics that inform continuous evolution. The existing system remains fully functional throughout, with new capabilities building alongside.
 
 ## Phases
-
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
-
-Decimal phases appear between their surrounding integers in numeric order.
-
-- [x] **Phase 1: QA Layer Foundation** - Self-testing framework that validates each component before proceeding
-- [x] **Phase 2: Self-Profile Schema** - Centralized professional identity data structure
-- [x] **Phase 3: Self-Profile Integration** - Profile feeds into outputs and learns from interactions
-- [x] **Phase 4: Discovery Core** - Scan, filter, research, and present job opportunities
-- [x] **Phase 5: Discovery Management** - Friend submissions, archiving, and job board curation
-- [x] **Phase 6: Application Intelligence** - Matching, contacts, and follow-up tracking
-- [x] **Phase 7: Application Generation** - Deep research and document generation
-- [x] **Phase 8: Interview Preparation** - Research, question generation, and practice
-- [x] **Phase 9: Interview Learning** - History persistence and profile evolution
-- [x] **Phase 10: Analytics & Insights** - Funnel visualization and criteria evolution
-
-## Phase Details
 
 ### Phase 1: QA Layer Foundation
 **Goal**: Establish a self-testing framework that validates components and gates progression to subsequent phases
@@ -217,5 +202,25 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 10. Analytics & Insights | 3/3 | Complete | 2026-02-03 |
 
 ---
-*Roadmap created: 2026-01-29*
-*Total phases: 10 | Total plans: 35 | Requirements covered: 69/69*
+
+## Milestone Summary
+
+**Key Decisions:**
+- QA layer first to gate all subsequent phases
+- 10 phases derived from 69 requirements at comprehensive depth
+- Existing system remains functional during evolution
+- Profile is primary data source; legacy JSON is fallback
+- INTV-06 (scheduling integration) deferred — external calendar out of MCP scope
+
+**Issues Resolved:**
+- Schema validation wired into loader.js and updates.js
+- Duplicate tool name collision fixed (get_experience_by_theme → get_resume_experience_by_theme)
+- Phase 6 schema conflict between job.schema.js and contact.schema.js resolved
+
+**Technical Debt:**
+- 3 pre-existing test failures (time-sensitive tests from before milestone)
+- analytics-snapshots.json starts empty (handled gracefully)
+
+---
+*Archived: 2026-02-03 as part of v1 milestone completion*
+*For current project status, see .planning/ROADMAP.md*
