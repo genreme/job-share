@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Application Intelligence** - Matching, contacts, and follow-up tracking
 - [x] **Phase 7: Application Generation** - Deep research and document generation
 - [x] **Phase 8: Interview Preparation** - Research, question generation, and practice
-- [ ] **Phase 9: Interview Learning** - History persistence and profile evolution
+- [x] **Phase 9: Interview Learning** - History persistence and profile evolution
 - [ ] **Phase 10: Analytics & Insights** - Funnel visualization and criteria evolution
 
 ## Phase Details
@@ -177,9 +177,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Schemas and transcript capture service (INTV-07, INTV-08, INTV-09)
-- [ ] 09-02-PLAN.md — Learning extraction and profile feedback services (INTV-10)
-- [ ] 09-03-PLAN.md — MCP tools for capture, learning, and feedback workflow
+- [x] 09-01-PLAN.md — Schemas and transcript capture service (INTV-07, INTV-08, INTV-09)
+- [x] 09-02-PLAN.md — Learning extraction and profile feedback services (INTV-10)
+- [x] 09-03-PLAN.md — MCP tools for capture, learning, and feedback workflow
 
 ### Phase 10: Analytics & Insights
 **Goal**: Visualize patterns and evolve strategy based on outcomes
@@ -212,7 +212,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 6. Application Intelligence | 4/4 | Complete | 2026-02-01 |
 | 7. Application Generation | 3/3 | Complete | 2026-02-02 |
 | 8. Interview Preparation | 3/3 | Complete | 2026-02-02 |
-| 9. Interview Learning | 0/3 | Not started | - |
+| 9. Interview Learning | 3/3 | Complete | 2026-02-03 |
 | 10. Analytics & Insights | 0/2 | Not started | - |
 
 ---

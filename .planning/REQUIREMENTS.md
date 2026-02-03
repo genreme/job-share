@@ -72,10 +72,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **INTV-04**: Self-scoring against profile stories and target talking points
 - [x] **INTV-05**: Gap identification ("You mentioned X but didn't quantify the result")
 - [ ] **INTV-06**: Role-specific positioning customizes foundation positioning per opportunity (Deferred - external calendar out of MCP scope)
-- [ ] **INTV-07**: Interview prep outputs remember conversation history per job
-- [ ] **INTV-08**: Practice session transcripts/notes added to self-profile database
-- [ ] **INTV-09**: Real interview transcripts/notes added to self-profile database
-- [ ] **INTV-10**: Interview learnings inform profile evolution (what worked, what didn't)
+- [x] **INTV-07**: Interview prep outputs remember conversation history per job
+- [x] **INTV-08**: Practice session transcripts/notes added to self-profile database
+- [x] **INTV-09**: Real interview transcripts/notes added to self-profile database
+- [x] **INTV-10**: Interview learnings inform profile evolution (what worked, what didn't)
 
 ### Analytics
 
