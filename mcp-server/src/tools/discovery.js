@@ -194,6 +194,106 @@ export async function researchJobUrl({ url, notes }) {
 }
 
 /**
+ * Add a job manually with extracted data (bypasses URL fetching)
+ * Use when Claude is browsing a job page and can extract data directly
+ *
+ * @param {object} params - Job data extracted from page
+ * @param {string} params.title - Job title
+ * @param {string} params.company - Company name
+ * @param {string} params.url - Job posting URL
+ * @param {string} [params.location] - Location
+ * @param {string} [params.salary] - Salary range
+ * @param {string} [params.industry] - Industry
+ * @param {string} [params.description] - Job description
+ * @param {string} [params.notes] - Notes about the job
+ * @returns {object} Result with job ID and fit analysis
+ */
+export function addJobManual({ title, company, url, location, salary, industry, description, notes }) {
+  // Validate required fields
+  if (!title || typeof title !== 'string' || !title.trim()) {
+    return { status: 'error', error: 'title is required' }
+  }
+  if (!company || typeof company !== 'string' || !company.trim()) {
+    return { status: 'error', error: 'company is required' }
+  }
+  if (!url || !isValidUrl(url)) {
+    return { status: 'error', error: 'Valid url is required' }
+  }
+
+  // Load current jobs
+  const data = loadJobsFromDashboard()
+  const jobs = data.jobs || []
+
+  // Check for duplicate
+  const existingJob = findDuplicateByUrl(url, jobs)
+  if (existingJob) {
+    return {
+      status: 'duplicate',
+      existingJob: {
+        id: existingJob.id,
+        title: existingJob.title,
+        company: existingJob.company,
+        status: existingJob.status,
+        fitScore: existingJob.fitScore
+      },
+      message: `This job already exists in your ${existingJob.status} list`
+    }
+  }
+
+  // Create job object
+  const jobData = {
+    id: getNextJobId(jobs),
+    title: title.trim(),
+    company: company.trim(),
+    location: location || '',
+    salary: salary || '',
+    industry: industry || '',
+    description: description || '',
+    url: url,
+    found: new Date().toISOString().split('T')[0],
+    status: 'inbox',
+    source: 'manual-browser',
+    notes: notes || '',
+    updates: [],
+    symbols: []
+  }
+
+  // Calculate fit score
+  const fitResult = calculateFitScore(jobData)
+  jobData.fitScore = fitResult.score
+  jobData.fitBreakdown = fitResult.breakdown
+
+  // Generate reasoning
+  const reasoning = generateReasoning(jobData, fitResult)
+
+  // Add to jobs array and save
+  jobs.push(jobData)
+  data.jobs = jobs
+  writeJobsData(data)
+
+  return {
+    status: 'added_to_inbox',
+    job: {
+      id: jobData.id,
+      title: jobData.title,
+      company: jobData.company,
+      location: jobData.location,
+      salary: jobData.salary,
+      fitScore: jobData.fitScore,
+      url: jobData.url
+    },
+    reasoning: {
+      score: reasoning.score,
+      summary: reasoning.summary,
+      whyIncluded: reasoning.whyIncluded,
+      considerations: reasoning.considerations
+    },
+    message: `Added "${jobData.title}" at ${jobData.company} to inbox with fit score ${jobData.fitScore}`,
+    nextStep: 'Review in inbox or call confirm_job to move to dashboard'
+  }
+}
+
+/**
  * Get jobs awaiting review in the inbox
  * DISC-04: Present shortlist for review
  *

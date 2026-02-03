@@ -81,6 +81,7 @@ import {
 
 import {
   researchJobUrl,
+  addJobManual,
   getInboxForReview,
   confirmJobToDashboard,
   deferJob
@@ -970,6 +971,24 @@ const TOOLS = [
         notes: { type: 'string', description: 'Optional notes about the submission' }
       },
       required: ['url']
+    }
+  },
+  {
+    name: 'add_job_manual',
+    description: 'Add a job manually with extracted data. Use when Claude is browsing a job page and can extract title, company, URL directly. Bypasses URL fetching - ideal for LinkedIn and auth-required pages.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string', description: 'Job title' },
+        company: { type: 'string', description: 'Company name' },
+        url: { type: 'string', description: 'Job posting URL' },
+        location: { type: 'string', description: 'Location (e.g., "Boston, MA" or "Remote")' },
+        salary: { type: 'string', description: 'Salary range if shown' },
+        industry: { type: 'string', description: 'Industry (e.g., "Education", "Healthcare")' },
+        description: { type: 'string', description: 'Job description text' },
+        notes: { type: 'string', description: 'Notes about why this job is interesting' }
+      },
+      required: ['title', 'company', 'url']
     }
   },
   {
@@ -2003,6 +2022,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       // Discovery
       case 'research_job_url':
         result = await researchJobUrl(args);
+        break;
+      case 'add_job_manual':
+        result = addJobManual(args);
         break;
       case 'get_inbox':
         result = getInboxForReview(args);
