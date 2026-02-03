@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Present the best version of myself to the right opportunities, informed by a comprehensive understanding of who I am professionally
-**Current focus:** Phase 9: Interview Learning - NOT STARTED
+**Current focus:** Phase 9: Interview Learning - IN PROGRESS
 
 ## Current Position
 
-Phase: 8 of 10 (Interview Preparation) - COMPLETE
-Plan: 3 of 3 in current phase
-Status: Complete
-Last activity: 2026-02-02 - Completed Phase 8: Interview Preparation
+Phase: 9 of 10 (Interview Learning)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-03 - Completed 09-01-PLAN.md (Schemas and Transcript Capture)
 
-Progress: [=========] ~94% (29 of ~31 plans)
+Progress: [==========] ~97% (30 of ~31 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 29
+- Total plans completed: 30
 - Average duration: 6 min
-- Total execution time: 175 min
+- Total execution time: 185 min
 
 **By Phase:**
 
@@ -35,9 +35,10 @@ Progress: [=========] ~94% (29 of ~31 plans)
 | 06-application-intelligence | 4 | 20 min | ~5 min |
 | 07-application-generation | 3 | 34 min | ~11 min |
 | 08-interview-preparation | 3 | 37 min | ~12 min |
+| 09-interview-learning | 1 | 10 min | ~10 min |
 
 **Recent Trend:**
-- Last 10 plans: 06-02 (6min), 06-03 (5min), 06-04 (5min), 07-01 (10min), 07-02 (10min), 07-03 (14min), 08-01 (9min), 08-02 (10min), 08-03 (18min)
+- Last 10 plans: 06-03 (5min), 06-04 (5min), 07-01 (10min), 07-02 (10min), 07-03 (14min), 08-01 (9min), 08-02 (10min), 08-03 (18min), 09-01 (10min)
 - Trend: Tool wiring with comprehensive tests takes longer (~14-18 min) than pure schema/service plans (~5-10 min)
 
 *Updated after each plan completion*
@@ -151,6 +152,11 @@ Recent decisions affecting current work:
 - [08-03]: Readiness thresholds: not-ready (0-50), needs-work (51-70), ready (71-85), well-prepared (86-100)
 - [08-03]: Focus areas identified from both low scores AND limited practice per category
 - [08-03]: Pre-interview checklist aggregates company research, interviewer briefs, top stories
+- [09-01]: Practice and real interviews stored together, tagged by sessionType
+- [09-01]: Transcripts stored per-job in job-research/{jobId}-transcripts.json
+- [09-01]: Full-text search requires ALL query words to match (AND logic)
+- [09-01]: 24h reminder checks for interview updates without corresponding transcripts
+- [09-01]: InterviewLearning dual-tagged with topic AND outcome
 
 ### Pending Todos
 
@@ -162,8 +168,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-02
-Stopped at: Completed 08-03-PLAN.md (Scoring, Progress Tracking & MCP Tools)
+Last session: 2026-02-03
+Stopped at: Completed 09-01-PLAN.md (Schemas and Transcript Capture)
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -611,3 +617,38 @@ Resume file: None
 | INTV-04 Self-scoring | score_session_answer (4 dimensions) | Complete |
 | INTV-05 Pre-interview checklist | get_pre_interview_checklist | Complete |
 | INTV-06 Scheduling | Deferred (external calendar out of MCP scope) | Deferred |
+
+## Phase 9 Progress
+
+**Phase 9: Interview Learning** - IN PROGRESS
+
+### Plans Completed:
+
+- **Plan 09-01: Schemas and Transcript Capture** (10 min)
+  - InterviewTranscriptSchema with metadata (date, type, vibe, confidence)
+  - InterviewLearningSchema with dual tagging (topic + outcome)
+  - Transcript capture service with atomic writes
+  - Full-text search across transcripts
+  - 24h reminder logic for uncaptured interviews
+  - 123 new tests (82 schema + 41 service)
+
+### Schema Exports:
+
+| Export | Purpose |
+|--------|---------|
+| InterviewTranscriptSchema | Interview transcript with metadata |
+| InterviewLearningSchema | Extracted learning with profile links |
+| TranscriptStorageSchema | Per-job transcript file structure |
+| LearningStorageSchema | Per-job learning file structure |
+| validateInterviewTranscript | Transcript validation with advisory/strict modes |
+| validateInterviewLearning | Learning validation with advisory/strict modes |
+
+### Service Exports:
+
+| Function | Purpose |
+|----------|---------|
+| captureTranscript | Save interview transcript with metadata |
+| getTranscriptsForJob | Get all transcripts for a job |
+| getTranscriptsChronological | Timeline view across all jobs |
+| searchTranscripts | Full-text search with context snippets |
+| checkTranscriptReminder | 24h reminder for uncaptured interviews |
