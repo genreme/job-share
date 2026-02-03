@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 9 of 10 (Interview Learning)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-02-03 - Completed 09-02-PLAN.md (Learning Extraction & Profile Feedback)
+Plan: 3 of 3 in current phase
+Status: Phase Complete
+Last activity: 2026-02-03 - Completed 09-03-PLAN.md (MCP Tools & Server Registration)
 
-Progress: [==========] ~97% (31 of ~32 plans)
+Progress: [==========] 100% (32 of 32 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 31
+- Total plans completed: 32
 - Average duration: 6 min
-- Total execution time: 197 min
+- Total execution time: 207 min
 
 **By Phase:**
 
@@ -35,10 +35,10 @@ Progress: [==========] ~97% (31 of ~32 plans)
 | 06-application-intelligence | 4 | 20 min | ~5 min |
 | 07-application-generation | 3 | 34 min | ~11 min |
 | 08-interview-preparation | 3 | 37 min | ~12 min |
-| 09-interview-learning | 2 | 22 min | ~11 min |
+| 09-interview-learning | 3 | 32 min | ~11 min |
 
 **Recent Trend:**
-- Last 10 plans: 06-04 (5min), 07-01 (10min), 07-02 (10min), 07-03 (14min), 08-01 (9min), 08-02 (10min), 08-03 (18min), 09-01 (10min), 09-02 (12min)
+- Last 10 plans: 07-01 (10min), 07-02 (10min), 07-03 (14min), 08-01 (9min), 08-02 (10min), 08-03 (18min), 09-01 (10min), 09-02 (12min), 09-03 (10min)
 - Trend: Service-heavy plans with comprehensive tests (~10-12 min) vs tool wiring (~14-18 min)
 
 *Updated after each plan completion*
@@ -162,6 +162,10 @@ Recent decisions affecting current work:
 - [09-02]: Minimum 3 occurrences + 2 companies for pattern recognition
 - [09-02]: Learning workflow: queue -> review -> link -> confidence update
 - [09-02]: Profile confidence tracks worked/needs-work counts per item
+- [09-03]: Tool handlers delegate to services; minimal logic in tool layer
+- [09-03]: proposeInterviewLearnings accepts array of learnings in single call
+- [09-03]: reviewInterviewLearning triggers confidence update on accept
+- [09-03]: getCaptureReminders checks all active jobs when no jobId provided
 
 ### Pending Todos
 
@@ -174,7 +178,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 09-01-PLAN.md (Schemas and Transcript Capture)
+Stopped at: Completed 09-03-PLAN.md (Phase 9 Complete)
 Resume file: None
 
 ## Phase 1 Completion Summary
@@ -623,9 +627,16 @@ Resume file: None
 | INTV-05 Pre-interview checklist | get_pre_interview_checklist | Complete |
 | INTV-06 Scheduling | Deferred (external calendar out of MCP scope) | Deferred |
 
-## Phase 9 Progress
+## Phase 9 Completion Summary
 
-**Phase 9: Interview Learning** - IN PROGRESS
+**Phase 9: Interview Learning** - COMPLETE
+
+- 3 plans executed
+- 263 new tests (123 + 70 + 70)
+- Complete interview learning feedback loop
+- Transcript capture with search
+- Learning extraction with user review
+- Profile confidence tracking
 
 ### Plans Completed:
 
@@ -637,23 +648,38 @@ Resume file: None
   - 24h reminder logic for uncaptured interviews
   - 123 new tests (82 schema + 41 service)
 
-### Schema Exports:
+- **Plan 09-02: Learning Extraction & Profile Feedback** (12 min)
+  - Learning extractor service with duplicate detection
+  - Profile feedback service with confidence tracking
+  - Pattern detection across interviews
+  - Conflict detection for mixed outcomes
+  - 70 new tests
 
-| Export | Purpose |
-|--------|---------|
-| InterviewTranscriptSchema | Interview transcript with metadata |
-| InterviewLearningSchema | Extracted learning with profile links |
-| TranscriptStorageSchema | Per-job transcript file structure |
-| LearningStorageSchema | Per-job learning file structure |
-| validateInterviewTranscript | Transcript validation with advisory/strict modes |
-| validateInterviewLearning | Learning validation with advisory/strict modes |
+- **Plan 09-03: MCP Tools & Server Registration** (10 min)
+  - 10 MCP tool handlers in interview-learning.js
+  - Tool registration in index.js
+  - 70 new tests
 
-### Service Exports:
+### New MCP Tools (Phase 9):
 
-| Function | Purpose |
-|----------|---------|
-| captureTranscript | Save interview transcript with metadata |
-| getTranscriptsForJob | Get all transcripts for a job |
-| getTranscriptsChronological | Timeline view across all jobs |
-| searchTranscripts | Full-text search with context snippets |
-| checkTranscriptReminder | 24h reminder for uncaptured interviews |
+| Tool | Purpose |
+|------|---------|
+| capture_interview_transcript | Store transcript with metadata (INTV-09) |
+| get_interview_history | View by job or chronologically |
+| search_transcripts | Full-text search across transcripts |
+| propose_interview_learnings | Claude proposes learnings (INTV-10) |
+| review_interview_learning | User accepts/rejects |
+| link_learning_to_profile | Get suggested profile links (INTV-11) |
+| confirm_profile_link | User confirms link |
+| get_profile_update_suggestions | Batch/aggregate suggestions (INTV-12) |
+| get_interview_patterns | Detect recurring patterns |
+| get_capture_reminders | Check for uncaptured interviews |
+
+### Requirements Status (Phase 9):
+
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| INTV-09 Capture transcripts | capture_interview_transcript | Complete |
+| INTV-10 Extract learnings | propose_interview_learnings + review | Complete |
+| INTV-11 Profile linking | link_learning_to_profile + confirm | Complete |
+| INTV-12 Profile feedback | get_profile_update_suggestions + patterns | Complete |
