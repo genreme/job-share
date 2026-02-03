@@ -191,11 +191,12 @@ Plans:
   3. Skill gaps identified from accumulated JD patterns
   4. Criteria evolution recommendations generated based on outcomes
   5. Time-in-stage metrics identify bottlenecks in the process
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 10-01: Funnel visualization dashboard
-- [ ] 10-02: Pattern analysis and recommendations
+- [ ] 10-01-PLAN.md — Core aggregation services (funnel, response rates, time-in-stage)
+- [ ] 10-02-PLAN.md — Skill gap aggregation and criteria recommender services
+- [ ] 10-03-PLAN.md — MCP tools and snapshot persistence
 
 ## Progress
 
@@ -213,8 +214,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 7. Application Generation | 3/3 | Complete | 2026-02-02 |
 | 8. Interview Preparation | 3/3 | Complete | 2026-02-02 |
 | 9. Interview Learning | 3/3 | Complete | 2026-02-03 |
-| 10. Analytics & Insights | 0/2 | Not started | - |
+| 10. Analytics & Insights | 0/3 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-29*
-*Total phases: 10 | Total plans: 32 | Requirements covered: 69/69*
+*Total phases: 10 | Total plans: 35 | Requirements covered: 69/69*
