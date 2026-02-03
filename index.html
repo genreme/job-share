@@ -536,6 +536,387 @@
             opacity: 0.3;
         }
 
+        /* Analytics Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .analytics-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .analytics-card h3 {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .analytics-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .analytics-metric:last-child {
+            border-bottom: none;
+        }
+
+        .analytics-metric-label {
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .analytics-metric-value {
+            font-weight: 600;
+            font-size: 18px;
+            color: #667eea;
+        }
+
+        .analytics-big-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #667eea;
+            line-height: 1;
+        }
+
+        .analytics-big-label {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .analytics-funnel {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .funnel-stage {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .funnel-bar {
+            height: 24px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .funnel-label {
+            min-width: 100px;
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .funnel-count {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .analytics-insight {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .analytics-insight.warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .analytics-insight.success {
+            background: #d1fae5;
+            border-left: 4px solid #22c55e;
+            color: #065f46;
+        }
+
+        .analytics-insight.info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            color: #1e40af;
+        }
+
+        /* Insights/Learning Styles */
+        .suggestion-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+
+        .suggestion-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .suggestion-card.priority-high {
+            border-left: 4px solid #ef4444;
+        }
+
+        .suggestion-card.priority-medium {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .suggestion-card.priority-low {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .suggestion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .suggestion-type {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6c757d;
+            background: #f3f4f6;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .suggestion-priority {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .suggestion-priority.high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .suggestion-priority.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .suggestion-priority.low {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .suggestion-message {
+            font-size: 15px;
+            color: #1f2937;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .suggestion-evidence {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .suggestion-evidence-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .suggestion-evidence-table {
+            width: 100%;
+            font-size: 12px;
+        }
+
+        .suggestion-evidence-table th,
+        .suggestion-evidence-table td {
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        .suggestion-evidence-table th {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .suggestion-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .suggestion-actions button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-approve {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #16a34a;
+        }
+
+        .btn-reject {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .btn-reject:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-defer {
+            background: white;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+
+        .evolution-timeline {
+            border-left: 2px solid #e5e7eb;
+            margin-left: 10px;
+            padding-left: 20px;
+        }
+
+        .evolution-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .evolution-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .evolution-item.rejected::before {
+            background: #ef4444;
+        }
+
+        .evolution-date {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .evolution-action {
+            font-size: 14px;
+            color: #374151;
+            margin-top: 4px;
+        }
+
+        .preferences-section {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .preferences-section h3 {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 15px;
+        }
+
+        .preference-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+        }
+
+        .preference-item:last-child {
+            border-bottom: none;
+        }
+
+        .confidence-bar {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+            width: 100px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #8b5cf6 100%);
+            border-radius: 3px;
+        }
+
+        .source-row {
+            display: grid;
+            grid-template-columns: 120px 1fr 80px 80px 80px;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+            align-items: center;
+        }
+
+        .source-row.header {
+            font-weight: 600;
+            color: #6c757d;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .source-bar-container {
+            height: 20px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .source-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+
+        .fit-accuracy-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .fit-accuracy-table th,
+        .fit-accuracy-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+        }
+
+        .fit-accuracy-table th {
+            color: #6c757d;
+            font-weight: 600;
+        }
+
         .btn-primary {
             background: #667eea;
             color: white;
@@ -631,17 +1012,32 @@
                     <button class="copy-btn" onclick="copySearchCommand()" style="background: #7c3aed; color: white;">
                         🔎 Search Prompt
                     </button>
+                    <button class="copy-btn" onclick="copyBrowserResearchPrompt()" style="background: #2563eb; color: white;" title="Full browser-driven research with auto-capture">
+                        🌐 Browser Research
+                    </button>
                     <button class="copy-btn" onclick="showValidateModal()" style="background: #059669; color: white;">
                         🔍 Validate Jobs
                     </button>
                     <button class="copy-btn" onclick="checkAllJobStatus()" style="background: #0891b2; color: white;">
                         📊 Check All Status
                     </button>
+                    <button id="appliedFirstBtn" class="copy-btn" onclick="toggleAppliedFirst()" style="background: #22c55e; color: white;" title="Applied jobs shown first (click to disable)">
+                        📌 Applied First
+                    </button>
+                    <button class="copy-btn" onclick="copyDeepResearchPrompt()" style="background: #7c3aed; color: white;" title="Copy prompt for Claude Chat with MCP">
+                        🔬 Deep Research
+                    </button>
                     <button class="copy-btn" onclick="showQuickAddModal()" style="background: #ec4899; color: white;">
                         ➕ Quick Add Job
                     </button>
                     <button class="copy-btn" onclick="importFromExtension()" id="extensionImportBtn" style="background: #6366f1; color: white; display: none;">
                         🔗 Import from Extension (<span id="pendingJobCount">0</span>)
+                    </button>
+                    <button class="copy-btn" onclick="syncToMCP()" style="background: #059669; color: white;" title="Push jobs to MCP server (auto when using localhost)">
+                        🔄 Push to MCP
+                    </button>
+                    <button class="copy-btn" onclick="importFromMCP()" style="background: #8b5cf6; color: white;" title="Pull jobs from MCP server (auto when using localhost)">
+                        📥 Pull from MCP
                     </button>
                 </div>
             </div>
@@ -673,6 +1069,7 @@
             <button class="tab" onclick="switchTab('filters', this)">⚙️ Filter Controls</button>
             <button class="tab" onclick="switchTab('history', this)">📅 Search History</button>
             <button class="tab" onclick="switchTab('analytics', this)">📈 Analytics</button>
+            <button class="tab" onclick="switchTab('insights', this)">🧠 Insights</button>
             <button class="tab" onclick="switchTab('archive', this)">📁 Documents</button>
         </div>
 
@@ -1158,12 +1555,34 @@ HELP ME:
         </div>
 
         <div id="analytics" class="tab-content">
-            <h2 style="margin-bottom: 20px;">📈 Analytics & Insights</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>📈 Analytics & Insights</h2>
+                <button class="copy-btn" onclick="refreshAnalytics()" style="background: #667eea; color: white;">
+                    🔄 Refresh Analytics
+                </button>
+            </div>
             <div id="analyticsContainer">
-                <div class="empty-state">
-                    <div class="empty-state-icon">📊</div>
-                    <h3>Analytics Coming Soon</h3>
-                    <p>Run a few searches and apply to jobs to see insights and patterns</p>
+                <div class="analytics-loading">
+                    <div style="text-align: center; padding: 40px; color: #6c757d;">
+                        Loading analytics...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="insights" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>🧠 Learning & Insights</h2>
+                <button class="copy-btn" onclick="refreshInsights()" style="background: #8b5cf6; color: white;">
+                    🔄 Refresh Insights
+                </button>
+            </div>
+            <p style="color: #6c757d; margin-bottom: 20px; font-size: 14px;">
+                The system learns from your job search patterns and suggests improvements. All changes require your approval.
+            </p>
+            <div id="insightsContainer">
+                <div style="text-align: center; padding: 40px; color: #6c757d;">
+                    Loading insights...
                 </div>
             </div>
         </div>
@@ -1287,10 +1706,10 @@ HELP ME:
     <div id="commandModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeCommandModal()">&times;</span>
-            <h2>Search Command</h2>
+            <h2 id="commandModalTitle">Search Command</h2>
             <p>Copy this text and paste it into Claude:</p>
             <textarea id="commandText" readonly style="width: 100%; height: 400px; padding: 10px; font-family: monospace; font-size: 12px; border: 2px solid #667eea; border-radius: 6px; margin: 15px 0;"></textarea>
-            <button class="btn-primary" onclick="copyFromModal()">📋 Copy Command</button>
+            <button class="btn-primary" onclick="copyFromModal()">📋 Copy Prompt</button>
             <button class="btn-primary" style="background: #6c757d; margin-left: 10px;" onclick="closeCommandModal()">Close</button>
         </div>
     </div>
@@ -1520,7 +1939,7 @@ https://www.linkedin.com/jobs/view/789"></textarea>
                 📤 Share Status
             </button>
         </div>
-        Job Search Command Center · v3.4 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
+        Job Search Command Center · v3.6 · <a href="https://genreme.github.io/job-share/submit-job.html" target="_blank" style="color: #667eea;">Share with friends</a>
     </div>
 
     <script>
@@ -1829,10 +2248,119 @@ https://www.linkedin.com/jobs/view/789"></textarea>
             return false;
         }
 
-        // Search command template - optimized for URL output
-        const SEARCH_COMMAND = `# Job Search Request
+        // Browser Research command - uses Claude's browser MCP to search AND capture jobs
+        const BROWSER_RESEARCH_COMMAND = `# Browser Research: Search & Capture Jobs
 
-Search for jobs matching my profile and return URLs I can validate.
+You have browser automation tools. Use them to search job boards AND automatically capture promising jobs to my Inbox.
+
+## Prerequisites
+- My local server must be running: \`cd ~/Claude/Job\\ Search\\ Command\\ Center && node server.js\` at localhost:3000
+- You have access to JSCC MCP tools
+
+## Research Workflow
+
+### Phase 0: Check Existing Jobs (DO THIS FIRST)
+Call \`get_existing_jobs\` to see what companies and URLs are already tracked.
+**Skip any jobs from these companies or URLs** unless it's a clearly different role.
+
+### Phase 1: Search Job Boards
+Visit each job board and search for matching roles:
+
+1. **LinkedIn Jobs** (linkedin.com/jobs)
+   - Search: "Creative Director" OR "Head of Design" OR "VP Creative"
+   - Location: Boston, MA or Remote
+   - Filter: Past week
+
+2. **Lever** (jobs.lever.co)
+   - Google: site:jobs.lever.co "creative director" boston OR remote
+   - Visit top 5-10 results
+
+3. **Greenhouse** (boards.greenhouse.io)
+   - Google: site:boards.greenhouse.io "creative director" OR "design director"
+   - Visit top 5-10 results
+
+4. **Ashby** (jobs.ashbyhq.com)
+   - Google: site:jobs.ashbyhq.com creative director
+   - Visit results
+
+5. **Workday** (myworkdayjobs.com)
+   - Google: site:myworkdayjobs.com "creative director" boston OR remote
+
+### Phase 2: Evaluate & Capture Each Job
+For each job posting you find:
+
+1. **Quick Fit Check** - Does it match?
+   ✅ Mission-driven org (nonprofit, healthcare, education, social impact)
+   ✅ Leadership role (director level+)
+   ✅ Boston/Remote/Hybrid
+   ✅ Likely $120K+ salary
+   ❌ Skip: Pure agencies, crypto, gaming, junior roles
+   ❌ Skip: Already in my tracked jobs (from Phase 0)
+
+2. **If Good Fit → Add via MCP Tool**
+   Extract from the page you're viewing:
+   - Title, Company, URL, Location, Salary (if shown), Industry
+   Then call \`add_job_manual\` with that data to add to my Inbox.
+
+3. **If add_job_manual returns "duplicate"** → Skip, already tracked
+
+### Phase 3: Report Results
+
+After searching all boards, provide:
+
+**📊 Research Summary**
+- Date/time: [now]
+- Boards searched: [list]
+- Jobs reviewed: [count]
+- Jobs captured to Inbox: [count]
+- Jobs noted for manual review: [count]
+
+**✅ Captured to Inbox:**
+| Company | Title | Source |
+|---------|-------|--------|
+| ... | ... | ... |
+
+**📝 Manual Review Needed:**
+(URLs where extension didn't trigger)
+- [url] - [company] - [title]
+
+**🎯 Top Priorities:**
+1. [Best fit job with reasoning]
+2. [Second best]
+3. [Third best]
+
+**💡 Insights:**
+- [Any patterns noticed]
+- [Companies to watch]
+- [Salary ranges observed]
+
+## Important Notes
+- Jobs go to my **Inbox** for review (not directly to pipeline)
+- I'll review the Inbox and accept/reject each job
+- If \`add_job_manual\` returns "duplicate", the job is already tracked - skip it
+- Always call \`get_existing_jobs\` first to avoid wasting time on duplicates
+
+## My Target Profile (for fit evaluation)
+- **Role:** Creative Director, VP Creative, Head of Design
+- **Industries:** Healthcare/nonprofit, Education, Arts/Culture, Mission-driven
+- **Location:** Boston area, Remote US, Hybrid
+- **Salary:** $120K+ minimum
+- **Org size:** Prefer <500 employees (less competition)
+
+Let's start with LinkedIn Jobs first!`;
+
+        // Search command template - uses MCP tools to search AND add to inbox
+        const SEARCH_COMMAND = `# Job Search & Auto-Add to Inbox
+
+Search for jobs matching my profile, VALIDATE they are active, find DIRECT company URLs, and add them to my Inbox.
+
+## Prerequisites
+- You have access to JSCC MCP tools and WebFetch
+- My server is running at localhost:3000
+
+## FIRST: Check Existing Jobs
+Call \`get_existing_jobs\` BEFORE searching to see what's already tracked.
+Skip any companies or URLs that appear in the results.
 
 ## My Target Profile
 - **Role:** Creative Director, VP Creative, Head of Design, Design Director, Creative Ops Director
@@ -1841,46 +2369,127 @@ Search for jobs matching my profile and return URLs I can validate.
 - **Salary:** $120K+ minimum (prefer $140K+)
 - **Posted:** Last 7 days preferred
 
-## Search These Sources (in order)
-1. **Lever** - Search: site:jobs.lever.co "creative director" OR "head of design" OR "vp creative"
-2. **Greenhouse** - Search: site:boards.greenhouse.io "creative director" OR "design director"
-3. **LinkedIn** - Search jobs directly on linkedin.com/jobs
-4. **Built In Boston** - Check builtin.com/boston for creative leadership roles
-5. **Ashby** - Search: site:jobs.ashbyhq.com creative director
+## Job Board Rotation System
 
-## What Makes a Good Fit
-✅ Mission-driven org (nonprofit, healthcare, education, social impact)
-✅ Leadership role (director+, managing team)
-✅ Boston/Remote/Hybrid
-✅ $120K+ salary (or likely based on role level)
-✅ Small-medium org (<500 people = less competition)
+Search across ALL tiers to continuously test effectiveness. Include boards from each tier:
 
-❌ Skip: Agencies (unless mission-focused), pure tech startups, crypto/gaming
+### Tier 1 (High Priority)
+- \`site:jobs.lever.co "creative director" OR "design director" boston OR remote\`
+- \`site:boards.greenhouse.io "creative director" OR "head of design" boston OR remote\`
+- \`site:job-boards.greenhouse.io "creative director" boston OR remote\`
+- \`site:foundationlist.org creative director\`
 
-## Output Format
-Return URLs only, one per line, grouped by confidence:
+### Tier 2 (Test Regularly)
+- \`site:builtinboston.com "creative director" OR "design director"\`
+- \`site:linkedin.com/jobs "creative director" boston nonprofit OR healthcare OR education\`
+- \`site:myworkdayjobs.com "creative director" boston\`
 
-**🎯 HIGH FIT (8+ match factors):**
-https://jobs.lever.co/company/position-id
-https://boards.greenhouse.io/company/jobs/12345
+### Tier 3 (Include Occasionally for Testing)
+- \`site:indeed.com "creative director" nonprofit boston posted:7d\`
+- \`site:idealist.org creative director boston\`
+- \`site:jobs.ashbyhq.com creative director boston OR remote\`
 
-**🤔 WORTH REVIEWING (5-7 match factors):**
-https://www.linkedin.com/jobs/view/123456
-https://jobs.ashbyhq.com/company/job-id
+**Search at least 2 boards from each tier** to maintain data on board effectiveness.
 
-**📝 NOTES:**
-- [Any companies with connections I should know about]
-- [Any urgent postings - "closing soon" or posted today]
-- [Any salary info spotted]
+## Fit Criteria
+✅ **Good Fit (add to Inbox):**
+- Mission-driven org (nonprofit, healthcare, education, social impact)
+- Leadership role (director+, managing team)
+- Boston/Remote/Hybrid location
+- $120K+ salary (or likely based on role level)
 
-I will paste these URLs into my Job Validator which will:
-- Check if still active
-- Extract full job details
-- Calculate fit scores
-- Find duplicates
-- Locate company careers pages
+❌ **Skip:**
+- Agencies (unless mission-focused like Media Cause, Blue State)
+- Pure tech startups without social mission
+- Crypto, gaming, gambling
+- Junior/mid-level roles
 
-Just give me the URLs - my validator handles the rest!`;
+## Workflow - VALIDATE BEFORE ADDING
+
+### Step 1: Search
+Run searches across multiple boards. Collect URLs.
+
+### Step 2: For Each URL - VALIDATE FIRST
+
+**A. Check if URL is live:**
+- Fetch the job board URL
+- If 404, fetch error, or "job not found" message → SKIP (job closed)
+- If redirects to generic careers page → job likely closed
+
+**B. Extract company name from the page**
+
+**C. Find the DIRECT company careers URL:**
+This is CRITICAL - don't use job board URLs as final URLs.
+
+1. Search: "[Company Name] careers" or "[Company Name] jobs"
+2. Find their actual careers page (usually careers.company.com or company.com/careers)
+3. Search their careers page for the same job title
+4. If you find it → use THAT direct URL
+5. If you can't find it on their site → job may be closed, SKIP
+
+**D. Extract job details from the COMPANY'S page (not job board):**
+- Exact job title (as listed on company site)
+- Location (as listed on company site)
+- Salary (if disclosed)
+- Key requirements
+
+### Step 3: Validate Fit & Check Duplicates
+1. Quick fit check against my criteria
+2. Skip if company/URL already in tracked jobs (from get_existing_jobs)
+
+### Step 4: Add to Inbox (only if validated)
+Call the MCP tool:
+\`\`\`
+add_job_manual({
+  title: "Creative Director",
+  company: "Company Name",
+  location: "Boston, MA",
+  salary: "$140k-$160k",
+  url: "https://company.com/careers/job123",  // DIRECT company URL!
+  industry: "Education",
+  description: "Brief role description",
+  notes: "Found on Lever, validated on company site"
+})
+\`\`\`
+
+### Step 5: Report Results
+
+**📊 Search Summary**
+- Date: [today]
+- Boards searched: [list all boards tested, by tier]
+- Jobs found: [count by board]
+- Jobs validated (URL live + company link found): [count]
+- Jobs added to Inbox: [count]
+
+**✅ Added to Inbox:**
+| Company | Title | Direct URL | Source Board | Why It's a Fit |
+|---------|-------|------------|--------------|----------------|
+
+**❌ Validation Failures:**
+| Company | Title | Board | Failure Reason |
+|---------|-------|-------|----------------|
+| ... | ... | Lever | 404 - job closed |
+| ... | ... | Greenhouse | Couldn't find on company careers |
+| ... | ... | Indeed | Stale posting (>30 days old) |
+
+**📊 Board Effectiveness (This Search):**
+| Board | Jobs Found | Validated | Success Rate |
+|-------|------------|-----------|--------------|
+| Lever | X | Y | Y/X% |
+| Greenhouse | X | Y | Y/X% |
+| Built In Boston | X | Y | Y/X% |
+| Indeed | X | Y | Y/X% |
+
+**💡 Recommendations:**
+- [Which boards performed well]
+- [Which boards had mostly stale postings]
+- [Suggest tier adjustments based on this data]
+
+## Key Rules
+1. **NEVER add a job without validating the URL is live**
+2. **ALWAYS find the direct company careers URL** - not just the job board link
+3. **Test ALL tiers** - we need data to know which boards work
+4. **Track source accurately** - note where found AND where validated`;
 
         // Weekly status check command template
         const STATUS_CHECK_COMMAND = `Check Job Posting Status
@@ -1979,6 +2588,83 @@ Add a new entry to the Search History tab documenting:
 **TIMING CONTEXT:**
 Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' })} (US Eastern Time)`;
 
+        // Deep Research command for Claude Chat with MCP tools
+        const DEEP_RESEARCH_COMMAND = `# Deep Research: Full Job Pipeline Review
+
+Use the JSCC MCP tools to research and UPDATE my job pipeline. You have access to both READ and WRITE tools.
+
+## Available MCP Tools
+
+### Read Tools
+- \`get_jobs\` - Load all jobs (filter by status)
+- \`get_job_detail\` - Get full details for a job
+- \`get_resume_data\` - My background for fit scoring
+- \`get_application_stats\` - Response/interview rates
+
+### Write Tools (use these to update the dashboard!)
+- \`update_job(jobId, {field: value})\` - Update job fields
+- \`archive_job(jobId, reason)\` - Archive closed jobs
+- \`set_hiring_manager(jobId, {name, title, linkedin})\` - Record hiring manager
+- \`add_job_note(jobId, type, notes)\` - Add to job history
+
+## Instructions
+
+### Step 1: Load Pipeline
+Call \`get_jobs\` to retrieve all non-archived jobs.
+Expected: ~{JOB_COUNT} jobs to review.
+
+### Step 2: For Each Job, Research & Update
+
+**A. Check Posting Status**
+- Visit the job URL
+- If closed/404 → call \`archive_job(jobId, "Posting closed as of {DATE}")\`
+- If URL changed → call \`update_job(jobId, {url: "new_url"})\`
+- Note days since posted
+
+**B. Research Hiring Manager**
+- Search LinkedIn: "{company} {title} hiring manager"
+- If found → call \`set_hiring_manager(jobId, {name, title, linkedin})\`
+
+**C. Clean Up Fields**
+For any incorrect/incomplete data, call \`update_job(jobId, {...})\`:
+- title: Exact job title
+- company: Official company name
+- location: "Remote" / "Hybrid - City" / "On-site - City"
+- salary: Salary if found (or "Not listed")
+- industry: Correct classification
+
+**D. Re-evaluate Fit Score**
+Based on your research, if fit score seems wrong:
+- call \`update_job(jobId, {fitScore: newScore})\`
+- call \`add_job_note(jobId, "Fit Adjusted", "Reason for change")\`
+
+### Step 3: Summary Report
+
+After all updates are applied, provide:
+
+### 📊 Pipeline Overview
+- Total jobs reviewed: X
+- Active postings: X
+- Archived (closed): X
+- Hiring managers found: X
+
+### 🔄 Changes Made
+| Job ID | Company | Action | Details |
+|--------|---------|--------|---------|
+
+### 👤 Hiring Managers Found
+| Company | Name | Title | LinkedIn |
+|---------|------|-------|----------|
+
+### 🎯 Top Priority Actions
+1. [Highest priority - apply immediately]
+2. [Second priority]
+3. [Interview follow-ups]
+
+**Note:** All changes are saved directly to the dashboard. User will refresh browser to see updates.
+
+## Today's Date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' })}`;
+
         // Initialize storage
         let filterStates = {
             'all': 'active',
@@ -2035,12 +2721,17 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             };
         }
 
-        // Save data
+        // Save data (to localStorage and optionally to server)
         async function saveData(data) {
             try {
                 console.log('Attempting to save data to storage...');
                 await window.storage.set('job-tracker-data', JSON.stringify(data));
                 console.log('Data saved successfully');
+
+                // Auto-sync to server if running on localhost (fire and forget)
+                if (typeof autoSyncToServer === 'function') {
+                    autoSyncToServer().catch(() => {}); // Silent fail for auto-sync
+                }
             } catch (e) {
                 console.error('Storage error:', e);
                 throw new Error(`Failed to save data: ${e.message}`);
@@ -2153,6 +2844,172 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
             // Reset file input
             event.target.value = '';
+        }
+
+        // ============================================
+        // MCP SYNC FUNCTIONS
+        // ============================================
+
+        // Check if running on local server (enables auto-sync)
+        function isLocalServer() {
+            return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        }
+
+        // Auto-sync to server API (when running on localhost)
+        async function autoSyncToServer() {
+            if (!isLocalServer()) return false;
+
+            const data = window.currentData;
+            if (!data || !data.jobs) return false;
+
+            try {
+                const exportData = {
+                    jobs: data.jobs,
+                    searchHistory: data.searchHistory || [],
+                    settings: data.settings || {},
+                    exportedAt: new Date().toISOString()
+                };
+
+                const response = await fetch('/api/jobs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(exportData)
+                });
+
+                if (!response.ok) throw new Error('Server sync failed');
+
+                console.log('✅ Auto-synced to server');
+                return true;
+            } catch (err) {
+                console.warn('Auto-sync failed:', err.message);
+                return false;
+            }
+        }
+
+        // Export jobs to JSON file for MCP server
+        async function syncToMCP() {
+            const data = window.currentData;
+            if (!data || !data.jobs) {
+                showToast('No data to sync', 'error');
+                return;
+            }
+
+            // Try server sync first if on localhost
+            if (isLocalServer()) {
+                const synced = await autoSyncToServer();
+                if (synced) {
+                    showToast(`Synced ${data.jobs.length} jobs to MCP server`, 'success');
+                    return;
+                }
+            }
+
+            // Fallback: download JSON file
+            const exportData = {
+                jobs: data.jobs,
+                searchHistory: data.searchHistory || [],
+                settings: data.settings || {},
+                exportedAt: new Date().toISOString()
+            };
+
+            const json = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([json], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'jobs.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast(`Exported ${data.jobs.length} jobs. Move to mcp-server/data/jobs.json`, 'success');
+        }
+
+        // Import jobs from MCP server or file
+        async function importFromMCP() {
+            // Try server fetch first if on localhost
+            if (isLocalServer()) {
+                try {
+                    const response = await fetch('/api/jobs');
+                    if (response.ok) {
+                        const imported = await response.json();
+                        if (imported.jobs && imported.jobs.length > 0) {
+                            await mergeImportedJobs(imported);
+                            return;
+                        }
+                    }
+                } catch (err) {
+                    console.warn('Server fetch failed, falling back to file picker:', err.message);
+                }
+            }
+
+            // Fallback: file picker
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+
+            input.onchange = async (e) => {
+                try {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const text = await file.text();
+                    const imported = JSON.parse(text);
+                    await mergeImportedJobs(imported);
+
+                } catch (err) {
+                    console.error('Import from MCP error:', err);
+                    showToast('Import failed: ' + err.message, 'error');
+                }
+            };
+
+            input.click();
+        }
+
+        // Helper: merge imported jobs with current data
+        async function mergeImportedJobs(imported) {
+            if (!imported.jobs || !Array.isArray(imported.jobs)) {
+                showToast('Invalid data: no jobs array found', 'error');
+                return;
+            }
+
+            const currentCount = window.currentData?.jobs?.length || 0;
+            const importedCount = imported.jobs.length;
+
+            if (currentCount > 0 && confirm(`Replace ${currentCount} current jobs with ${importedCount} imported jobs?\n\nClick OK to replace, Cancel to merge.`)) {
+                // Full replace
+                window.currentData = imported;
+                await saveData(imported);
+            } else if (currentCount > 0) {
+                // Merge: add new jobs, update existing
+                let added = 0, updated = 0;
+
+                for (const job of imported.jobs) {
+                    const existingIndex = window.currentData.jobs.findIndex(j => j.id === job.id);
+                    if (existingIndex >= 0) {
+                        // Update existing job
+                        window.currentData.jobs[existingIndex] = job;
+                        updated++;
+                    } else {
+                        // Add new job
+                        window.currentData.jobs.push(job);
+                        added++;
+                    }
+                }
+
+                await saveData(window.currentData);
+                showToast(`Merged: ${added} new, ${updated} updated`, 'success');
+                renderJobs(window.currentData.jobs);
+                return;
+            } else {
+                // No current data, just import
+                window.currentData = imported;
+                await saveData(imported);
+            }
+
+            renderJobs(window.currentData.jobs);
+            showToast(`Imported ${importedCount} jobs from MCP`, 'success');
         }
 
         // Jobs from comprehensive search - Jan 22, 2026
@@ -2882,6 +3739,43 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             ];
         }
 
+        // Copy browser research command (for Claude with browser MCP)
+        function copyBrowserResearchPrompt() {
+            const btn = event ? event.target : null;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(BROWSER_RESEARCH_COMMAND).then(() => {
+                    if (btn) {
+                        const originalText = btn.innerHTML;
+                        const originalBg = btn.style.background || '#2563eb';
+                        const originalColor = btn.style.color || 'white';
+                        btn.innerHTML = '✅ Copied! Paste in Claude';
+                        btn.style.background = '#2e7d32';
+                        btn.style.color = 'white';
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                            btn.style.background = originalBg;
+                            btn.style.color = originalColor;
+                        }, 3000);
+                    }
+                }).catch((err) => {
+                    console.log('📋 Clipboard API blocked - showing modal');
+                    showBrowserResearchModal();
+                });
+            } else {
+                showBrowserResearchModal();
+            }
+        }
+
+        function showBrowserResearchModal() {
+            const modal = document.getElementById('commandModal');
+            const textarea = document.getElementById('commandText');
+            const title = document.querySelector('#commandModal h3');
+            if (title) title.textContent = '🌐 Browser Research Prompt';
+            textarea.value = BROWSER_RESEARCH_COMMAND;
+            modal.classList.add('active');
+        }
+
         // Copy search command
         function copySearchCommand() {
             const btn = event ? event.target : document.querySelector('.copy-btn');
@@ -2890,11 +3784,15 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(SEARCH_COMMAND).then(() => {
                     const originalText = btn.innerHTML;
+                    const originalBg = btn.style.background || '#7c3aed';
+                    const originalColor = btn.style.color || 'white';
                     btn.innerHTML = '✅ Copied! Paste in Claude';
                     btn.style.background = '#2e7d32';
+                    btn.style.color = 'white';
                     setTimeout(() => {
                         btn.innerHTML = originalText;
-                        btn.style.background = 'white';
+                        btn.style.background = originalBg;
+                        btn.style.color = originalColor;
                     }, 3000);
                 }).catch((err) => {
                     console.log('📋 Clipboard API blocked (' + err.name + ') - trying fallback');
@@ -2923,11 +3821,15 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                 if (successful) {
                     console.log('✅ Copy succeeded via execCommand');
                     const originalText = btn.innerHTML;
+                    const originalBg = btn.style.background || '#7c3aed';
+                    const originalColor = btn.style.color || 'white';
                     btn.innerHTML = '✅ Copied! Paste in Claude';
                     btn.style.background = '#2e7d32';
+                    btn.style.color = 'white';
                     setTimeout(() => {
                         btn.innerHTML = originalText;
-                        btn.style.background = 'white';
+                        btn.style.background = originalBg;
+                        btn.style.color = originalColor;
                     }, 3000);
                 } else {
                     console.log('❌ execCommand failed - opening modal');
@@ -2978,11 +3880,11 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
-            
+
             try {
                 const successful = document.execCommand('copy');
                 document.body.removeChild(textArea);
-                
+
                 if (successful) {
                     console.log('✅ Status check copy succeeded via execCommand');
                     if (btn) {
@@ -3006,6 +3908,60 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                 }
                 alert('Copy failed. Please try again or manually copy the command.');
             }
+        }
+
+        // Copy Deep Research command for Claude Chat with MCP
+        function copyDeepResearchPrompt() {
+            try {
+                console.log('🔬 Deep Research button clicked');
+                const data = window.currentData;
+                if (!data || !data.jobs) {
+                    showToast('Data not loaded yet. Please wait and try again.', 'error');
+                    return;
+                }
+                const jobCount = data.jobs.filter(j => j.status !== 'archived').length;
+                console.log('📊 Jobs to review:', jobCount);
+                const prompt = DEEP_RESEARCH_COMMAND.replace('{JOB_COUNT}', jobCount);
+                console.log('📝 Prompt length:', prompt.length);
+
+                // Always show the modal for reliability (clipboard API is unreliable on file://)
+                showDeepResearchModal(prompt);
+
+            } catch (err) {
+                console.error('❌ Deep Research error:', err);
+                alert('Error in Deep Research: ' + err.message);
+            }
+        }
+
+        function showDeepResearchModal(prompt) {
+            console.log('📋 Showing Deep Research modal');
+            const modal = document.getElementById('commandModal');
+            const textarea = document.getElementById('commandText');
+            const title = document.getElementById('commandModalTitle');
+
+            if (!modal) {
+                alert('Error: commandModal not found');
+                return;
+            }
+            if (!textarea) {
+                alert('Error: commandText not found');
+                return;
+            }
+
+            // Set title to indicate this is Deep Research
+            if (title) {
+                title.textContent = '🔬 Deep Research Prompt';
+            }
+
+            textarea.value = prompt;
+            modal.classList.add('active');
+            console.log('✅ Modal activated');
+
+            // Select the text for easy copying
+            setTimeout(() => {
+                textarea.focus();
+                textarea.select();
+            }, 100);
         }
 
         // Switch tabs
@@ -3039,13 +3995,28 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
             // Render documents when archive/documents tab is shown
             if (tabName === 'archive') {
-                renderDocuments();
+                // Try server first if available, fall back to local
+                if (isLocalServer()) {
+                    renderDocumentsFromServer();
+                } else {
+                    renderDocuments();
+                }
                 updateStorageUsage();
             }
 
             // Refresh inbox when shown
             if (tabName === 'inbox') {
                 loadInbox();
+            }
+
+            // Load analytics when shown
+            if (tabName === 'analytics') {
+                loadAnalytics();
+            }
+
+            // Load insights when shown
+            if (tabName === 'insights') {
+                loadInsights();
             }
         }
 
@@ -3332,9 +4303,108 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Scan existing files (placeholder - would need server component for actual file access)
-        function scanExistingFiles() {
-            alert('To link existing files from your computer:\\n\\n1. Open the job you want to link a file to\\n2. Use the "Add Document" button in the job modal\\n3. Select the file from your computer\\n\\nNote: For security, browsers cannot directly scan local folders. Files must be manually selected.');
+        // Scan existing files and auto-link to jobs via server API
+        async function scanExistingFiles() {
+            if (!isLocalServer()) {
+                alert('Auto-linking requires the local server.\\n\\nRun: npm start\\nThen open: http://localhost:3000');
+                return;
+            }
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '⏳ Scanning...';
+
+            try {
+                const response = await fetch('/api/documents/auto-link', { method: 'POST' });
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast(`Linked ${result.linkedCount} documents to jobs`, 'success');
+                    // Refresh documents display
+                    await renderDocumentsFromServer();
+                    // Also sync to localStorage if needed
+                    await importFromMCP();
+                } else {
+                    throw new Error(result.error || 'Auto-link failed');
+                }
+            } catch (err) {
+                console.error('Scan error:', err);
+                showToast('Failed to scan files: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔄 Scan & Link Existing PDFs';
+            }
+        }
+
+        // Render documents from server API
+        async function renderDocumentsFromServer() {
+            if (!isLocalServer()) {
+                return; // Fall back to localStorage-based rendering
+            }
+
+            const container = document.getElementById('documentsContainer');
+            const noDocsMsg = document.getElementById('noDocuments');
+            if (!container || !noDocsMsg) return;
+
+            try {
+                const response = await fetch('/api/documents');
+                const { documents } = await response.json();
+
+                if (documents.length === 0) {
+                    container.innerHTML = '';
+                    noDocsMsg.style.display = 'block';
+                    return;
+                }
+
+                noDocsMsg.style.display = 'none';
+
+                // Group by company
+                const byCompany = {};
+                documents.forEach(doc => {
+                    const company = doc.company || 'Other';
+                    if (!byCompany[company]) byCompany[company] = [];
+                    byCompany[company].push(doc);
+                });
+
+                container.innerHTML = Object.entries(byCompany)
+                    .sort((a, b) => {
+                        // Sort by most recent document
+                        const aLatest = new Date(a[1][0].created);
+                        const bLatest = new Date(b[1][0].created);
+                        return bLatest - aLatest;
+                    })
+                    .map(([company, docs]) => `
+                        <div style="background: white; border: 1px solid #e0e4e8; border-radius: 8px; padding: 15px;">
+                            <h4 style="margin: 0 0 10px 0; color: #667eea;">${escapeHtml(company)}</h4>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                ${docs.map(doc => `
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                                        <div>
+                                            <span style="font-size: 12px;">${doc.type === 'resume' ? '📄' : doc.type === 'cover_letter' ? '✉️' : '📎'}</span>
+                                            <span style="font-size: 13px; margin-left: 5px;">${escapeHtml(doc.filename)}</span>
+                                        </div>
+                                        <a href="/documents/${encodeURIComponent(doc.filename)}" target="_blank"
+                                           style="font-size: 12px; color: #667eea; text-decoration: none;">
+                                           View →
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('');
+
+                // Update count in tab header
+                document.getElementById('existingFilesPreview').innerHTML = `
+                    <div style="background: white; padding: 10px; border-radius: 6px; font-size: 12px;">
+                        <strong>${documents.length} PDFs found</strong><br>
+                        <code style="color: #6c757d;">/Users/genre/Claude/resume/</code>
+                    </div>
+                `;
+
+            } catch (err) {
+                console.error('Error loading documents:', err);
+                container.innerHTML = `<p style="color: #ef4444;">Failed to load documents: ${err.message}</p>`;
+            }
         }
 
         // Render jobs table
@@ -3468,6 +4538,7 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         // Sorting state
         let sortColumn = 'fitScore';
         let sortDirection = 'desc';
+        let appliedFirst = true; // Default: show applied jobs at top
 
         function sortJobs(column) {
             // Safety check
@@ -3475,71 +4546,94 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                 console.error('Data not loaded yet');
                 return;
             }
-            
+
             if (sortColumn === column) {
                 sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
             } else {
                 sortColumn = column;
                 sortDirection = column === 'fitScore' || column === 'salary' ? 'desc' : 'asc';
             }
-            
+
             const data = window.currentData;
-            
+
             // Apply filter first
             let jobs = [...data.jobs];
             const onlyStatus = Object.keys(filterStates).find(key => filterStates[key] === 'only');
-            
+
             if (onlyStatus) {
                 jobs = jobs.filter(job => job.status === onlyStatus);
             } else {
                 const hiddenStatuses = Object.keys(filterStates).filter(key => filterStates[key] === 'hidden');
                 jobs = jobs.filter(job => !hiddenStatuses.includes(job.status));
             }
-            
-            // Then sort
+
+            // Then sort - applied jobs first by default, then by selected column
             const sorted = jobs.sort((a, b) => {
+                // If appliedFirst is enabled, always sort applied jobs to top
+                if (appliedFirst && column !== 'status') {
+                    const aIsApplied = a.status === 'applied' ? 1 : 0;
+                    const bIsApplied = b.status === 'applied' ? 1 : 0;
+                    if (aIsApplied !== bIsApplied) {
+                        return bIsApplied - aIsApplied; // Applied jobs first
+                    }
+                }
+
                 let aVal, bVal;
-                
+
                 switch(column) {
                     case 'fitScore':
                         return sortDirection === 'desc' ? b.fitScore - a.fitScore : a.fitScore - b.fitScore;
-                    
+
                     case 'title':
                         return sortDirection === 'asc' ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
-                    
+
                     case 'company':
                         return sortDirection === 'asc' ? a.company.localeCompare(b.company) : b.company.localeCompare(a.company);
-                    
+
                     case 'salary':
                         // Extract first number from salary string
                         aVal = parseInt((a.salary.match(/\d+/) || [0])[0]);
                         bVal = parseInt((b.salary.match(/\d+/) || [0])[0]);
                         return sortDirection === 'desc' ? bVal - aVal : aVal - bVal;
-                    
+
                     case 'status':
-                        const statusOrder = {'apply-now': 0, 'maybe': 1, 'applied': 2, 'probably-not': 3, 'archived': 4};
+                        // When explicitly sorting by status, use this order (applied at top)
+                        const statusOrder = {'applied': 0, 'apply-now': 1, 'maybe': 2, 'probably-not': 3, 'archived': 4};
                         aVal = statusOrder[a.status] || 99;
                         bVal = statusOrder[b.status] || 99;
                         return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
-                    
+
                     case 'connections':
                         aVal = a.connections ? a.connections.length : 0;
                         bVal = b.connections ? b.connections.length : 0;
                         return sortDirection === 'desc' ? bVal - aVal : aVal - bVal;
-                    
+
                     case 'daysSince':
                         // Use found date for days since
                         aVal = a.found ? new Date(a.found).getTime() : 0;
                         bVal = b.found ? new Date(b.found).getTime() : 0;
                         return sortDirection === 'desc' ? bVal - aVal : aVal - bVal;
-                    
+
                     default:
                         return 0;
                 }
             });
-            
+
             renderJobs(sorted);
             saveFilterState(); // Persist sort state
+        }
+
+        function toggleAppliedFirst() {
+            appliedFirst = !appliedFirst;
+            // Re-sort with current column
+            sortJobs(sortColumn);
+            // Update button state
+            const btn = document.getElementById('appliedFirstBtn');
+            if (btn) {
+                btn.style.background = appliedFirst ? '#22c55e' : '#e5e7eb';
+                btn.style.color = appliedFirst ? 'white' : '#374151';
+                btn.title = appliedFirst ? 'Applied jobs shown first (click to disable)' : 'Click to show applied jobs first';
+            }
         }
 
         function getSortArrow(column) {
@@ -3634,7 +4728,11 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
 
             if (job.status === 'archived') {
                 // Check if this archived job was applied or rejected
-                if (job.appliedDate || job.symbols?.rejected) {
+                const wasApplied = job.appliedDate || job.applied;
+                const wasRejected = job.symbols?.includes('❌') ||
+                                   job.updates?.some(u => u.type === 'Rejected');
+
+                if (wasApplied || wasRejected) {
                     classes.push('row-archived-applied');
                 } else {
                     classes.push('row-archived');
@@ -3701,6 +4799,147 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             return dates.join(' / ');
         }
 
+        function getFitBreakdownHTML(job) {
+            // Try to get breakdown from job data or estimate from fit score
+            const breakdown = job.fitBreakdown || estimateFitBreakdown(job);
+
+            const categories = [
+                { key: 'role', label: 'Role Match', max: 25, icon: '💼', desc: 'Title and responsibilities alignment' },
+                { key: 'industry', label: 'Industry', max: 20, icon: '🏢', desc: 'Sector and mission fit' },
+                { key: 'location', label: 'Location', max: 15, icon: '📍', desc: 'Boston/MA area, remote, or hybrid' },
+                { key: 'salary', label: 'Salary', max: 15, icon: '💰', desc: 'Meets $120K+ minimum' }
+            ];
+
+            const baseScore = 50; // Starting score before category bonuses
+            let html = `<div style="display: grid; gap: 8px;">`;
+
+            categories.forEach(cat => {
+                const score = breakdown[cat.key] || 0;
+                const percent = Math.round((score / cat.max) * 100);
+                const barColor = percent >= 80 ? '#22c55e' : percent >= 50 ? '#f59e0b' : '#ef4444';
+
+                html += `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 24px; text-align: center;">${cat.icon}</span>
+                        <span style="width: 100px; font-size: 13px; color: #374151;">${cat.label}</span>
+                        <div style="flex: 1; background: #e5e7eb; border-radius: 4px; height: 16px; overflow: hidden;">
+                            <div style="width: ${percent}%; background: ${barColor}; height: 100%; border-radius: 4px; transition: width 0.3s;"></div>
+                        </div>
+                        <span style="width: 50px; text-align: right; font-weight: 600; color: ${barColor};">+${score}/${cat.max}</span>
+                    </div>
+                `;
+            });
+
+            // Show base score
+            html += `
+                <div style="display: flex; align-items: center; gap: 10px; padding-top: 8px; border-top: 1px solid #e5e7eb;">
+                    <span style="width: 24px; text-align: center;">🎯</span>
+                    <span style="width: 100px; font-size: 13px; color: #374151;">Base Score</span>
+                    <div style="flex: 1;"></div>
+                    <span style="width: 50px; text-align: right; font-weight: 600; color: #6b7280;">+${baseScore}</span>
+                </div>
+            `;
+
+            html += `</div>`;
+            return html;
+        }
+
+        function estimateFitBreakdown(job) {
+            // Estimate breakdown when not available from validator
+            const fitScore = job.fitScore || 50;
+            const excess = fitScore - 50; // Points above base
+
+            // Distribute proportionally (25+20+15+15 = 75 max)
+            if (excess <= 0) {
+                return { role: 0, industry: 0, location: 0, salary: 0 };
+            }
+
+            // Estimate based on job attributes
+            let role = 0, industry = 0, location = 0, salary = 0;
+
+            // Role estimation based on title
+            const title = (job.title || '').toLowerCase();
+            if (title.includes('director') || title.includes('head') || title.includes('vp')) {
+                role = Math.min(25, Math.round(excess * 0.35));
+            } else if (title.includes('senior') || title.includes('lead') || title.includes('manager')) {
+                role = Math.min(20, Math.round(excess * 0.28));
+            } else {
+                role = Math.min(15, Math.round(excess * 0.20));
+            }
+
+            // Industry estimation
+            const ind = (job.industry || '').toLowerCase();
+            if (ind.includes('health') || ind.includes('nonprofit') || ind.includes('education') || ind.includes('social')) {
+                industry = Math.min(20, Math.round(excess * 0.28));
+            } else {
+                industry = Math.min(10, Math.round(excess * 0.15));
+            }
+
+            // Location estimation
+            const loc = (job.location || '').toLowerCase();
+            if (loc.includes('boston') || loc.includes('massachusetts') || loc.includes('ma') || loc.includes('remote')) {
+                location = Math.min(15, Math.round(excess * 0.20));
+            } else {
+                location = Math.min(8, Math.round(excess * 0.10));
+            }
+
+            // Salary estimation
+            const salaryStr = (job.salary || '').replace(/[^0-9]/g, '');
+            const salaryNum = parseInt(salaryStr.substring(0, 6)) || 0;
+            if (salaryNum >= 160000) {
+                salary = 15;
+            } else if (salaryNum >= 140000) {
+                salary = 12;
+            } else if (salaryNum >= 120000) {
+                salary = 10;
+            } else {
+                salary = Math.min(8, Math.round(excess * 0.12));
+            }
+
+            return { role, industry, location, salary };
+        }
+
+        async function submitScoreFeedback(jobId, feedback) {
+            if (!window.currentData || !window.currentData.jobs) {
+                console.error('Data not loaded yet');
+                return;
+            }
+
+            const data = window.currentData;
+            const job = data.jobs.find(j => j.id === jobId);
+            if (!job) return;
+
+            // Toggle feedback if clicking same button
+            if (job.scoreFeedback === feedback) {
+                delete job.scoreFeedback;
+                delete job.scoreFeedbackNote;
+            } else {
+                job.scoreFeedback = feedback;
+
+                // Prompt for optional note based on feedback type
+                if (feedback === 'down') {
+                    const note = prompt('Why does this score feel too high? (optional)\n\nExample: "Not a creative role despite title" or "Company too small"');
+                    if (note) {
+                        job.scoreFeedbackNote = note;
+                    } else {
+                        delete job.scoreFeedbackNote;
+                    }
+                } else if (feedback === 'up') {
+                    const note = prompt('Why does this score feel too low? (optional)\n\nExample: "Perfect mission alignment" or "Strong team culture fit"');
+                    if (note) {
+                        job.scoreFeedbackNote = note;
+                    } else {
+                        delete job.scoreFeedbackNote;
+                    }
+                }
+            }
+
+            await saveData(data);
+
+            // Refresh the modal
+            showJobDetail(jobId);
+        }
+
         function getSymbolsHTML(symbols) {
             const symbolMap = {
                 '⚡': 'Posted Today - Apply immediately for best chances',
@@ -3724,12 +4963,21 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             if (!job.connections || job.connections.length === 0) {
                 return '<span class="connection-badge connection-none">None</span>';
             }
-            
-            return job.connections.map(conn => {
+
+            // Sort so primary referral appears first
+            const sortedConnections = [...job.connections].sort((a, b) => {
+                if (a.isPrimary && !b.isPrimary) return -1;
+                if (!a.isPrimary && b.isPrimary) return 1;
+                return 0;
+            });
+
+            return sortedConnections.map(conn => {
                 const badgeClass = conn.reachedOut ? 'connection-reached-out' : 'connection-not-reached';
                 const status = conn.reachedOut ? '✓' : '○';
-                return `<span class="connection-badge ${badgeClass}" onclick="toggleReachOut(${job.id}, '${conn.name}')" style="cursor: pointer;">
-                    ${status} ${conn.name}
+                const primaryStar = conn.isPrimary ? '⭐ ' : '';
+                const primaryStyle = conn.isPrimary ? 'border: 2px solid #f59e0b; font-weight: 600;' : '';
+                return `<span class="connection-badge ${badgeClass}" onclick="toggleReachOut(${job.id}, '${escapeHtml(conn.name)}')" style="cursor: pointer; ${primaryStyle}" title="${conn.isPrimary ? 'Primary Referral - ' : ''}${conn.role || 'No role'}${conn.notes ? ' | ' + conn.notes : ''}">
+                    ${primaryStar}${status} ${escapeHtml(conn.name)}
                 </span>`;
             }).join('');
         }
@@ -3800,6 +5048,157 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             }
         }
 
+        // =====================================================
+        // CONNECTION MANAGEMENT FUNCTIONS
+        // =====================================================
+
+        function showAddConnectionForm(jobId) {
+            const form = document.getElementById(`addConnectionForm-${jobId}`);
+            if (form) {
+                form.style.display = 'block';
+                // Clear any previous values
+                document.getElementById(`connName-${jobId}`).value = '';
+                document.getElementById(`connRole-${jobId}`).value = '';
+                document.getElementById(`connLinkedIn-${jobId}`).value = '';
+                document.getElementById(`connNotes-${jobId}`).value = '';
+                document.getElementById(`connPrimary-${jobId}`).checked = false;
+                document.getElementById(`connReachedOut-${jobId}`).checked = false;
+                // Focus on name field
+                document.getElementById(`connName-${jobId}`).focus();
+            }
+        }
+
+        function hideAddConnectionForm(jobId) {
+            const form = document.getElementById(`addConnectionForm-${jobId}`);
+            if (form) {
+                form.style.display = 'none';
+            }
+        }
+
+        async function saveConnection(jobId, editIndex = null) {
+            if (!window.currentData || !window.currentData.jobs) {
+                console.error('Data not loaded');
+                return;
+            }
+
+            const name = document.getElementById(`connName-${jobId}`).value.trim();
+            if (!name) {
+                alert('Please enter a connection name');
+                return;
+            }
+
+            const connection = {
+                name: name,
+                role: document.getElementById(`connRole-${jobId}`).value.trim() || '',
+                linkedIn: document.getElementById(`connLinkedIn-${jobId}`).value.trim() || '',
+                notes: document.getElementById(`connNotes-${jobId}`).value.trim() || '',
+                isPrimary: document.getElementById(`connPrimary-${jobId}`).checked,
+                reachedOut: document.getElementById(`connReachedOut-${jobId}`).checked
+            };
+
+            const data = window.currentData;
+            const job = data.jobs.find(j => j.id === jobId);
+            if (!job) return;
+
+            // Initialize connections array if needed
+            if (!job.connections) {
+                job.connections = [];
+            }
+
+            // If marking as primary, unmark any existing primary
+            if (connection.isPrimary) {
+                job.connections.forEach(c => c.isPrimary = false);
+            }
+
+            if (editIndex !== null && editIndex >= 0) {
+                // Editing existing connection
+                job.connections[editIndex] = connection;
+            } else {
+                // Adding new connection
+                job.connections.push(connection);
+            }
+
+            // Add update to history
+            if (!job.updates) job.updates = [];
+            job.updates.push({
+                timestamp: new Date().toISOString(),
+                type: editIndex !== null ? 'Connection Updated' : 'Connection Added',
+                notes: `${connection.name}${connection.role ? ' (' + connection.role + ')' : ''}${connection.isPrimary ? ' - Primary Referral' : ''}`
+            });
+
+            await saveData(data);
+            await loadData();
+            showJobDetail(jobId); // Refresh the modal
+        }
+
+        function editConnection(jobId, index) {
+            if (!window.currentData || !window.currentData.jobs) return;
+
+            const job = window.currentData.jobs.find(j => j.id === jobId);
+            if (!job || !job.connections || !job.connections[index]) return;
+
+            const conn = job.connections[index];
+
+            // Show the form and populate with existing values
+            const form = document.getElementById(`addConnectionForm-${jobId}`);
+            if (form) {
+                form.style.display = 'block';
+                document.getElementById(`connName-${jobId}`).value = conn.name || '';
+                document.getElementById(`connRole-${jobId}`).value = conn.role || '';
+                document.getElementById(`connLinkedIn-${jobId}`).value = conn.linkedIn || '';
+                document.getElementById(`connNotes-${jobId}`).value = conn.notes || '';
+                document.getElementById(`connPrimary-${jobId}`).checked = conn.isPrimary || false;
+                document.getElementById(`connReachedOut-${jobId}`).checked = conn.reachedOut || false;
+
+                // Change save button to update
+                const saveBtn = form.querySelector('button[onclick^="saveConnection"]');
+                if (saveBtn) {
+                    saveBtn.textContent = 'Update Connection';
+                    saveBtn.onclick = () => saveConnection(jobId, index);
+                }
+            }
+        }
+
+        async function deleteConnection(jobId, index) {
+            if (!window.currentData || !window.currentData.jobs) return;
+
+            const job = window.currentData.jobs.find(j => j.id === jobId);
+            if (!job || !job.connections || !job.connections[index]) return;
+
+            const conn = job.connections[index];
+            if (!confirm(`Remove ${conn.name} from connections?`)) return;
+
+            // Add update to history
+            if (!job.updates) job.updates = [];
+            job.updates.push({
+                timestamp: new Date().toISOString(),
+                type: 'Connection Removed',
+                notes: `${conn.name}${conn.role ? ' (' + conn.role + ')' : ''}`
+            });
+
+            job.connections.splice(index, 1);
+
+            await saveData(window.currentData);
+            await loadData();
+            showJobDetail(jobId); // Refresh the modal
+        }
+
+        async function setPrimaryReferral(jobId, index) {
+            if (!window.currentData || !window.currentData.jobs) return;
+
+            const job = window.currentData.jobs.find(j => j.id === jobId);
+            if (!job || !job.connections) return;
+
+            // Unmark all, then mark the selected one
+            job.connections.forEach((c, i) => {
+                c.isPrimary = (i === index);
+            });
+
+            await saveData(window.currentData);
+            await loadData();
+            showJobDetail(jobId);
+        }
+
         function viewPDF(jobId) {
             alert('PDF viewer coming soon! This will open the saved job description PDF.');
         }
@@ -3829,6 +5228,33 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                         Fit Score: ${job.fitScore}/100
                     </span>
                 </div>
+
+                <!-- FIT SCORE BREAKDOWN -->
+                <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #bae6fd;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="margin: 0; color: #0369a1;">📊 Fit Score Breakdown</h4>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="submitScoreFeedback(${job.id}, 'up')"
+                                class="feedback-btn ${job.scoreFeedback === 'up' ? 'feedback-active-up' : ''}"
+                                style="padding: 6px 12px; border: 2px solid #22c55e; background: ${job.scoreFeedback === 'up' ? '#22c55e' : 'white'}; color: ${job.scoreFeedback === 'up' ? 'white' : '#22c55e'}; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;"
+                                title="Score should be higher - this job is a better fit than shown">
+                                👆 Too Low
+                            </button>
+                            <button onclick="submitScoreFeedback(${job.id}, 'down')"
+                                class="feedback-btn ${job.scoreFeedback === 'down' ? 'feedback-active-down' : ''}"
+                                style="padding: 6px 12px; border: 2px solid #ef4444; background: ${job.scoreFeedback === 'down' ? '#ef4444' : 'white'}; color: ${job.scoreFeedback === 'down' ? 'white' : '#ef4444'}; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;"
+                                title="Score should be lower - this job is not as good a fit">
+                                👇 Too High
+                            </button>
+                        </div>
+                    </div>
+                    ${getFitBreakdownHTML(job)}
+                    ${job.scoreFeedbackNote ? `
+                        <div style="margin-top: 10px; padding: 8px 12px; background: ${job.scoreFeedback === 'up' ? '#dcfce7' : '#fef3c7'}; border-radius: 6px; font-size: 13px; border-left: 3px solid ${job.scoreFeedback === 'up' ? '#22c55e' : '#f59e0b'};">
+                            <strong>${job.scoreFeedback === 'up' ? '👆 Score too low:' : '👇 Score too high:'}</strong> ${escapeHtml(job.scoreFeedbackNote)}
+                        </div>
+                    ` : ''}
+                </div>
                 
                 <div class="job-detail">
                     <p><strong>Industry:</strong> ${job.industry}</p>
@@ -3842,24 +5268,99 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                     <p><strong>Symbols:</strong> ${job.symbols.join(' ') || 'None'}</p>
                 </div>
                 
-                ${job.connections && job.connections.length > 0 ? `
-                <div style="margin-top: 20px;">
-                    <h4>🔗 Connections at ${job.company}:</h4>
-                    ${job.connections.map(conn => `
-                        <div style="padding: 10px; background: #f7f9fc; border-radius: 6px; margin: 5px 0;">
-                            <strong>${conn.name}</strong> - ${conn.role}
-                            <br>
-                            <span style="font-size: 12px; color: #6c757d;">
-                                ${conn.reachedOut ? '✅ Reached out' : '⏳ Not contacted yet'}
-                            </span>
-                            <button class="btn-primary" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;" 
-                                onclick="toggleReachOut(${job.id}, '${conn.name}'); showJobDetail(${job.id});">
-                                ${conn.reachedOut ? 'Mark as Not Contacted' : 'Mark as Reached Out'}
+                <!-- CONNECTIONS SECTION -->
+                <div style="margin-top: 20px; background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="margin: 0; color: #166534;">🔗 Connections at ${job.company}</h4>
+                        <button onclick="showAddConnectionForm(${job.id})"
+                            style="padding: 6px 12px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                            + Add Connection
+                        </button>
+                    </div>
+
+                    <!-- Add Connection Form (hidden by default) -->
+                    <div id="addConnectionForm-${job.id}" style="display: none; background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 1px solid #d1d5db;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <div>
+                                <label style="display: block; font-size: 11px; color: #6b7280; margin-bottom: 2px;">Name *</label>
+                                <input type="text" id="connName-${job.id}" placeholder="Jane Smith"
+                                    style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 11px; color: #6b7280; margin-bottom: 2px;">Role/Title</label>
+                                <input type="text" id="connRole-${job.id}" placeholder="VP of Design"
+                                    style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; font-size: 11px; color: #6b7280; margin-bottom: 2px;">LinkedIn URL</label>
+                            <input type="text" id="connLinkedIn-${job.id}" placeholder="https://linkedin.com/in/janesmith"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; font-size: 11px; color: #6b7280; margin-bottom: 2px;">Notes (how you know them, context)</label>
+                            <input type="text" id="connNotes-${job.id}" placeholder="Former colleague at PIH, strong reference"
+                                style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                                <input type="checkbox" id="connPrimary-${job.id}">
+                                <span style="color: #f59e0b;">⭐ Primary Referral</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                                <input type="checkbox" id="connReachedOut-${job.id}">
+                                <span>Already reached out</span>
+                            </label>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="saveConnection(${job.id})"
+                                style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                                Save Connection
+                            </button>
+                            <button onclick="hideAddConnectionForm(${job.id})"
+                                style="padding: 8px 16px; background: white; color: #6b7280; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                                Cancel
                             </button>
                         </div>
-                    `).join('')}
+                    </div>
+
+                    <!-- Connections List -->
+                    <div id="connectionsList-${job.id}">
+                        ${job.connections && job.connections.length > 0 ? job.connections.map((conn, idx) => `
+                            <div style="padding: 12px; background: white; border-radius: 6px; margin-bottom: 8px; border: 1px solid ${conn.isPrimary ? '#fbbf24' : '#e5e7eb'}; ${conn.isPrimary ? 'border-width: 2px;' : ''}">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                            <strong style="font-size: 14px;">${escapeHtml(conn.name)}</strong>
+                                            ${conn.isPrimary ? '<span style="background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 600;">⭐ PRIMARY REFERRAL</span>' : ''}
+                                            ${conn.reachedOut ? '<span style="background: #d1fae5; color: #065f46; padding: 2px 6px; border-radius: 3px; font-size: 10px;">✓ Contacted</span>' : '<span style="background: #fef9c3; color: #854d0e; padding: 2px 6px; border-radius: 3px; font-size: 10px;">⏳ Not contacted</span>'}
+                                        </div>
+                                        ${conn.role ? `<div style="color: #6b7280; font-size: 13px; margin-top: 3px;">${escapeHtml(conn.role)}</div>` : ''}
+                                        ${conn.linkedIn ? `<div style="margin-top: 3px;"><a href="${escapeHtml(conn.linkedIn)}" target="_blank" style="color: #0077b5; font-size: 12px; text-decoration: none;">🔗 LinkedIn Profile</a></div>` : ''}
+                                        ${conn.notes ? `<div style="color: #9ca3af; font-size: 12px; margin-top: 5px; font-style: italic;">"${escapeHtml(conn.notes)}"</div>` : ''}
+                                    </div>
+                                    <div style="display: flex; gap: 5px; flex-shrink: 0;">
+                                        <button onclick="toggleReachOut(${job.id}, '${escapeHtml(conn.name)}'); showJobDetail(${job.id});"
+                                            title="${conn.reachedOut ? 'Mark as not contacted' : 'Mark as contacted'}"
+                                            style="padding: 4px 8px; background: ${conn.reachedOut ? '#fee2e2' : '#d1fae5'}; color: ${conn.reachedOut ? '#991b1b' : '#065f46'}; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
+                                            ${conn.reachedOut ? '↩ Undo' : '✓ Reached Out'}
+                                        </button>
+                                        <button onclick="editConnection(${job.id}, ${idx})"
+                                            title="Edit connection"
+                                            style="padding: 4px 8px; background: #e0e7ff; color: #3730a3; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
+                                            ✏️
+                                        </button>
+                                        <button onclick="deleteConnection(${job.id}, ${idx})"
+                                            title="Remove connection"
+                                            style="padding: 4px 8px; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('') : '<p style="color: #6b7280; font-size: 13px; margin: 0; text-align: center; padding: 10px;">No connections yet. Add someone who can help!</p>'}
+                    </div>
                 </div>
-                ` : '<p style="margin-top: 20px; color: #6c757d;"><em>No known connections at this company yet</em></p>'}
                 
                 <div style="margin-top: 20px;">
                     <h4>Notes:</h4>
@@ -3937,43 +5438,131 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             const container = document.getElementById(`jobDocsContainer-${jobId}`);
             if (!container) return;
 
+            const typeLabels = {
+                resume: '📄',
+                cover_letter: '✉️',
+                job_description: '📋',
+                research: '🔍',
+                general: '📎'
+            };
+
             try {
-                const { documents, fileRefs } = await DocStore.getDocumentsForJob(jobId);
-                const allDocs = [
-                    ...documents.map(d => ({ ...d, source: 'uploaded' })),
-                    ...fileRefs.map(r => ({ ...r, source: 'reference' }))
-                ];
+                // Get job data to check for linked documents
+                const job = window.currentData?.jobs?.find(j => j.id === jobId);
+                let allDocs = [];
+
+                // First, get uploaded documents from DocStore
+                try {
+                    const { documents, fileRefs } = await DocStore.getDocumentsForJob(jobId);
+                    allDocs = [
+                        ...documents.map(d => ({ ...d, source: 'uploaded' })),
+                        ...fileRefs.map(r => ({ ...r, source: 'reference' }))
+                    ];
+                } catch (e) {
+                    // DocStore might not be available
+                }
+
+                // Add server-linked documents if available
+                if (job && job.documents && Array.isArray(job.documents)) {
+                    job.documents.forEach(doc => {
+                        // Avoid duplicates
+                        if (!allDocs.find(d => d.name === doc.filename || d.filename === doc.filename)) {
+                            allDocs.push({
+                                name: doc.filename,
+                                filename: doc.filename,
+                                type: doc.type,
+                                source: 'server',
+                                linkedAt: doc.linkedAt
+                            });
+                        }
+                    });
+                }
 
                 if (allDocs.length === 0) {
+                    // Check if server has matching documents for this company
+                    if (isLocalServer() && job) {
+                        try {
+                            const response = await fetch(`/api/documents/company/${encodeURIComponent(job.company)}`);
+                            const { documents: serverDocs } = await response.json();
+                            if (serverDocs && serverDocs.length > 0) {
+                                container.innerHTML = `
+                                    <p style="color: #6c757d; font-size: 13px; margin: 0 0 10px 0;">No documents linked yet.</p>
+                                    <div style="background: #fef3c7; padding: 10px; border-radius: 6px; font-size: 12px;">
+                                        <strong>Found ${serverDocs.length} PDF(s) for ${escapeHtml(job.company)}:</strong>
+                                        <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px;">
+                                            ${serverDocs.slice(0, 4).map(doc => `
+                                                <button onclick="linkDocumentToJob(${jobId}, '${escapeHtml(doc.filename)}', '${doc.type}')"
+                                                    style="padding: 4px 8px; background: white; border: 1px solid #f59e0b; border-radius: 4px; cursor: pointer; font-size: 11px;">
+                                                    ${typeLabels[doc.type] || '📎'} Link: ${escapeHtml(doc.filename.substring(0, 30))}${doc.filename.length > 30 ? '...' : ''}
+                                                </button>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                `;
+                                return;
+                            }
+                        } catch (e) {
+                            // Server not available
+                        }
+                    }
+
                     container.innerHTML = '<p style="color: #6c757d; font-size: 13px; margin: 0;">No documents attached yet. Use the buttons above to add files.</p>';
                     return;
                 }
 
-                const typeLabels = {
-                    resume: '📄',
-                    cover_letter: '✉️',
-                    job_description: '📋',
-                    research: '🔍',
-                    general: '📎'
-                };
-
                 container.innerHTML = `
                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                        ${allDocs.map(doc => `
-                            <div style="display: flex; align-items: center; gap: 6px; background: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #e0e4e8; font-size: 12px;">
+                        ${allDocs.map(doc => {
+                            const docName = doc.name || doc.filename;
+                            const isServer = doc.source === 'server';
+                            return `
+                            <div style="display: flex; align-items: center; gap: 6px; background: white; padding: 6px 10px; border-radius: 4px; border: 1px solid ${isServer ? '#3b82f6' : '#e0e4e8'}; font-size: 12px;">
                                 <span>${typeLabels[doc.type] || '📎'}</span>
-                                <span style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(doc.name)}</span>
-                                ${doc.source === 'uploaded' ? `
+                                <span style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(docName)}">${escapeHtml(docName)}</span>
+                                ${isServer ? `
+                                    <a href="/documents/${encodeURIComponent(docName)}" target="_blank" style="color: #3b82f6; text-decoration: none;" title="View PDF">👁️</a>
+                                ` : doc.source === 'uploaded' ? `
                                     <button onclick="viewDocument(${doc.id})" style="background: none; border: none; cursor: pointer; color: #3b82f6;" title="View">👁️</button>
                                 ` : ''}
-                                <button onclick="deleteDocument(${doc.id}, '${doc.source}'); loadJobDocuments(${jobId});" style="background: none; border: none; cursor: pointer; color: #dc2626;" title="Remove">×</button>
                             </div>
-                        `).join('')}
+                        `;
+                        }).join('')}
                     </div>
                 `;
             } catch (err) {
                 console.error('Failed to load job documents:', err);
                 container.innerHTML = '<p style="color: #dc2626; font-size: 13px; margin: 0;">Error loading documents</p>';
+            }
+        }
+
+        // Link a document from server to a job
+        async function linkDocumentToJob(jobId, filename, type) {
+            if (!isLocalServer()) {
+                showToast('Linking requires local server', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/jobs/link-document', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jobId,
+                        document: { filename, type }
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Document linked!', 'success');
+                    // Refresh job data and modal
+                    await importFromMCP();
+                    loadJobDocuments(jobId);
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (err) {
+                showToast('Failed to link document: ' + err.message, 'error');
             }
         }
 
@@ -4167,6 +5756,13 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         function showCommandModal() {
             const modal = document.getElementById('commandModal');
             const textarea = document.getElementById('commandText');
+            const title = document.getElementById('commandModalTitle');
+
+            // Set title to indicate this is Search
+            if (title) {
+                title.textContent = '🔍 Search Prompt';
+            }
+
             textarea.value = SEARCH_COMMAND;
             modal.classList.add('active');
         }
@@ -4174,9 +5770,12 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         function copyFromModal() {
             const textarea = document.getElementById('commandText');
             textarea.select();
-            
+
+            // Copy whatever is in the textarea (could be search or deep research prompt)
+            const textToCopy = textarea.value;
+
             if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(SEARCH_COMMAND).then(() => {
+                navigator.clipboard.writeText(textToCopy).then(() => {
                     alert('✅ Copied to clipboard! Paste into Claude.');
                     closeCommandModal();
                 }).catch(() => {
@@ -4547,9 +6146,584 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             alert('✅ Filter settings saved!');
         }
 
+        // =====================================================
+        // ANALYTICS FUNCTIONS
+        // =====================================================
+
+        async function loadAnalytics() {
+            const container = document.getElementById('analyticsContainer');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #6c757d;">
+                    <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
+                    Loading analytics...
+                </div>
+            `;
+
+            try {
+                // Try to fetch from server if available
+                if (isLocalServer()) {
+                    const [summary, funnel, sources, fitAccuracy] = await Promise.all([
+                        fetch('/api/analytics').then(r => r.json()),
+                        fetch('/api/analytics/funnel').then(r => r.json()),
+                        fetch('/api/analytics/sources').then(r => r.json()),
+                        fetch('/api/analytics/fit-accuracy').then(r => r.json())
+                    ]);
+                    renderAnalytics(summary, funnel, sources, fitAccuracy);
+                } else {
+                    // Calculate from local data
+                    const data = await initStorage();
+                    const localAnalytics = calculateLocalAnalytics(data.jobs);
+                    renderLocalAnalytics(localAnalytics);
+                }
+            } catch (e) {
+                console.error('Analytics load error:', e);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <h3>Could Not Load Analytics</h3>
+                        <p>Start the local server with <code>npm start</code> for full analytics, or check console for errors.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function refreshAnalytics() {
+            loadAnalytics();
+        }
+
+        function renderAnalytics(summary, funnel, sources, fitAccuracy) {
+            const container = document.getElementById('analyticsContainer');
+
+            container.innerHTML = `
+                <!-- Summary Cards -->
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>📊 Pipeline Overview</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
+                            <div>
+                                <div class="analytics-big-number">${summary.summary.totalJobs}</div>
+                                <div class="analytics-big-label">Total Jobs Tracked</div>
+                            </div>
+                            <div>
+                                <div class="analytics-big-number">${summary.summary.activeJobs}</div>
+                                <div class="analytics-big-label">Active Jobs</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>📈 Application Metrics</h3>
+                        <div class="analytics-metric">
+                            <span class="analytics-metric-label">Total Applied</span>
+                            <span class="analytics-metric-value">${summary.summary.totalApplied}</span>
+                        </div>
+                        <div class="analytics-metric">
+                            <span class="analytics-metric-label">Response Rate</span>
+                            <span class="analytics-metric-value">${summary.summary.responseRate}%</span>
+                        </div>
+                        <div class="analytics-metric">
+                            <span class="analytics-metric-label">Interview Rate</span>
+                            <span class="analytics-metric-value">${summary.summary.interviewRate}%</span>
+                        </div>
+                        <div class="analytics-metric">
+                            <span class="analytics-metric-label">Avg Days to Apply</span>
+                            <span class="analytics-metric-value">${summary.summary.avgDaysToApply}</span>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>🎯 Recent Activity (30 Days)</h3>
+                        <div class="analytics-metric">
+                            <span class="analytics-metric-label">Jobs Added</span>
+                            <span class="analytics-metric-value">${summary.recentActivity.addedLast30Days}</span>
+                        </div>
+                        <div class="analytics-metric">
+                            <span class="analytics-metric-label">Applications Sent</span>
+                            <span class="analytics-metric-value">${summary.recentActivity.appliedLast30Days}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Funnel Visualization -->
+                <div class="analytics-grid">
+                    <div class="analytics-card" style="grid-column: span 2;">
+                        <h3>🔄 Application Funnel</h3>
+                        <div class="analytics-funnel">
+                            ${renderFunnelStage('Discovered', funnel.funnel.discovered, funnel.funnel.discovered)}
+                            ${renderFunnelStage('Considering', funnel.funnel.considering, funnel.funnel.discovered)}
+                            ${renderFunnelStage('Applied', funnel.funnel.applied, funnel.funnel.discovered)}
+                            ${renderFunnelStage('Responded', funnel.funnel.responded, funnel.funnel.discovered)}
+                            ${renderFunnelStage('Interviewed', funnel.funnel.interviewed, funnel.funnel.discovered)}
+                            ${renderFunnelStage('Offered', funnel.funnel.offered, funnel.funnel.discovered)}
+                        </div>
+                        <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; font-size: 12px; color: #6c757d;">
+                            <div>Considering → Applied: <strong>${funnel.conversionRates.consideringToApplied}</strong></div>
+                            <div>Applied → Responded: <strong>${funnel.conversionRates.appliedToResponded}</strong></div>
+                            <div>Interviewed → Offered: <strong>${funnel.conversionRates.interviewedToOffered}</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Source Effectiveness -->
+                <div class="analytics-grid">
+                    <div class="analytics-card" style="grid-column: span 2;">
+                        <h3>📍 Source Effectiveness</h3>
+                        <div class="source-row header">
+                            <div>Source</div>
+                            <div>Jobs Found</div>
+                            <div>Applied</div>
+                            <div>Interviews</div>
+                            <div>Score</div>
+                        </div>
+                        ${Object.entries(sources.bySource).map(([source, data]) => `
+                            <div class="source-row">
+                                <div style="font-weight: 500;">${source}</div>
+                                <div class="source-bar-container">
+                                    <div class="source-bar" style="width: ${(data.totalJobs / Math.max(...Object.values(sources.bySource).map(s => s.totalJobs))) * 100}%"></div>
+                                </div>
+                                <div>${data.applied}</div>
+                                <div>${data.interviewed}</div>
+                                <div style="color: #667eea; font-weight: 600;">${data.effectiveness}</div>
+                            </div>
+                        `).join('')}
+                        ${sources.recommendations.length > 0 ? `
+                            <div style="margin-top: 20px;">
+                                ${sources.recommendations.map(r => `
+                                    <div class="analytics-insight ${r.type}">
+                                        ${r.message}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Fit Score Accuracy -->
+                <div class="analytics-grid">
+                    <div class="analytics-card" style="grid-column: span 2;">
+                        <h3>🎯 Fit Score Accuracy</h3>
+                        <p style="font-size: 13px; color: #6c757d; margin-bottom: 15px;">
+                            How well do fit scores predict interview success?
+                        </p>
+                        <table class="fit-accuracy-table">
+                            <thead>
+                                <tr>
+                                    <th>Fit Range</th>
+                                    <th>Jobs</th>
+                                    <th>Applied</th>
+                                    <th>Interviewed</th>
+                                    <th>Interview Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.entries(fitAccuracy.byFitRange).map(([range, data]) => `
+                                    <tr>
+                                        <td style="font-weight: 500;">${range}</td>
+                                        <td>${data.totalJobs}</td>
+                                        <td>${data.applied}</td>
+                                        <td>${data.interviewed}</td>
+                                        <td style="color: ${parseFloat(data.interviewRate) > 20 ? '#22c55e' : '#6c757d'}; font-weight: 600;">
+                                            ${data.interviewRate}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        ${fitAccuracy.insights.length > 0 ? `
+                            <div style="margin-top: 20px;">
+                                ${fitAccuracy.insights.map(i => `
+                                    <div class="analytics-insight ${i.type}">
+                                        ${i.message}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Status Breakdown -->
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>📋 Status Breakdown</h3>
+                        ${Object.entries(summary.statusBreakdown).map(([status, count]) => `
+                            <div class="analytics-metric">
+                                <span class="analytics-metric-label">${formatStatus(status)}</span>
+                                <span class="analytics-metric-value">${count}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>🏢 Industry Breakdown</h3>
+                        ${Object.entries(summary.industryBreakdown)
+                            .sort(([,a], [,b]) => b - a)
+                            .slice(0, 8)
+                            .map(([industry, count]) => `
+                            <div class="analytics-metric">
+                                <span class="analytics-metric-label">${industry}</span>
+                                <span class="analytics-metric-value">${count}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>📊 Fit Score Distribution</h3>
+                        ${Object.entries(summary.fitScoreDistribution).map(([range, count]) => `
+                            <div class="analytics-metric">
+                                <span class="analytics-metric-label">${range}</span>
+                                <span class="analytics-metric-value">${count}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: #9ca3af; font-size: 12px; margin-top: 20px;">
+                    Analytics generated at ${new Date(summary.generatedAt).toLocaleString()}
+                </div>
+            `;
+        }
+
+        function renderFunnelStage(label, count, maxCount) {
+            const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
+            return `
+                <div class="funnel-stage">
+                    <div class="funnel-label">${label}</div>
+                    <div class="funnel-bar" style="width: ${Math.max(percentage, 2)}%; min-width: 20px;"></div>
+                    <div class="funnel-count">${count}</div>
+                </div>
+            `;
+        }
+
+        function formatStatus(status) {
+            const statusMap = {
+                'apply-now': '🟢 Apply Now',
+                'maybe': '🟡 Maybe',
+                'probably-not': '🔴 Probably Not',
+                'applied': '📤 Applied',
+                'archived': '📁 Archived'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Calculate analytics from local data (fallback when server not running)
+        function calculateLocalAnalytics(jobs) {
+            const statusCounts = {};
+            const industryCounts = {};
+            let totalApplied = 0;
+
+            for (const job of jobs) {
+                statusCounts[job.status] = (statusCounts[job.status] || 0) + 1;
+                industryCounts[job.industry || 'Unknown'] = (industryCounts[job.industry || 'Unknown'] || 0) + 1;
+                if (job.status === 'applied' || job.appliedDate) totalApplied++;
+            }
+
+            return {
+                totalJobs: jobs.length,
+                activeJobs: jobs.filter(j => j.status !== 'archived').length,
+                totalApplied,
+                statusCounts,
+                industryCounts
+            };
+        }
+
+        function renderLocalAnalytics(analytics) {
+            const container = document.getElementById('analyticsContainer');
+
+            container.innerHTML = `
+                <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #92400e;">
+                    ⚠️ Showing basic analytics. Start the local server (<code>npm start</code>) for full analytics including funnel, source effectiveness, and fit score accuracy.
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>📊 Pipeline Overview</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
+                            <div>
+                                <div class="analytics-big-number">${analytics.totalJobs}</div>
+                                <div class="analytics-big-label">Total Jobs</div>
+                            </div>
+                            <div>
+                                <div class="analytics-big-number">${analytics.activeJobs}</div>
+                                <div class="analytics-big-label">Active Jobs</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>📋 Status Breakdown</h3>
+                        ${Object.entries(analytics.statusCounts).map(([status, count]) => `
+                            <div class="analytics-metric">
+                                <span class="analytics-metric-label">${formatStatus(status)}</span>
+                                <span class="analytics-metric-value">${count}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>🏢 Industry Breakdown</h3>
+                        ${Object.entries(analytics.industryCounts)
+                            .sort(([,a], [,b]) => b - a)
+                            .map(([industry, count]) => `
+                            <div class="analytics-metric">
+                                <span class="analytics-metric-label">${industry}</span>
+                                <span class="analytics-metric-value">${count}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
         function resetFilters() {
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
             alert('🔄 Filters reset to defaults');
+        }
+
+        // =====================================================
+        // INSIGHTS / LEARNING FUNCTIONS
+        // =====================================================
+
+        async function loadInsights() {
+            const container = document.getElementById('insightsContainer');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #6c757d;">
+                    <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
+                    Analyzing your job search patterns...
+                </div>
+            `;
+
+            try {
+                if (!isLocalServer()) {
+                    container.innerHTML = `
+                        <div style="background: #fef3c7; padding: 20px; border-radius: 8px; color: #92400e;">
+                            ⚠️ Start the local server (<code>npm start</code>) to enable learning insights.
+                        </div>
+                    `;
+                    return;
+                }
+
+                const [learningData, suggestionsData] = await Promise.all([
+                    fetch('/api/learning').then(r => r.json()),
+                    fetch('/api/learning/suggestions').then(r => r.json())
+                ]);
+
+                renderInsights(suggestionsData.suggestions, learningData);
+            } catch (e) {
+                console.error('Insights load error:', e);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <h3>Could Not Load Insights</h3>
+                        <p>Check that the server is running and try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function refreshInsights() {
+            loadInsights();
+        }
+
+        function renderInsights(suggestions, learningData) {
+            const container = document.getElementById('insightsContainer');
+
+            const suggestionsHTML = suggestions.length > 0
+                ? suggestions.map(s => renderSuggestionCard(s)).join('')
+                : `
+                    <div style="background: #d1fae5; padding: 20px; border-radius: 12px; margin-bottom: 20px; color: #065f46;">
+                        <strong>✨ No suggestions right now!</strong>
+                        <p style="margin-top: 8px; font-size: 14px;">
+                            The system is learning from your job search. Keep tracking applications
+                            and outcomes to generate insights.
+                        </p>
+                    </div>
+                `;
+
+            const evolutionHTML = learningData.evolutionHistory?.length > 0
+                ? `
+                    <div class="analytics-card" style="margin-top: 30px;">
+                        <h3>📜 Evolution History</h3>
+                        <p style="color: #6c757d; font-size: 13px; margin-bottom: 15px;">
+                            How the system has evolved based on your decisions
+                        </p>
+                        <div class="evolution-timeline">
+                            ${learningData.evolutionHistory.slice(-10).reverse().map(e => `
+                                <div class="evolution-item ${e.action.includes('Rejected') ? 'rejected' : ''}">
+                                    <div class="evolution-date">${new Date(e.date).toLocaleDateString()}</div>
+                                    <div class="evolution-action">${e.action}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `
+                : '';
+
+            const preferencesHTML = `
+                <div class="preferences-section">
+                    <h3>⚙️ Current Preferences</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div>
+                            <strong style="font-size: 12px; color: #6c757d;">Fit Score Weights</strong>
+                            ${Object.entries(learningData.preferences.fitScoreWeights || {}).map(([k, v]) => `
+                                <div class="preference-item">
+                                    <span>${formatPreferenceKey(k)}</span>
+                                    <span style="font-weight: 600; color: #667eea;">${v}%</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div>
+                            <strong style="font-size: 12px; color: #6c757d;">Source Tiers</strong>
+                            ${Object.entries(learningData.preferences.sourceTiers || {}).map(([tier, sources]) => `
+                                <div class="preference-item">
+                                    <span>${tier.replace('tier', 'Tier ')}</span>
+                                    <span style="color: #6c757d; font-size: 12px;">${(sources || []).join(', ') || 'None'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div>
+                            <strong style="font-size: 12px; color: #6c757d;">Thresholds</strong>
+                            ${Object.entries(learningData.preferences.thresholds || {}).map(([k, v]) => `
+                                <div class="preference-item">
+                                    <span>${formatPreferenceKey(k)}</span>
+                                    <span style="font-weight: 600;">${v}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; color: #374151; margin-bottom: 15px;">
+                        💡 Suggestions (${suggestions.length})
+                    </h3>
+                    ${suggestionsHTML}
+                </div>
+                ${evolutionHTML}
+                ${preferencesHTML}
+            `;
+        }
+
+        function renderSuggestionCard(suggestion) {
+            const typeLabels = {
+                'fit_weight_adjustment': 'Fit Score Calibration',
+                'source_tier_change': 'Source Effectiveness',
+                'timing_optimization': 'Application Timing',
+                'industry_focus': 'Industry Focus',
+                'threshold_adjustment': 'Threshold Change'
+            };
+
+            const evidenceTableHTML = suggestion.evidence?.dataPoints?.length > 0
+                ? `
+                    <table class="suggestion-evidence-table">
+                        <thead>
+                            <tr>
+                                ${Object.keys(suggestion.evidence.dataPoints[0]).map(k => `<th>${formatPreferenceKey(k)}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${suggestion.evidence.dataPoints.map(dp => `
+                                <tr>
+                                    ${Object.values(dp).map(v => `<td>${v}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `
+                : '';
+
+            return `
+                <div class="suggestion-card priority-${suggestion.priority}">
+                    <div class="suggestion-header">
+                        <span class="suggestion-type">${typeLabels[suggestion.type] || suggestion.type}</span>
+                        <span class="suggestion-priority ${suggestion.priority}">${suggestion.priority} priority</span>
+                    </div>
+                    <div class="suggestion-message">${suggestion.message}</div>
+                    <div class="suggestion-evidence">
+                        <div class="suggestion-evidence-title">
+                            Evidence (${suggestion.evidence?.sampleSize || 0} data points,
+                            ${((suggestion.evidence?.confidence || 0) * 100).toFixed(0)}% confidence)
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <span style="font-size: 12px; color: #6c757d;">Confidence:</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${(suggestion.evidence?.confidence || 0) * 100}%"></div>
+                            </div>
+                        </div>
+                        ${evidenceTableHTML}
+                    </div>
+                    <div class="suggestion-actions">
+                        <button class="btn-approve" onclick="applySuggestion(${suggestion.id})">
+                            ✓ Apply
+                        </button>
+                        <button class="btn-reject" onclick="rejectSuggestion(${suggestion.id})">
+                            ✗ Reject
+                        </button>
+                        <button class="btn-defer" onclick="deferSuggestion(${suggestion.id})">
+                            ⏸ Later
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function applySuggestion(suggestionId) {
+            const rationale = prompt('Why are you approving this? (optional)');
+
+            try {
+                const response = await fetch('/api/learning/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ suggestionId, rationale: rationale || 'User approved' })
+                });
+
+                if (response.ok) {
+                    showToast('✅ Suggestion applied!', 'success');
+                    loadInsights();
+                } else {
+                    const err = await response.json();
+                    showToast('Failed: ' + (err.error || 'Unknown error'), 'error');
+                }
+            } catch (e) {
+                showToast('Error applying suggestion', 'error');
+            }
+        }
+
+        async function rejectSuggestion(suggestionId) {
+            const rationale = prompt('Why are you rejecting this? (helps the system learn)');
+            if (rationale === null) return; // User cancelled
+
+            try {
+                const response = await fetch('/api/learning/reject', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ suggestionId, rationale: rationale || 'User rejected without reason' })
+                });
+
+                if (response.ok) {
+                    showToast('Suggestion rejected', 'info');
+                    loadInsights();
+                } else {
+                    const err = await response.json();
+                    showToast('Failed: ' + (err.error || 'Unknown error'), 'error');
+                }
+            } catch (e) {
+                showToast('Error rejecting suggestion', 'error');
+            }
+        }
+
+        function deferSuggestion(suggestionId) {
+            showToast('Suggestion deferred - will show again later', 'info');
+        }
+
+        function formatPreferenceKey(key) {
+            return key
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/^./, s => s.toUpperCase())
+                .replace('Fit Score', 'Fit')
+                .replace('Min ', 'Min. ')
+                .trim();
         }
 
         async function loadData() {
@@ -4662,6 +6836,20 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
             //     e.preventDefault();
             //     document.getElementById('searchInput')?.focus();
             // }
+        });
+
+        // Click outside modal to close
+        document.addEventListener('click', (e) => {
+            // Check if click is on a modal backdrop (the modal element itself, not its content)
+            if (e.target.classList.contains('modal') && e.target.classList.contains('active')) {
+                // Close the specific modal that was clicked
+                e.target.classList.remove('active');
+
+                // Reset any forms if needed
+                if (e.target.id === 'updateModal') {
+                    document.getElementById('updateForm')?.reset();
+                }
+            }
         });
 
         // Toast notification utility
@@ -5836,62 +8024,106 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
                 .subscribe();
         }
 
-        // Load inbox submissions
+        // Load inbox submissions (from local server AND Supabase)
         async function loadInbox(retryCount = 0) {
-            if (!supabaseClient) {
-                console.log('loadInbox: supabaseClient not ready, retry:', retryCount);
-                // Show loading state
-                const pendingList = document.getElementById('pendingList');
-                if (pendingList && retryCount === 0) {
-                    pendingList.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">⏳ Connecting to database...</p>';
+            const pendingList = document.getElementById('pendingList');
+            let allPending = [];
+            let localInboxJobs = [];
+
+            // FIRST: Try to load local inbox jobs from server API
+            if (isLocalServer()) {
+                try {
+                    console.log('loadInbox: Fetching local inbox jobs from server...');
+                    const response = await fetch('/api/jobs');
+                    if (response.ok) {
+                        const serverData = await response.json();
+                        // Filter for jobs with status "inbox"
+                        localInboxJobs = (serverData.jobs || [])
+                            .filter(job => job.status === 'inbox')
+                            .map(job => ({
+                                // Convert to submission format for rendering
+                                id: `local-${job.id}`,
+                                title: job.title,
+                                company: job.company,
+                                location: job.location,
+                                salary: job.salary,
+                                url: job.url,
+                                fit_score: job.fitScore,
+                                notes: job.notes,
+                                submitted_by: 'Browser Extension',
+                                created_at: job.found || new Date().toISOString(),
+                                status: 'pending',
+                                _isLocal: true,  // Flag to identify local jobs
+                                _localId: job.id  // Original job ID for updates
+                            }));
+                        console.log('loadInbox: Found', localInboxJobs.length, 'local inbox jobs');
+                    }
+                } catch (err) {
+                    console.warn('loadInbox: Could not fetch local inbox:', err.message);
                 }
-                // Retry up to 5 times (2.5 seconds total)
-                if (retryCount < 5) {
-                    setTimeout(() => loadInbox(retryCount + 1), 500);
-                } else {
-                    // Show error after retries exhausted
-                    if (pendingList) {
-                        pendingList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">❌ Could not connect to database. <button onclick="loadInbox(0)" style="color: #667eea; text-decoration: underline; background: none; border: none; cursor: pointer;">Retry</button></p>';
+            }
+
+            // SECOND: Try Supabase if available
+            if (supabaseClient) {
+                try {
+                    console.log('loadInbox: Fetching Supabase submissions...');
+                    const { data: pending, error } = await supabaseClient
+                        .from('job_submissions')
+                        .select('*')
+                        .eq('status', 'pending')
+                        .order('created_at', { ascending: false });
+
+                    if (!error && pending) {
+                        console.log('loadInbox: Found', pending.length, 'Supabase submissions');
+                        allPending = pending;
+                    }
+                } catch (err) {
+                    console.warn('loadInbox: Supabase error:', err.message);
+                }
+            }
+
+            // Combine local + Supabase submissions
+            const combinedPending = [...localInboxJobs, ...allPending];
+            console.log('loadInbox: Total pending:', combinedPending.length, '(local:', localInboxJobs.length, ', supabase:', allPending.length, ')');
+
+            // Render combined results
+            if (combinedPending.length > 0 || localInboxJobs.length > 0 || allPending.length > 0) {
+                renderPendingSubmissions(combinedPending);
+                updateInboxBadge(combinedPending.length);
+            } else if (!supabaseClient && localInboxJobs.length === 0) {
+                // No data sources available
+                if (pendingList) {
+                    if (isLocalServer()) {
+                        pendingList.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">📭 No jobs in inbox. Use the browser extension to capture jobs!</p>';
+                    } else {
+                        pendingList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">⚠️ Run on localhost:3000 to see extension-captured jobs, or connect Supabase for friend submissions.</p>';
                     }
                 }
-                return;
+                updateInboxBadge(0);
+            } else {
+                renderPendingSubmissions([]);
+                updateInboxBadge(0);
             }
 
-            try {
-                console.log('loadInbox: Fetching pending submissions...');
-                // Get pending submissions
-                const { data: pending, error } = await supabaseClient
-                    .from('job_submissions')
-                    .select('*')
-                    .eq('status', 'pending')
-                    .order('created_at', { ascending: false });
+            // Get recent activity from Supabase (if available)
+            if (supabaseClient) {
+                try {
+                    const { data: recent } = await supabaseClient
+                        .from('job_submissions')
+                        .select('*')
+                        .neq('status', 'pending')
+                        .order('reviewed_at', { ascending: false })
+                        .limit(10);
 
-                if (error) {
-                    console.error('loadInbox error:', error);
-                    throw error;
+                    console.log('loadInbox: Found', recent?.length || 0, 'recent activities');
+                    renderRecentActivity(recent || []);
+                } catch (err) {
+                    console.warn('loadInbox: Could not fetch recent activity:', err.message);
                 }
-
-                console.log('loadInbox: Found', pending?.length || 0, 'pending submissions:', pending);
-                renderPendingSubmissions(pending || []);
-                updateInboxBadge(pending?.length || 0);
-
-                // Get recent activity (last 10 reviewed)
-                const { data: recent } = await supabaseClient
-                    .from('job_submissions')
-                    .select('*')
-                    .neq('status', 'pending')
-                    .order('reviewed_at', { ascending: false })
-                    .limit(10);
-
-                console.log('loadInbox: Found', recent?.length || 0, 'recent activities');
-                renderRecentActivity(recent || []);
-
-                // Update the share link
-                updateShareLink();
-
-            } catch (err) {
-                console.error('Error loading inbox:', err);
             }
+
+            // Update the share link
+            updateShareLink();
         }
 
         function refreshInbox() {
@@ -6198,11 +8430,55 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         }
 
         async function acceptSubmission(id) {
-            if (!supabaseClient) return;
-
             try {
                 // Get the submission - check local cache first for edits
                 let sub = window.pendingSubmissions?.find(s => s.id === id);
+
+                // Handle LOCAL inbox jobs (from browser extension)
+                if (sub && sub._isLocal) {
+                    console.log('Accepting local inbox job:', sub._localId);
+
+                    // Update the job status from 'inbox' to appropriate status via server API
+                    const newStatus = sub.fit_score >= 75 ? 'apply-now' : 'maybe';
+                    const response = await fetch('/api/jobs');
+                    if (response.ok) {
+                        const serverData = await response.json();
+                        const job = serverData.jobs.find(j => j.id === sub._localId);
+                        if (job) {
+                            job.status = newStatus;
+                            job.notes = job.notes || '';
+                            if (!job.notes.includes('Accepted from inbox')) {
+                                job.notes = `✅ Accepted from inbox on ${new Date().toLocaleDateString()}\n\n${job.notes}`;
+                            }
+                            job.updates = job.updates || [];
+                            job.updates.unshift({
+                                date: new Date().toISOString(),
+                                text: `Accepted from inbox → ${newStatus}`
+                            });
+
+                            // Save back to server
+                            await fetch('/api/jobs', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(serverData)
+                            });
+
+                            // Reload data
+                            await loadData();
+                            loadInbox();
+                            showToast(`Added "${job.title}" to your tracker as "${newStatus}"!`);
+                            return;
+                        }
+                    }
+                    showToast('Failed to update job status', 'error');
+                    return;
+                }
+
+                // Handle SUPABASE submissions (from friends)
+                if (!supabaseClient) {
+                    showToast('Supabase not connected', 'error');
+                    return;
+                }
 
                 if (!sub) {
                     const { data, error: fetchError } = await supabaseClient
@@ -6274,9 +8550,49 @@ Today's date: ${new Date().toLocaleDateString('en-US', { timeZone: 'America/New_
         }
 
         async function rejectSubmission(id) {
-            if (!supabaseClient) return;
-
             try {
+                // Get the submission from cache
+                let sub = window.pendingSubmissions?.find(s => s.id === id);
+
+                // Handle LOCAL inbox jobs (from browser extension) - archive them
+                if (sub && sub._isLocal) {
+                    console.log('Rejecting/archiving local inbox job:', sub._localId);
+
+                    const response = await fetch('/api/jobs');
+                    if (response.ok) {
+                        const serverData = await response.json();
+                        const job = serverData.jobs.find(j => j.id === sub._localId);
+                        if (job) {
+                            job.status = 'archived';
+                            job.notes = job.notes || '';
+                            if (!job.notes.includes('Skipped from inbox')) {
+                                job.notes = `⏭️ Skipped from inbox on ${new Date().toLocaleDateString()}\n\n${job.notes}`;
+                            }
+                            job.updates = job.updates || [];
+                            job.updates.unshift({
+                                date: new Date().toISOString(),
+                                text: 'Skipped from inbox → archived'
+                            });
+
+                            // Save back to server
+                            await fetch('/api/jobs', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(serverData)
+                            });
+
+                            loadInbox();
+                            showToast('Job skipped and archived');
+                            return;
+                        }
+                    }
+                    showToast('Failed to skip job', 'error');
+                    return;
+                }
+
+                // Handle SUPABASE submissions
+                if (!supabaseClient) return;
+
                 await supabaseClient
                     .from('job_submissions')
                     .update({ status: 'rejected', reviewed_at: new Date().toISOString() })
