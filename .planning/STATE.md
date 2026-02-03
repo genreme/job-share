@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 10 of 10 (Analytics & Insights)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: Phase In Progress
-Last activity: 2026-02-03 - Completed 10-01-PLAN.md (Core Analytics Services)
+Last activity: 2026-02-03 - Completed 10-02-PLAN.md (Skill Gap & Criteria Recommender)
 
-Progress: [==========] 94% (33 of 35 plans)
+Progress: [==========] 97% (34 of 35 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 33
+- Total plans completed: 34
 - Average duration: 6 min
-- Total execution time: 214 min
+- Total execution time: 219 min
 
 **By Phase:**
 
@@ -36,10 +36,10 @@ Progress: [==========] 94% (33 of 35 plans)
 | 07-application-generation | 3 | 34 min | ~11 min |
 | 08-interview-preparation | 3 | 37 min | ~12 min |
 | 09-interview-learning | 3 | 32 min | ~11 min |
-| 10-analytics-insights | 1 | 7 min | ~7 min |
+| 10-analytics-insights | 2 | 12 min | ~6 min |
 
 **Recent Trend:**
-- Last 10 plans: 07-02 (10min), 07-03 (14min), 08-01 (9min), 08-02 (10min), 08-03 (18min), 09-01 (10min), 09-02 (12min), 09-03 (10min), 10-01 (7min)
+- Last 10 plans: 07-03 (14min), 08-01 (9min), 08-02 (10min), 08-03 (18min), 09-01 (10min), 09-02 (12min), 09-03 (10min), 10-01 (7min), 10-02 (5min)
 - Trend: Service-heavy plans with comprehensive tests (~10-12 min) vs tool wiring (~14-18 min)
 
 *Updated after each plan completion*
@@ -167,6 +167,14 @@ Recent decisions affecting current work:
 - [09-03]: proposeInterviewLearnings accepts array of learnings in single call
 - [09-03]: reviewInterviewLearning triggers confidence update on accept
 - [09-03]: getCaptureReminders checks all active jobs when no jobId provided
+- [10-01]: Confidence thresholds: very-low (<5), low (5-9), medium (10-29), high (30+)
+- [10-01]: Response rate breakdown dimensions: company size, industry, role type, job board
+- [10-01]: Time-to-response distribution with percentiles (p50, p75, p90)
+- [10-02]: Minimum 3 occurrences for skill gaps to filter noise
+- [10-02]: Priority levels: high (10+), medium (5-9), low (3-4) occurrences
+- [10-02]: Minimum 5 outcomes before generating criteria recommendations
+- [10-02]: Anomaly types: high-score-rejected vs low-score-accepted
+- [10-02]: Preview shows exact score changes before applying criteria updates
 
 ### Pending Todos
 
@@ -179,7 +187,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 10-01-PLAN.md (Core Analytics Services)
+Stopped at: Completed 10-02-PLAN.md (Skill Gap & Criteria Recommender)
 Resume file: None
 
 ## Phase 1 Completion Summary
