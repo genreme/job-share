@@ -153,6 +153,22 @@ import {
   getCaptureReminders
 } from './tools/interview-learning.js';
 
+// Phase 10: Analytics & Insights tools
+import {
+  getFunnelMetrics,
+  getResponseRates,
+  getTimeToResponse,
+  getTimeInStage,
+  getBottlenecks,
+  getSkillGaps,
+  getSkillGapRecommendations,
+  getCriteriaRecommendations,
+  previewCriteriaChange,
+  applyCriteriaChange,
+  getAnalyticsSnapshot,
+  saveAnalyticsSnapshot
+} from './tools/analytics.js';
+
 // Create server
 const server = new Server(
   {
@@ -1602,6 +1618,168 @@ const TOOLS = [
         jobId: { type: 'number', description: 'Check specific job (optional, omit to check all active jobs)' }
       }
     }
+  },
+
+  // === Analytics & Insights (Phase 10) ===
+
+  // Funnel Tools (ANLT-01)
+  {
+    name: 'get_funnel_metrics',
+    description: 'Get Sankey diagram data showing job flow through pipeline stages. Supports date presets (7d, 30d, 90d, all) or custom date range. ANLT-01.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        preset: { type: 'string', enum: ['7d', '30d', '90d', 'all'], description: 'Date preset filter' },
+        dateRange: {
+          type: 'object',
+          properties: {
+            start: { type: 'string', description: 'Start date (ISO format)' },
+            end: { type: 'string', description: 'End date (ISO format)' }
+          },
+          description: 'Custom date range (alternative to preset)'
+        }
+      }
+    }
+  },
+
+  // Response Rate Tools (ANLT-02)
+  {
+    name: 'get_response_rates',
+    description: 'Get response rates by dimension with confidence indicators. Shows rate percentage, sample size (n=X), and confidence level. ANLT-02.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        dimension: {
+          type: 'string',
+          enum: ['companySize', 'industry', 'applicationMethod', 'jobBoard', 'roleType'],
+          description: 'Dimension to analyze'
+        }
+      },
+      required: ['dimension']
+    }
+  },
+  {
+    name: 'get_time_to_response',
+    description: 'Get response time distribution from application to first response. Shows average days, percentiles, and display format. ANLT-02.',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
+  },
+
+  // Time-in-Stage Tools (ANLT-05)
+  {
+    name: 'get_time_in_stage',
+    description: 'Get time metrics per status (average days, median, percentiles). Omit status to get all stages. ANLT-05.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        status: { type: 'string', description: 'Specific status to analyze (optional, returns all if omitted)' }
+      }
+    }
+  },
+  {
+    name: 'get_bottlenecks',
+    description: 'Identify process bottlenecks exceeding threshold days. Returns stages with recommendations. ANLT-05.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        threshold: { type: 'number', description: 'Days threshold (default: 7)' }
+      }
+    }
+  },
+
+  // Skill Gap Tools (ANLT-03)
+  {
+    name: 'get_skill_gaps',
+    description: 'Get aggregated skill gaps from job descriptions. Shows skills requested but not in profile, with frequency and context. ANLT-03.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        minOccurrences: { type: 'number', description: 'Minimum occurrences to include (default: 3)' }
+      }
+    }
+  },
+  {
+    name: 'get_skill_gap_recommendations',
+    description: 'Get actionable recommendations for addressing skill gaps. Includes priority, rationale, and action type (learn/highlight/research). ANLT-03.',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
+  },
+
+  // Criteria Evolution Tools (ANLT-04)
+  {
+    name: 'get_criteria_recommendations',
+    description: 'Get fit criteria evolution suggestions based on outcome analysis. Correlates fit scores with job outcomes. ANLT-04.',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
+  },
+  {
+    name: 'preview_criteria_change',
+    description: 'Preview impact of a criteria change on existing job scores. Shows affected jobs and score deltas before applying. ANLT-04.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        change: {
+          type: 'object',
+          properties: {
+            type: { type: 'string', description: 'Change type (add_title, remove_title, add_industry, adjust_salary, adjust_weight)' },
+            criteria: { type: 'string', description: 'Criteria path (e.g., titles.exact, industries.acceptable)' },
+            newValue: { description: 'New value to set' },
+            currentValue: { description: 'Current value (for comparison)' },
+            removeValue: { type: 'string', description: 'Value to remove (for remove_* types)' },
+            percentChange: { type: 'number', description: 'Percent change (for adjust_weight type)' }
+          },
+          required: ['type', 'criteria']
+        }
+      },
+      required: ['change']
+    }
+  },
+  {
+    name: 'apply_criteria_change',
+    description: 'Apply recommended criteria change with audit trail. Requires reason for audit logging. ANLT-04.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        change: {
+          type: 'object',
+          properties: {
+            type: { type: 'string', description: 'Change type' },
+            criteria: { type: 'string', description: 'Criteria path' },
+            newValue: { description: 'New value to apply' },
+            currentValue: { description: 'Current value' }
+          },
+          required: ['type', 'criteria']
+        },
+        reason: { type: 'string', description: 'Human-readable reason for the change (required for audit trail)' }
+      },
+      required: ['change', 'reason']
+    }
+  },
+
+  // Snapshot Tools
+  {
+    name: 'get_analytics_snapshot',
+    description: 'Get current or historical analytics snapshot. Omit date for current metrics, provide date for historical. Used for trend analysis.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        date: { type: 'string', description: 'ISO date to retrieve (omit for current)' }
+      }
+    }
+  },
+  {
+    name: 'save_analytics_snapshot',
+    description: 'Save current analytics state as a snapshot for trend analysis. Maintains 90-day rolling window.',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
   }
 ];
 
@@ -2048,6 +2226,55 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         break;
       case 'get_capture_reminders':
         result = getCaptureReminders(args || {});
+        break;
+
+      // Analytics & Insights (Phase 10)
+      // Funnel Tools
+      case 'get_funnel_metrics':
+        result = getFunnelMetrics(args || {});
+        break;
+
+      // Response Rate Tools
+      case 'get_response_rates':
+        result = getResponseRates(args || {});
+        break;
+      case 'get_time_to_response':
+        result = getTimeToResponse();
+        break;
+
+      // Time-in-Stage Tools
+      case 'get_time_in_stage':
+        result = getTimeInStage(args || {});
+        break;
+      case 'get_bottlenecks':
+        result = getBottlenecks(args || {});
+        break;
+
+      // Skill Gap Tools
+      case 'get_skill_gaps':
+        result = getSkillGaps(args || {});
+        break;
+      case 'get_skill_gap_recommendations':
+        result = getSkillGapRecommendations();
+        break;
+
+      // Criteria Evolution Tools
+      case 'get_criteria_recommendations':
+        result = getCriteriaRecommendations();
+        break;
+      case 'preview_criteria_change':
+        result = previewCriteriaChange(args || {});
+        break;
+      case 'apply_criteria_change':
+        result = applyCriteriaChange(args || {});
+        break;
+
+      // Snapshot Tools
+      case 'get_analytics_snapshot':
+        result = getAnalyticsSnapshot(args || {});
+        break;
+      case 'save_analytics_snapshot':
+        result = saveAnalyticsSnapshot();
         break;
 
       default:

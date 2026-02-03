@@ -34,13 +34,10 @@ import { fileURLToPath } from 'url'
 
 // Import analytics services from Wave 1
 import { calculateFunnelMetrics, calculateFlows, getStatusDisplayName } from '../services/funnel-calculator.js'
-import { calculateRatesByDimension, calculateTimeToResponse as getTimeToResponseService, VALID_DIMENSIONS } from '../services/response-rate-analyzer.js'
-import { calculateTimeInStage, calculateAllStageMetrics, identifyBottlenecks } from '../services/time-in-stage.js'
+import { calculateRatesByDimension, VALID_DIMENSIONS } from '../services/response-rate-analyzer.js'
+import { calculateTimeInStage, calculateAllStageMetrics, identifyBottlenecks, calculateTimeToResponse } from '../services/time-in-stage.js'
 import { aggregateSkillGaps, getGapRecommendations } from '../services/skill-gap-aggregator.js'
 import { generateRecommendations, previewCriteriaChange as previewChange, applyCriteriaChange as applyChange } from '../services/criteria-recommender.js'
-
-// Also need calculateTimeToResponse from time-in-stage for ANLT-02
-import { calculateTimeToResponse } from '../services/time-in-stage.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const DATA_DIR = join(__dirname, '..', '..', 'data')
