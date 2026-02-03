@@ -174,11 +174,12 @@ Plans:
   2. Practice session transcripts/notes are added to self-profile database
   3. Real interview transcripts/notes are captured and stored
   4. Interview learnings inform profile evolution (what worked, what did not)
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 09-01: Conversation history persistence
-- [ ] 09-02: Transcript capture and profile integration
+- [ ] 09-01-PLAN.md — Schemas and transcript capture service (INTV-07, INTV-08, INTV-09)
+- [ ] 09-02-PLAN.md — Learning extraction and profile feedback services (INTV-10)
+- [ ] 09-03-PLAN.md — MCP tools for capture, learning, and feedback workflow
 
 ### Phase 10: Analytics & Insights
 **Goal**: Visualize patterns and evolve strategy based on outcomes
@@ -211,9 +212,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 6. Application Intelligence | 4/4 | Complete | 2026-02-01 |
 | 7. Application Generation | 3/3 | Complete | 2026-02-02 |
 | 8. Interview Preparation | 3/3 | Complete | 2026-02-02 |
-| 9. Interview Learning | 0/2 | Not started | - |
+| 9. Interview Learning | 0/3 | Not started | - |
 | 10. Analytics & Insights | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-29*
-*Total phases: 10 | Total plans: 31 | Requirements covered: 69/69*
+*Total phases: 10 | Total plans: 32 | Requirements covered: 69/69*
