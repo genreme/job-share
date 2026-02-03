@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 9 of 10 (Interview Learning)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-03 - Completed 09-01-PLAN.md (Schemas and Transcript Capture)
+Last activity: 2026-02-03 - Completed 09-02-PLAN.md (Learning Extraction & Profile Feedback)
 
-Progress: [==========] ~97% (30 of ~31 plans)
+Progress: [==========] ~97% (31 of ~32 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 30
+- Total plans completed: 31
 - Average duration: 6 min
-- Total execution time: 185 min
+- Total execution time: 197 min
 
 **By Phase:**
 
@@ -35,11 +35,11 @@ Progress: [==========] ~97% (30 of ~31 plans)
 | 06-application-intelligence | 4 | 20 min | ~5 min |
 | 07-application-generation | 3 | 34 min | ~11 min |
 | 08-interview-preparation | 3 | 37 min | ~12 min |
-| 09-interview-learning | 1 | 10 min | ~10 min |
+| 09-interview-learning | 2 | 22 min | ~11 min |
 
 **Recent Trend:**
-- Last 10 plans: 06-03 (5min), 06-04 (5min), 07-01 (10min), 07-02 (10min), 07-03 (14min), 08-01 (9min), 08-02 (10min), 08-03 (18min), 09-01 (10min)
-- Trend: Tool wiring with comprehensive tests takes longer (~14-18 min) than pure schema/service plans (~5-10 min)
+- Last 10 plans: 06-04 (5min), 07-01 (10min), 07-02 (10min), 07-03 (14min), 08-01 (9min), 08-02 (10min), 08-03 (18min), 09-01 (10min), 09-02 (12min)
+- Trend: Service-heavy plans with comprehensive tests (~10-12 min) vs tool wiring (~14-18 min)
 
 *Updated after each plan completion*
 
@@ -157,6 +157,11 @@ Recent decisions affecting current work:
 - [09-01]: Full-text search requires ALL query words to match (AND logic)
 - [09-01]: 24h reminder checks for interview updates without corresponding transcripts
 - [09-01]: InterviewLearning dual-tagged with topic AND outcome
+- [09-02]: Duplicate detection threshold 0.85 for learnings (stringSimilarity)
+- [09-02]: Pattern detection threshold 0.7 for content similarity grouping
+- [09-02]: Minimum 3 occurrences + 2 companies for pattern recognition
+- [09-02]: Learning workflow: queue -> review -> link -> confidence update
+- [09-02]: Profile confidence tracks worked/needs-work counts per item
 
 ### Pending Todos
 
