@@ -314,7 +314,7 @@ const TOOLS = [
     }
   },
   {
-    name: 'get_experience_by_theme',
+    name: 'get_resume_experience_by_theme',
     description: 'Find experience bullets that match a specific theme or skill (e.g., "leadership", "design systems", "team scaling").',
     inputSchema: {
       type: 'object',
@@ -1832,7 +1832,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_documents_for_company':
         result = getDocumentsForCompany(args.companyName);
         break;
-      case 'get_experience_by_theme':
+      case 'get_resume_experience_by_theme':
         result = getExperienceByTheme(args.theme);
         break;
       case 'get_portfolio_highlights':
