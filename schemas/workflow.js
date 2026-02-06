@@ -17,6 +17,7 @@
  * - archived: Terminal state, no transitions allowed
  */
 export const VALID_TRANSITIONS = {
+  'inbox': ['apply-now', 'maybe', 'probably-not', 'archived'], // New jobs start here
   'apply-now': ['maybe', 'probably-not', 'applied', 'archived'],
   'maybe': ['apply-now', 'probably-not', 'applied', 'archived'],
   'probably-not': ['maybe', 'apply-now', 'archived'],
