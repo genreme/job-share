@@ -8638,6 +8638,14 @@ After all updates are applied, provide:
                 console.error('[JSCC] checkExtensionJobs error:', err);
             }
 
+            // Update inbox badge on initial load (before Supabase loads)
+            try {
+                await loadInbox();
+                console.log('[JSCC] Initial inbox badge updated');
+            } catch (err) {
+                console.error('[JSCC] Initial loadInbox error:', err);
+            }
+
             // Load Supabase dynamically (after main page works)
             setTimeout(() => {
                 const script = document.createElement('script');

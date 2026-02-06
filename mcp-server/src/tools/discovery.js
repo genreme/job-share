@@ -193,15 +193,33 @@ export async function researchJobUrl({ url, notes }) {
 
   // If no job data from Worker, return partial research result
   if (!jobData) {
+    const isLinkedIn = url.includes('linkedin.com')
+    const isAuthRequired = isLinkedIn || research.warnings.some(w =>
+      w.includes('401') || w.includes('403') || w.includes('login') || w.includes('auth')
+    )
+
     return {
       status: 'partial_research',
       requiresManualEntry: true,
       missingFields: ['title', 'company', 'description'],
-      message: 'Could not fetch job details automatically. Please provide: title, company, description',
+      message: isAuthRequired
+        ? 'This page requires authentication. Use add_job_manual instead - browse the page and extract the job details directly.'
+        : 'Could not fetch job details automatically. Use add_job_manual with the job details you can see on the page.',
       url,
       notes,
       research,
-      nextStep: 'Provide job details manually, then call research_job_url again with jobData'
+      nextStep: 'Use add_job_manual tool with: title, company, url, and optionally location, salary, industry, description, notes',
+      suggestedTool: 'add_job_manual',
+      exampleCall: {
+        tool: 'add_job_manual',
+        params: {
+          title: '[extract from page]',
+          company: '[extract from page]',
+          url: url,
+          location: '[if visible]',
+          description: '[job description text]'
+        }
+      }
     }
   }
 
