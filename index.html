@@ -4048,6 +4048,69 @@ After all updates are applied, provide:
             });
         }
 
+        // Copy job info to clipboard (title, company, URL, notes)
+        function copyJobInfo(jobId) {
+            if (!window.currentData || !window.currentData.jobs) return;
+
+            const job = window.currentData.jobs.find(j => j.id === jobId);
+            if (!job) return;
+
+            // Build copy text with useful info
+            const lines = [
+                `${job.title} at ${job.company}`,
+                job.url ? `URL: ${job.url}` : null,
+                job.location ? `Location: ${job.location}` : null,
+                job.salary ? `Salary: ${job.salary}` : null,
+                job.notes ? `\nNotes:\n${job.notes}` : null
+            ].filter(Boolean);
+
+            const text = lines.join('\n');
+
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById(`copyJobBtn-${jobId}`);
+                if (btn) {
+                    btn.innerHTML = '✓ Copied!';
+                    btn.style.background = '#10b981';
+                    btn.style.color = 'white';
+                    setTimeout(() => {
+                        btn.innerHTML = '📋 Copy Info';
+                        btn.style.background = '#f3f4f6';
+                        btn.style.color = '';
+                    }, 2000);
+                }
+                showToast('Job info copied to clipboard');
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                showToast('Failed to copy', 'error');
+            });
+        }
+
+        // Copy just the notes for a job
+        function copyJobNotes(jobId) {
+            if (!window.currentData || !window.currentData.jobs) return;
+
+            const job = window.currentData.jobs.find(j => j.id === jobId);
+            if (!job || !job.notes) return;
+
+            navigator.clipboard.writeText(job.notes).then(() => {
+                const btn = document.getElementById(`copyNotesBtn-${jobId}`);
+                if (btn) {
+                    btn.innerHTML = '✓ Copied!';
+                    btn.style.background = '#10b981';
+                    btn.style.color = 'white';
+                    setTimeout(() => {
+                        btn.innerHTML = '📋 Copy';
+                        btn.style.background = '#f3f4f6';
+                        btn.style.color = '';
+                    }, 2000);
+                }
+                showToast('Notes copied to clipboard');
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                showToast('Failed to copy', 'error');
+            });
+        }
+
         // ============================================
         // DOCUMENT MANAGEMENT FUNCTIONS
         // ============================================
@@ -5219,9 +5282,19 @@ After all updates are applied, provide:
             const content = document.getElementById('modalContent');
             
             content.innerHTML = `
-                <h2>${job.title}</h2>
-                <h3><a href="${job.url}" target="_blank" class="company-link">${job.company}</a></h3>
-                
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                    <div>
+                        <h2 style="margin-bottom: 5px;">${job.title}</h2>
+                        <h3><a href="${job.url}" target="_blank" class="company-link">${job.company}</a></h3>
+                    </div>
+                    <button onclick="copyJobInfo(${job.id})"
+                        id="copyJobBtn-${job.id}"
+                        style="padding: 8px 14px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 13px; white-space: nowrap; display: flex; align-items: center; gap: 5px;"
+                        title="Copy job title, company, and URL to clipboard">
+                        📋 Copy Info
+                    </button>
+                </div>
+
                 <div style="margin: 20px 0;">
                     <span class="status-badge status-${job.status}">${getStatusLabel(job.status)}</span>
                     <span class="fit-score ${getFitClass(job.fitScore)}" style="margin-left: 10px; font-size: 20px;">
@@ -5363,7 +5436,17 @@ After all updates are applied, provide:
                 </div>
                 
                 <div style="margin-top: 20px;">
-                    <h4>Notes:</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin: 0;">Notes:</h4>
+                        ${job.notes ? `
+                            <button onclick="copyJobNotes(${job.id})"
+                                id="copyNotesBtn-${job.id}"
+                                style="padding: 4px 10px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer; font-size: 12px;"
+                                title="Copy notes to clipboard">
+                                📋 Copy
+                            </button>
+                        ` : ''}
+                    </div>
                     <p>${formatNotes(job.notes)}</p>
                 </div>
                 
