@@ -15,12 +15,21 @@ import {
 
 describe('VALID_TRANSITIONS', () => {
   it('defines all expected statuses', () => {
+    expect(VALID_STATUSES).toContain('inbox')
     expect(VALID_STATUSES).toContain('apply-now')
     expect(VALID_STATUSES).toContain('maybe')
     expect(VALID_STATUSES).toContain('probably-not')
     expect(VALID_STATUSES).toContain('applied')
     expect(VALID_STATUSES).toContain('archived')
-    expect(VALID_STATUSES).toHaveLength(5)
+    expect(VALID_STATUSES).toHaveLength(6)
+  })
+
+  it('defines inbox transitions (entry point for new jobs)', () => {
+    expect(VALID_TRANSITIONS['inbox']).toContain('apply-now')
+    expect(VALID_TRANSITIONS['inbox']).toContain('maybe')
+    expect(VALID_TRANSITIONS['inbox']).toContain('probably-not')
+    expect(VALID_TRANSITIONS['inbox']).toContain('archived')
+    expect(VALID_TRANSITIONS['inbox']).not.toContain('applied') // Must triage first
   })
 
   it('defines apply-now transitions', () => {
@@ -55,6 +64,22 @@ describe('VALID_TRANSITIONS', () => {
 
 describe('isValidTransition', () => {
   describe('valid transitions', () => {
+    it('allows inbox to apply-now (triage decision)', () => {
+      expect(isValidTransition('inbox', 'apply-now')).toBe(true)
+    })
+
+    it('allows inbox to maybe (triage decision)', () => {
+      expect(isValidTransition('inbox', 'maybe')).toBe(true)
+    })
+
+    it('allows inbox to probably-not (triage decision)', () => {
+      expect(isValidTransition('inbox', 'probably-not')).toBe(true)
+    })
+
+    it('allows inbox to archived (reject from inbox)', () => {
+      expect(isValidTransition('inbox', 'archived')).toBe(true)
+    })
+
     it('allows apply-now to applied', () => {
       expect(isValidTransition('apply-now', 'applied')).toBe(true)
     })
@@ -114,7 +139,12 @@ describe('isValidTransition', () => {
       expect(isValidTransition('probably-not', 'applied')).toBe(false)
     })
 
+    it('blocks inbox to applied (must triage first)', () => {
+      expect(isValidTransition('inbox', 'applied')).toBe(false)
+    })
+
     it('blocks self-transitions', () => {
+      expect(isValidTransition('inbox', 'inbox')).toBe(false)
       expect(isValidTransition('apply-now', 'apply-now')).toBe(false)
       expect(isValidTransition('maybe', 'maybe')).toBe(false)
       expect(isValidTransition('probably-not', 'probably-not')).toBe(false)
@@ -154,6 +184,16 @@ describe('isValidTransition', () => {
 })
 
 describe('getValidNextStatuses', () => {
+  it('returns valid next statuses for inbox', () => {
+    const nextStatuses = getValidNextStatuses('inbox')
+    expect(nextStatuses).toContain('apply-now')
+    expect(nextStatuses).toContain('maybe')
+    expect(nextStatuses).toContain('probably-not')
+    expect(nextStatuses).toContain('archived')
+    expect(nextStatuses).not.toContain('applied')
+    expect(nextStatuses).toHaveLength(4)
+  })
+
   it('returns valid next statuses for apply-now', () => {
     const nextStatuses = getValidNextStatuses('apply-now')
     expect(nextStatuses).toContain('maybe')

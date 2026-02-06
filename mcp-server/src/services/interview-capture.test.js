@@ -5,9 +5,22 @@
  * searchTranscripts, and checkTranscriptReminder.
  *
  * Uses job ID range 9100-9199 for test isolation.
+ * Uses fake timers to ensure deterministic date-based tests.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+
+// Use fake timers for deterministic date testing
+const FIXED_DATE = new Date('2026-02-06T12:00:00Z')
+
+beforeEach(() => {
+  vi.useFakeTimers()
+  vi.setSystemTime(FIXED_DATE)
+})
+
+afterEach(() => {
+  vi.useRealTimers()
+})
 import { unlinkSync, existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
@@ -86,7 +99,8 @@ function createValidTranscript(overrides = {}) {
 }
 
 describe('Interview Capture Service', () => {
-  const testJobIds = Array.from({ length: 20 }, (_, i) => 9100 + i)
+  // Extended range to cover all test job IDs used (9100-9199)
+  const testJobIds = Array.from({ length: 100 }, (_, i) => 9100 + i)
 
   beforeEach(() => {
     cleanupTestFiles(testJobIds)
@@ -505,7 +519,8 @@ describe('Interview Capture Service', () => {
   // ===========================================================================
 
   describe('checkTranscriptReminder', () => {
-    const now = new Date()
+    // Use FIXED_DATE for deterministic testing
+    const now = FIXED_DATE
     const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000)
     const twelvHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000)
     const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000)

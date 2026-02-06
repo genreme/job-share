@@ -4,7 +4,7 @@
  * Tests time-based follow-up calculations and smart suggestion generation.
  */
 
-import { vi, describe, it, expect, beforeEach } from 'vitest'
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import {
   FOLLOWUP_RULES,
   calculateFollowupStatus,
@@ -19,11 +19,23 @@ vi.mock('../data/loader.js', () => ({
 
 import { loadJobsFromDashboard } from '../data/loader.js'
 
+// Use fake timers for deterministic date testing
+const FIXED_DATE = new Date('2026-02-06T12:00:00Z')
+
+beforeEach(() => {
+  vi.useFakeTimers()
+  vi.setSystemTime(FIXED_DATE)
+})
+
+afterEach(() => {
+  vi.useRealTimers()
+})
+
 /**
- * Create a date N days ago
+ * Create a date N days ago from the fixed test date
  */
 function daysAgo(n) {
-  const date = new Date()
+  const date = new Date(FIXED_DATE)
   date.setDate(date.getDate() - n)
   return date.toISOString().split('T')[0]
 }
