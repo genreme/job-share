@@ -18,22 +18,40 @@
       match: /linkedin\.com\/jobs/,
       selectors: {
         title: [
+          // 2026 LinkedIn job detail selectors
           '.job-details-jobs-unified-top-card__job-title h1',
+          '.job-details-jobs-unified-top-card__job-title',
+          '.jobs-unified-top-card__job-title h1',
           '.jobs-unified-top-card__job-title',
           '.t-24.t-bold.jobs-unified-top-card__job-title',
-          'h1.t-24'
+          'h1.t-24',
+          // Fallback: any h1 that's likely a job title
+          '.job-details h1',
+          '.top-card-layout h1',
+          'h1[class*="job-title"]',
+          'h1[class*="topcard"]'
         ],
         company: [
           '.job-details-jobs-unified-top-card__company-name a',
+          '.job-details-jobs-unified-top-card__company-name',
           '.jobs-unified-top-card__company-name a',
-          '.jobs-unified-top-card__company-name'
+          '.jobs-unified-top-card__company-name',
+          // Fallback: company links
+          'a[href*="/company/"][data-tracking-control-name*="company"]',
+          '.topcard__org-name-link',
+          'a[class*="company-name"]'
         ],
         location: [
           '.job-details-jobs-unified-top-card__primary-description-container .t-black--light',
-          '.jobs-unified-top-card__bullet'
+          '.job-details-jobs-unified-top-card__bullet',
+          '.jobs-unified-top-card__bullet',
+          '.jobs-unified-top-card__workplace-type',
+          // Fallback patterns
+          'span[class*="location"]',
+          '.topcard__flavor--bullet'
         ],
-        description: ['.jobs-description__content', '.jobs-box__html-content'],
-        salary: ['.job-details-jobs-unified-top-card__job-insight'],
+        description: ['.jobs-description__content', '.jobs-box__html-content', '#job-details', '.jobs-description'],
+        salary: ['.job-details-jobs-unified-top-card__job-insight', '.compensation__salary', '[class*="salary"]'],
         actionsContainer: [
           '.jobs-unified-top-card__actions',
           '.job-details-jobs-unified-top-card__top-buttons'
@@ -74,21 +92,72 @@
     workday: {
       match: /myworkday(jobs)?\.com|wd\d+\.myworkday/,
       selectors: {
-        title: ['[data-automation-id="jobPostingHeader"]', 'h2.css-1dbjc4n'],
-        company: ['[data-automation-id="companyName"]'],
-        location: ['[data-automation-id="locations"]', '.css-129m7dg'],
-        description: ['[data-automation-id="jobPostingDescription"]'],
-        actionsContainer: ['[data-automation-id="jobPostingHeader"]']
+        title: [
+          '[data-automation-id="jobPostingHeader"]',
+          '[data-automation-id="jobTitle"]',
+          'h2[data-automation-id]',
+          'h1[data-automation-id]',
+          // Fallback: common Workday patterns
+          '.css-1dbjc4n h2',
+          '.WGDC h2',
+          '[class*="jobTitle"]'
+        ],
+        company: [
+          '[data-automation-id="companyName"]',
+          '[data-automation-id="organizationName"]',
+          // Extract from page/URL
+          'header [class*="company"]'
+        ],
+        location: [
+          '[data-automation-id="locations"]',
+          '[data-automation-id="location"]',
+          '.css-129m7dg',
+          '[class*="location"]'
+        ],
+        description: [
+          '[data-automation-id="jobPostingDescription"]',
+          '[data-automation-id="description"]',
+          '.job-description',
+          '[class*="jobDescription"]'
+        ],
+        actionsContainer: ['[data-automation-id="jobPostingHeader"]', '[data-automation-id="applyButton"]']
+      },
+      getCompanyFromUrl: () => {
+        const match = window.location.hostname.match(/([^.]+)\.wd\d*\.myworkdayjobs\.com/i);
+        return match ? formatCompanyName(match[1]) : '';
       }
     },
     ashby: {
       match: /ashbyhq\.com|jobs\.ashbyhq/,
       selectors: {
-        title: ['h1', '.ashby-job-posting-title'],
-        company: ['.ashby-company-name'],
-        location: ['.ashby-job-posting-location'],
-        description: ['.ashby-job-posting-description'],
-        actionsContainer: ['h1']
+        title: [
+          'h1.ashby-job-posting-title',
+          'h1[class*="JobPostingTitle"]',
+          '.ashby-job-posting-header h1',
+          // Fallback
+          'h1'
+        ],
+        company: [
+          '.ashby-company-name',
+          '[class*="CompanyName"]',
+          'header .company-name'
+        ],
+        location: [
+          '.ashby-job-posting-location',
+          '[class*="JobPostingLocation"]',
+          '.ashby-job-posting-locationGroup span'
+        ],
+        description: [
+          '.ashby-job-posting-description',
+          '[class*="JobPostingDescription"]',
+          '.ashby-job-posting-brief-description'
+        ],
+        actionsContainer: ['h1', '.ashby-job-posting-header']
+      },
+      getCompanyFromUrl: () => {
+        const match = window.location.pathname.match(/jobs\.ashbyhq\.com\/([^\/]+)/i) ||
+                      window.location.hostname.match(/([^.]+)\.ashbyhq\.com/i);
+        return match ? formatCompanyName(match[1]) : '';
       }
     }
   };
@@ -122,6 +191,63 @@
     return div.innerHTML;
   }
 
+  /**
+   * Format a URL slug into a proper company name
+   */
+  function formatCompanyName(slug) {
+    if (!slug) return '';
+    return slug
+      .replace(/-/g, ' ')
+      .replace(/_/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+
+  /**
+   * Try to extract job data from JSON-LD structured data
+   * Many job boards include this for SEO
+   */
+  function extractFromJsonLd() {
+    try {
+      const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+      for (const script of scripts) {
+        const data = JSON.parse(script.textContent);
+        const items = Array.isArray(data) ? data : [data];
+
+        for (const item of items) {
+          if (item['@type'] === 'JobPosting') {
+            return {
+              title: item.title || '',
+              company: item.hiringOrganization?.name || '',
+              location: item.jobLocation?.address?.addressLocality ||
+                       item.jobLocation?.address?.addressRegion ||
+                       (item.jobLocationType === 'TELECOMMUTE' ? 'Remote' : ''),
+              salary: formatSalaryFromJsonLd(item.baseSalary),
+              description: item.description ? item.description.replace(/<[^>]+>/g, ' ').substring(0, 500) : ''
+            };
+          }
+        }
+      }
+    } catch (e) {
+      // JSON-LD parsing failed
+    }
+    return null;
+  }
+
+  function formatSalaryFromJsonLd(baseSalary) {
+    if (!baseSalary || !baseSalary.value) return 'Not listed';
+
+    const value = baseSalary.value;
+    if (typeof value === 'object' && value.minValue) {
+      return `$${Number(value.minValue).toLocaleString()} - $${Number(value.maxValue).toLocaleString()}`;
+    }
+    if (typeof value === 'number') {
+      return `$${Number(value).toLocaleString()}`;
+    }
+    return 'Not listed';
+  }
+
   // =====================================================
   // JOB DATA EXTRACTION
   // =====================================================
@@ -130,30 +256,41 @@
     const { config } = board;
     const sel = config.selectors;
 
+    // Try JSON-LD first (most reliable when available)
+    const jsonLdData = extractFromJsonLd();
+
     // Title
-    const titleEl = querySelector(sel.title);
-    const title = titleEl ? titleEl.textContent.trim() : '';
+    let title = jsonLdData?.title || '';
+    if (!title) {
+      const titleEl = querySelector(sel.title);
+      title = titleEl ? titleEl.textContent.trim() : '';
+    }
 
     // Company
-    let company = '';
-    const companyEl = querySelector(sel.company);
-    if (companyEl) {
-      company = companyEl.alt || companyEl.textContent.trim();
+    let company = jsonLdData?.company || '';
+    if (!company) {
+      const companyEl = querySelector(sel.company);
+      if (companyEl) {
+        company = companyEl.alt || companyEl.textContent.trim();
+      }
     }
     if (!company && config.getCompanyFromUrl) {
       company = config.getCompanyFromUrl();
     }
 
     // Location
-    const locationEl = querySelector(sel.location);
-    let location = locationEl ? locationEl.textContent.trim() : '';
-    if (location.includes('·')) {
-      location = location.split('·')[0].trim();
+    let location = jsonLdData?.location || '';
+    if (!location) {
+      const locationEl = querySelector(sel.location);
+      location = locationEl ? locationEl.textContent.trim() : '';
+      if (location.includes('·')) {
+        location = location.split('·')[0].trim();
+      }
     }
 
     // Salary
-    let salary = 'Not listed';
-    if (sel.salary) {
+    let salary = jsonLdData?.salary || 'Not listed';
+    if (salary === 'Not listed' && sel.salary) {
       const salaryEls = document.querySelectorAll(sel.salary.join(', '));
       salaryEls.forEach(el => {
         const text = el.textContent;
@@ -452,7 +589,7 @@
       e.target.textContent = toolbar.classList.contains('minimized') ? '+' : '−';
     });
 
-    // Add to Tracker button
+    // Add to Tracker button - sends to Inbox for review
     const addBtn = toolbar.querySelector('#jscc-add-btn');
     addBtn.addEventListener('click', async () => {
       addBtn.textContent = '⏳ Adding...';
@@ -460,13 +597,46 @@
 
       try {
         chrome.runtime.sendMessage({
-          action: 'addJob',
+          action: 'addJobToInbox',
           job: jobData
         }, (response) => {
+          if (chrome.runtime.lastError) {
+            console.error('JSCC Error:', chrome.runtime.lastError);
+            addBtn.textContent = '❌ Extension Error';
+            addBtn.disabled = false;
+            return;
+          }
+
           if (response && response.success) {
-            addBtn.textContent = '✓ Added!';
+            if (response.inbox) {
+              // Added to inbox successfully
+              addBtn.textContent = '✓ Sent to Inbox';
+              addBtn.classList.remove('btn-primary');
+              addBtn.classList.add('btn-success');
+            } else if (response.direct === false) {
+              // Server offline - saved to pending
+              addBtn.textContent = '⏸ Queued (server offline)';
+              addBtn.classList.remove('btn-primary');
+              addBtn.style.background = '#f59e0b';
+            } else {
+              addBtn.textContent = '✓ Added!';
+              addBtn.classList.remove('btn-primary');
+              addBtn.classList.add('btn-success');
+            }
+          } else if (response && response.duplicate) {
+            // Duplicate found
+            addBtn.textContent = '⚠️ Already exists';
             addBtn.classList.remove('btn-primary');
-            addBtn.classList.add('btn-success');
+            addBtn.style.background = '#f59e0b';
+            addBtn.title = response.message || 'This job is already in your tracker';
+            // Allow clicking again after 3 seconds
+            setTimeout(() => {
+              addBtn.textContent = '📥 Add to Tracker';
+              addBtn.classList.add('btn-primary');
+              addBtn.style.background = '';
+              addBtn.disabled = false;
+              addBtn.title = '';
+            }, 3000);
           } else {
             addBtn.textContent = '❌ Failed - Try again';
             addBtn.disabled = false;

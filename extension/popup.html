@@ -59,6 +59,51 @@
       border: 1px solid #93c5fd;
     }
 
+    .status.warning {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+    }
+
+    .btn-warning {
+      background: #f59e0b !important;
+      color: white !important;
+    }
+
+    .btn-warning:hover {
+      background: #d97706 !important;
+    }
+
+    .extraction-quality {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+
+    .extraction-quality.good {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .extraction-quality.partial {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .extraction-quality.poor {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .missing-field {
+      color: #dc2626;
+      font-style: italic;
+    }
+
     .job-preview {
       background: white;
       border: 1px solid #e2e8f0;
@@ -246,6 +291,7 @@
   </div>
 
   <div class="footer">
+    <span id="serverStatus" style="display: block; margin-bottom: 6px;"><span style="color: #94a3b8;">⚪ Checking server...</span></span>
     <a href="#" id="openDashboard">Open Dashboard</a> |
     <a href="#" onclick="sendToDashboard(); return false;" id="sendToDashboard" style="display: none;">Send All to Dashboard</a>
     <span id="jobCount">0 pending jobs</span>

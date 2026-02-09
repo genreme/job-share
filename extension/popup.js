@@ -2,13 +2,24 @@
 
 const DASHBOARD_PATH = '/Users/genre/Claude/Job Search Command Center/index.html';
 const STORAGE_KEY = 'jobSearchExtensionData';
+const SERVER_URL = 'http://localhost:3000';
 
 let extractedJob = null;
 let connections = [];
+let serverRunning = false;
+let duplicateJob = null; // Track if this job is a duplicate
 
 // Initialize popup
 document.addEventListener('DOMContentLoaded', async () => {
   updateJobCount();
+
+  // Check if local server is running
+  chrome.runtime.sendMessage({ action: 'checkServer' }, (response) => {
+    if (response && response.serverRunning) {
+      serverRunning = true;
+      updateServerStatus(true);
+    }
+  });
 
   // Check if we're on a LinkedIn job page
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -48,16 +59,46 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
-    if (extractedData) {
+    if (extractedData && (extractedData.title || extractedData.company)) {
       extractedJob = extractedData;
-      showJobPreview(extractedJob);
+
+      // Check extraction quality
+      const missingFields = [];
+      if (!extractedData.title) missingFields.push('title');
+      if (!extractedData.company) missingFields.push('company');
+      if (!extractedData.location) missingFields.push('location');
+
+      // Check for duplicates before showing preview
+      chrome.runtime.sendMessage({ action: 'checkDuplicate', job: extractedData }, (response) => {
+        if (response && response.success && response.duplicate) {
+          duplicateJob = response.duplicate;
+        }
+
+        // If we have partial data, show preview with warning
+        if (missingFields.length > 0 && missingFields.length < 3) {
+          // Has some data but not complete - show preview with note
+          showJobPreview(extractedJob);
+        } else if (missingFields.length >= 3) {
+          // Very incomplete - show manual entry with partial data
+          showManualEntry(tab.url, {
+            reason: 'Could not fully detect job details',
+            hint: `Missing: ${missingFields.join(', ')}. Please fill in the missing fields.`,
+            partialData: extractedData
+          });
+        } else {
+          showJobPreview(extractedJob);
+        }
+      });
     } else {
-      // Show manual entry option
-      showManualEntry(tab.url);
+      // No data at all - show manual entry
+      showManualEntry(tab.url, {
+        reason: 'Could not detect job details',
+        hint: 'This job board may have an unusual layout. Please enter details manually.'
+      });
     }
   } catch (err) {
     console.error('Extraction error:', err);
-    showError('Unable to read page. Try refreshing the LinkedIn page.');
+    showError(`Unable to read page: ${err.message}. Try refreshing and reopening the extension.`);
   }
 
   // Open dashboard link
@@ -234,8 +275,21 @@ function extractJobData() {
 // Show job preview form
 function showJobPreview(job) {
   const content = document.getElementById('content');
+
+  // Build duplicate warning if needed
+  let duplicateWarning = '';
+  if (duplicateJob) {
+    const foundDate = duplicateJob.found || duplicateJob.posted || 'unknown date';
+    duplicateWarning = `
+      <div class="status warning" style="background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;">
+        ⚠️ Possible duplicate: <strong>${escapeHtml(duplicateJob.title)}</strong> at ${escapeHtml(duplicateJob.company)}<br>
+        <small>Added ${escapeHtml(foundDate)} • Status: ${escapeHtml(duplicateJob.status || 'unknown')}</small>
+      </div>
+    `;
+  }
+
   content.innerHTML = `
-    <div class="status success">✓ Job detected on this page</div>
+    ${duplicateJob ? duplicateWarning : '<div class="status success">✓ Job detected on this page</div>'}
 
     <div class="job-preview">
       <h2>${escapeHtml(job.title)}</h2>
@@ -291,9 +345,15 @@ function showJobPreview(job) {
       <textarea id="notes" placeholder="Why this job interests you, key requirements, etc.">${escapeHtml(job.description)}</textarea>
     </div>
 
-    <button class="btn btn-primary" id="addToTracker" onclick="saveJob()">
-      ➕ Add to Job Tracker
+    <button class="btn ${duplicateJob ? 'btn-warning' : 'btn-primary'}" id="addToTracker" onclick="saveJob()" ${duplicateJob ? 'style="background: #f59e0b; color: white;"' : ''}>
+      ${duplicateJob ? '⚠️ Add Anyway' : '➕ Add to Job Tracker'}
     </button>
+
+    ${duplicateJob ? `
+    <button class="btn btn-secondary" onclick="openDashboard()">
+      👀 View Existing Job
+    </button>
+    ` : ''}
 
     <button class="btn btn-secondary" onclick="copyJobData()">
       📋 Copy Job Data
@@ -329,7 +389,7 @@ function renderConnections() {
   `).join('');
 }
 
-// Save job to extension storage (will sync to dashboard)
+// Save job to inbox via server API (preferred) or to pending queue (fallback)
 async function saveJob() {
   const btn = document.getElementById('addToTracker');
   btn.disabled = true;
@@ -344,59 +404,122 @@ async function saveJob() {
 
     // Build job object
     const job = {
-      id: Date.now(), // Temporary ID, dashboard will assign real one
       title: extractedJob.title,
       company: extractedJob.company,
       industry: industry,
       location: extractedJob.location,
       salary: extractedJob.salary,
       fitScore: fitScore,
-      status: status,
-      posted: new Date().toISOString().split('T')[0], // Today's date
-      found: new Date().toISOString().split('T')[0],
-      applied: null,
-      followup: null,
+      description: notes,
       url: extractedJob.url,
-      symbols: [],
       connections: connections,
-      sources: ['LinkedIn'],
-      notes: `📍 Via LinkedIn Extension | ${notes}`,
-      updates: []
+      source: extractedJob.source || 'LinkedIn'
     };
 
-    // Save to extension storage
-    const data = await chrome.storage.local.get(STORAGE_KEY);
-    const existing = data[STORAGE_KEY] || { pendingJobs: [] };
-    existing.pendingJobs.push(job);
-    await chrome.storage.local.set({ [STORAGE_KEY]: existing });
+    // Send to inbox via new background action
+    chrome.runtime.sendMessage({ action: 'addJobToInbox', job }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('JSCC Error:', chrome.runtime.lastError);
+        btn.disabled = false;
+        btn.textContent = '➕ Add to Job Tracker';
+        showError(`Extension error: ${chrome.runtime.lastError.message}`);
+        return;
+      }
 
-    // Update count
-    updateJobCount();
+      const content = document.getElementById('content');
 
-    console.log('JSCC: Job saved to storage', job);
-
-    // Show success
-    const content = document.getElementById('content');
-    content.innerHTML = `
-      <div class="status success">
-        ✓ Job saved! Click below to send to dashboard.
-      </div>
-      <div style="text-align: center; padding: 20px;">
-        <p style="margin-bottom: 15px; color: #475569;">
-          <strong>${escapeHtml(extractedJob.title)}</strong><br>
-          at ${escapeHtml(extractedJob.company)}
-        </p>
-        <button class="btn btn-primary" onclick="sendToDashboard()">
-          🚀 Send to Dashboard Now
-        </button>
-        <button class="btn btn-secondary" onclick="window.close()" style="margin-top: 8px;">
-          Save More Jobs First
-        </button>
-        <p style="margin-top: 15px; font-size: 12px; color: #94a3b8;">
-          You can add more jobs and send them all at once.
-        </p>
-      </div>
-    `;
+      if (response && response.success) {
+        if (response.inbox) {
+          // Job was added to inbox for review
+          content.innerHTML = `
+            <div class="status success">
+              ✓ Job sent to Inbox for review!
+            </div>
+            <div style="text-align: center; padding: 20px;">
+              <p style="margin-bottom: 15px; color: #475569;">
+                <strong>${escapeHtml(extractedJob.title)}</strong><br>
+                at ${escapeHtml(extractedJob.company)}
+              </p>
+              <p style="color: #10b981; font-weight: 500;">
+                🟢 ${escapeHtml(response.message || 'Added to inbox')}
+              </p>
+              <button class="btn btn-primary" onclick="openDashboard()" style="margin-top: 15px;">
+                📬 Open Inbox
+              </button>
+              <button class="btn btn-secondary" onclick="window.close()" style="margin-top: 8px;">
+                Continue Browsing
+              </button>
+            </div>
+          `;
+        } else if (response.direct === false) {
+          // Server offline - saved to pending queue
+          updateJobCount();
+          content.innerHTML = `
+            <div class="status warning" style="background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;">
+              ⏸ Job queued (server offline)
+            </div>
+            <div style="text-align: center; padding: 20px;">
+              <p style="margin-bottom: 15px; color: #475569;">
+                <strong>${escapeHtml(extractedJob.title)}</strong><br>
+                at ${escapeHtml(extractedJob.company)}
+              </p>
+              <p style="color: #f59e0b; font-size: 12px;">
+                ${escapeHtml(response.message || 'Start server with: node server.js')}
+              </p>
+              <button class="btn btn-primary" onclick="sendToDashboard()">
+                🚀 Send to Dashboard Now
+              </button>
+              <button class="btn btn-secondary" onclick="window.close()" style="margin-top: 8px;">
+                Save More Jobs First
+              </button>
+            </div>
+          `;
+        } else {
+          // Added directly (legacy flow)
+          content.innerHTML = `
+            <div class="status success">
+              ✓ Job added to dashboard!
+            </div>
+            <div style="text-align: center; padding: 20px;">
+              <p style="margin-bottom: 15px; color: #475569;">
+                <strong>${escapeHtml(extractedJob.title)}</strong><br>
+                at ${escapeHtml(extractedJob.company)}
+              </p>
+              <button class="btn btn-secondary" onclick="openDashboard()" style="margin-top: 15px;">
+                📊 Open Dashboard
+              </button>
+              <button class="btn btn-secondary" onclick="window.close()" style="margin-top: 8px;">
+                Continue Browsing
+              </button>
+            </div>
+          `;
+        }
+      } else if (response && response.duplicate) {
+        // Duplicate found
+        content.innerHTML = `
+          <div class="status warning" style="background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;">
+            ⚠️ This job already exists
+          </div>
+          <div style="text-align: center; padding: 20px;">
+            <p style="margin-bottom: 15px; color: #475569;">
+              <strong>${escapeHtml(response.existingJob?.title || extractedJob.title)}</strong><br>
+              at ${escapeHtml(response.existingJob?.company || extractedJob.company)}
+            </p>
+            <p style="font-size: 12px; color: #64748b;">
+              Status: ${escapeHtml(response.existingJob?.status || 'unknown')}
+            </p>
+            <button class="btn btn-primary" onclick="openDashboard()" style="margin-top: 15px;">
+              👀 View in Dashboard
+            </button>
+            <button class="btn btn-secondary" onclick="window.close()" style="margin-top: 8px;">
+              Continue Browsing
+            </button>
+          </div>
+        `;
+      } else {
+        throw new Error(response?.error || 'Failed to save job');
+      }
+    });
 
   } catch (err) {
     console.error('Save error:', err);
@@ -499,11 +622,48 @@ async function sendToDashboard() {
 function showError(message) {
   const content = document.getElementById('content');
   content.innerHTML = `
-    <div class="status error">${escapeHtml(message)}</div>
-    <button class="btn btn-secondary" onclick="window.location.reload()">
-      Try Again
+    <div class="status error" style="margin-bottom: 12px;">
+      <strong>❌ Error</strong><br>
+      ${escapeHtml(message)}
+    </div>
+    <button class="btn btn-primary" onclick="window.location.reload()" style="margin-bottom: 8px;">
+      🔄 Try Again
     </button>
+    <button class="btn btn-secondary" onclick="showManualEntry(getCurrentUrl())">
+      ✏️ Enter Manually
+    </button>
+    <p style="margin-top: 12px; font-size: 11px; color: #94a3b8; text-align: center;">
+      If this keeps happening, the page structure may have changed.<br>
+      <a href="#" onclick="copyErrorReport(); return false;" style="color: #667eea;">Copy error report</a>
+    </p>
   `;
+}
+
+// Get current tab URL
+async function getCurrentUrl() {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    return tab?.url || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+// Copy error details for debugging
+async function copyErrorReport() {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const report = {
+      url: tab?.url,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      extensionVersion: chrome.runtime.getManifest().version
+    };
+    await navigator.clipboard.writeText(JSON.stringify(report, null, 2));
+    alert('Error report copied to clipboard!');
+  } catch (e) {
+    alert('Could not copy report: ' + e.message);
+  }
 }
 
 // Show not on LinkedIn message
@@ -521,22 +681,29 @@ function showNotLinkedIn() {
 }
 
 // Show manual entry form when auto-extraction fails
-function showManualEntry(pageUrl) {
+function showManualEntry(pageUrl, options = {}) {
+  const reason = options.reason || 'Auto-detection failed';
+  const hint = options.hint || 'Please enter job details manually.';
+  const partialData = options.partialData || {};
+
   extractedJob = {
-    title: '',
-    company: '',
-    location: '',
-    salary: 'Not listed',
+    title: partialData.title || '',
+    company: partialData.company || '',
+    location: partialData.location || '',
+    salary: partialData.salary || 'Not listed',
     posted: '',
-    description: '',
+    description: partialData.description || '',
     url: pageUrl ? pageUrl.split('?')[0] : '',
-    industry: 'Unknown',
-    source: 'LinkedIn'
+    industry: partialData.industry || 'Unknown',
+    source: detectSourceFromUrl(pageUrl)
   };
 
   const content = document.getElementById('content');
   content.innerHTML = `
-    <div class="status info">⚠️ Auto-detection failed. Please enter job details manually.</div>
+    <div class="status info" style="margin-bottom: 12px;">
+      <strong>⚠️ ${escapeHtml(reason)}</strong><br>
+      <small>${escapeHtml(hint)}</small>
+    </div>
 
     <div class="form-group">
       <label>Job Title *</label>
@@ -650,4 +817,27 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+// Detect job board source from URL
+function detectSourceFromUrl(url) {
+  if (!url) return 'Unknown';
+  if (url.includes('linkedin.com')) return 'LinkedIn';
+  if (url.includes('lever.co')) return 'Lever';
+  if (url.includes('greenhouse.io')) return 'Greenhouse';
+  if (url.includes('workday')) return 'Workday';
+  if (url.includes('ashbyhq.com')) return 'Ashby';
+  if (url.includes('indeed.com')) return 'Indeed';
+  if (url.includes('glassdoor.com')) return 'Glassdoor';
+  return 'Other';
+}
+
+// Update server status indicator in footer
+function updateServerStatus(isRunning) {
+  const indicator = document.getElementById('serverStatus');
+  if (indicator) {
+    indicator.innerHTML = isRunning
+      ? '<span style="color: #10b981;">🟢 Server connected</span>'
+      : '<span style="color: #94a3b8;">⚪ Server offline</span>';
+  }
 }

@@ -16,7 +16,8 @@
     "https://*.myworkdayjobs.com/*",
     "https://*.myworkday.com/*",
     "https://*.ashbyhq.com/*",
-    "https://jobs.ashbyhq.com/*"
+    "https://jobs.ashbyhq.com/*",
+    "http://localhost:3000/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -36,6 +37,7 @@
         "https://*.lever.co/*",
         "https://boards.greenhouse.io/*",
         "https://*.greenhouse.io/jobs/*",
+        "https://job-boards.greenhouse.io/*/jobs/*",
         "https://*.myworkdayjobs.com/*",
         "https://*.myworkday.com/*",
         "https://*.ashbyhq.com/*",
