@@ -1918,15 +1918,20 @@ const TOOLS = [
   },
   {
     name: 'analyze_boards',
-    description: 'Analyze job board quality from historical job data. Calculates extraction rate, freshness (expired job rate), direct-to-company rate, and data completeness for each board. Returns recommendations for which boards to prioritize or avoid.',
+    description: 'Analyze job board quality from historical job data AND automatically save to registry. Calculates extraction rate, freshness (expired job rate), direct-to-company rate, and data completeness for each board. Returns recommendations for which boards to prioritize or avoid. Results are automatically synced to the board registry unless preview=true.',
     inputSchema: {
       type: 'object',
-      properties: {}
+      properties: {
+        preview: {
+          type: 'boolean',
+          description: 'If true, only analyze without saving to registry. Default: false (auto-saves).'
+        }
+      }
     }
   },
   {
     name: 'sync_board_quality',
-    description: 'Sync analyzed quality scores to the board registry. Updates existing boards and auto-discovers new boards from job source data. Call after analyze_boards to persist scores.',
+    description: 'Sync analyzed quality scores to the board registry. Updates existing boards and auto-discovers new boards from job source data. NOTE: analyze_boards now auto-syncs by default, so this is only needed if you used preview mode.',
     inputSchema: {
       type: 'object',
       properties: {}
@@ -2476,7 +2481,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         result = recordScanResults(args);
         break;
       case 'analyze_boards':
-        result = analyzeBoards();
+        result = analyzeBoards(args);
         break;
       case 'sync_board_quality':
         result = syncBoardQuality();

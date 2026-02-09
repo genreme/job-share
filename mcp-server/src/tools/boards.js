@@ -193,10 +193,21 @@ export function recordScanResults({ boardId, scanned, successful, failed }) {
  * - Data completeness
  * - Application conversion rate
  *
+ * By default, automatically syncs results to the board registry.
+ * Set preview=true to analyze without persisting.
+ *
+ * @param {object} [params] - Options
+ * @param {boolean} [params.preview=false] - If true, only analyze without saving
  * @returns {object} Quality analysis with recommendations
  */
-export function analyzeBoards() {
+export function analyzeBoards({ preview = false } = {}) {
   const analysis = analyzeBoardQuality()
+
+  // Auto-sync to registry unless preview mode
+  let syncResult = null
+  if (!preview && analysis.boardsFound > 0) {
+    syncResult = syncQualityToRegistry()
+  }
 
   return {
     success: true,
@@ -211,7 +222,18 @@ export function analyzeBoards() {
       recentActivity: board.recentActivity
     })),
     recommendations: analysis.recommendations,
-    nextStep: 'Use sync_board_quality to update registry with these scores'
+    // Include sync status
+    synced: !preview && syncResult !== null,
+    syncResult: syncResult ? {
+      updated: syncResult.updated,
+      added: syncResult.added,
+      totalBoards: syncResult.totalBoards
+    } : null,
+    message: preview
+      ? 'Preview mode - results not saved. Call again without preview to persist.'
+      : syncResult
+        ? `Analyzed ${analysis.totalJobsAnalyzed} jobs. Updated ${syncResult.updated} boards, discovered ${syncResult.added} new.`
+        : 'No boards found to sync.'
   }
 }
 

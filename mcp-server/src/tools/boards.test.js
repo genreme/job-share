@@ -373,7 +373,7 @@ describe('analyzeBoards', () => {
     vi.clearAllMocks()
   })
 
-  it('returns analysis results', () => {
+  it('returns analysis results and auto-syncs by default', () => {
     vi.mocked(analyzeBoardQuality).mockReturnValue({
       totalJobsAnalyzed: 100,
       boardsFound: 5,
@@ -397,6 +397,11 @@ describe('analyzeBoards', () => {
         { type: 'warning', boardId: 'indeed', issue: 'Low extraction rate' }
       ]
     })
+    vi.mocked(syncQualityToRegistry).mockReturnValue({
+      updated: 2,
+      added: 0,
+      totalBoards: 5
+    })
 
     const result = analyzeBoards()
 
@@ -406,7 +411,31 @@ describe('analyzeBoards', () => {
     expect(result.boards).toHaveLength(2)
     expect(result.boards[0].name).toBe('LinkedIn')
     expect(result.recommendations).toHaveLength(1)
-    expect(result.nextStep).toContain('sync_board_quality')
+    // Should auto-sync
+    expect(syncQualityToRegistry).toHaveBeenCalled()
+    expect(result.synced).toBe(true)
+    expect(result.syncResult.updated).toBe(2)
+    expect(result.message).toContain('Analyzed')
+    expect(result.message).toContain('Updated')
+  })
+
+  it('does not sync in preview mode', () => {
+    vi.mocked(analyzeBoardQuality).mockReturnValue({
+      totalJobsAnalyzed: 10,
+      boardsFound: 2,
+      boards: [
+        { boardId: 'linkedin', totalJobs: 10, qualityScore: 80, metrics: {}, recentActivity: {} }
+      ],
+      recommendations: []
+    })
+
+    const result = analyzeBoards({ preview: true })
+
+    expect(result.success).toBe(true)
+    expect(syncQualityToRegistry).not.toHaveBeenCalled()
+    expect(result.synced).toBe(false)
+    expect(result.syncResult).toBeNull()
+    expect(result.message).toContain('Preview mode')
   })
 
   it('formats board names correctly', () => {
@@ -420,12 +449,33 @@ describe('analyzeBoards', () => {
       ],
       recommendations: []
     })
+    vi.mocked(syncQualityToRegistry).mockReturnValue({
+      updated: 3,
+      added: 0,
+      totalBoards: 3
+    })
 
     const result = analyzeBoards()
 
     expect(result.boards[0].name).toBe('Greenhouse')
     expect(result.boards[1].name).toBe('Wellfound (AngelList)')
     expect(result.boards[2].name).toBe('Custom-board')
+  })
+
+  it('handles no boards found', () => {
+    vi.mocked(analyzeBoardQuality).mockReturnValue({
+      totalJobsAnalyzed: 0,
+      boardsFound: 0,
+      boards: [],
+      recommendations: []
+    })
+
+    const result = analyzeBoards()
+
+    expect(result.success).toBe(true)
+    expect(syncQualityToRegistry).not.toHaveBeenCalled()
+    expect(result.synced).toBe(false)
+    expect(result.message).toContain('No boards found')
   })
 })
 
