@@ -19,3 +19,24 @@ node_modules/
 # Temp files
 *.tmp
 *.bak
+
+# Test artifacts
+test-reports/
+test-results/
+
+# MCP server runtime data (user-specific)
+mcp-server/data/jobs.json
+mcp-server/data/learning*.json
+mcp-server/data/job-research/*.json
+mcp-server/data/schema.md
+
+# Draft/temp tools (not part of main codebase)
+mcp-server/extract-jobs.js
+mcp-server/src/tools/jobs.js
+mcp-server/src/tools/resume.js
+
+# Local server
+server.js
+
+# Claude settings (user-specific)
+.claude/settings.local.json
