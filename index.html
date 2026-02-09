@@ -1009,6 +1009,9 @@
             <div class="header-top">
                 <h1>🎯 Job Search Command Center</h1>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="copy-btn" onclick="showCommandPalette()" style="background: #1a1a2e; color: white;">
+                        🎮 Commands
+                    </button>
                     <button class="copy-btn" onclick="copySearchCommand()" style="background: #7c3aed; color: white;">
                         🔎 Search Prompt
                     </button>
@@ -1713,6 +1716,138 @@ HELP ME:
             <button class="btn-primary" style="background: #6c757d; margin-left: 10px;" onclick="closeCommandModal()">Close</button>
         </div>
     </div>
+
+    <!-- Command Palette Modal -->
+    <div id="commandPaletteModal" class="modal">
+        <div class="modal-content" style="max-width: 900px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;">
+            <span class="close-modal" onclick="closeCommandPalette()">&times;</span>
+            <h2 style="margin-bottom: 15px;">🎮 Command Palette</h2>
+            <p style="color: #6c757d; margin-bottom: 15px;">MCP tools organized by workflow. Click a command to copy its prompt.</p>
+
+            <!-- Search/Filter -->
+            <input type="text" id="commandSearch" placeholder="Search commands..."
+                   style="width: 100%; padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 14px; margin-bottom: 15px;"
+                   oninput="filterCommands(this.value)">
+
+            <!-- Category Tabs -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; border-bottom: 2px solid #e1e8ed; padding-bottom: 10px;">
+                <button class="palette-tab active" onclick="filterPaletteCategory('all')">All</button>
+                <button class="palette-tab" onclick="filterPaletteCategory('discovery')">🔍 Discovery</button>
+                <button class="palette-tab" onclick="filterPaletteCategory('boards')">📊 Boards</button>
+                <button class="palette-tab" onclick="filterPaletteCategory('application')">📝 Application</button>
+                <button class="palette-tab" onclick="filterPaletteCategory('interview')">🎤 Interview</button>
+                <button class="palette-tab" onclick="filterPaletteCategory('analytics')">📈 Analytics</button>
+                <button class="palette-tab" onclick="filterPaletteCategory('profile')">👤 Profile</button>
+            </div>
+
+            <!-- Commands List -->
+            <div id="commandsList" style="overflow-y: auto; flex: 1; padding-right: 10px;"></div>
+        </div>
+    </div>
+
+    <style>
+        .palette-tab {
+            padding: 8px 16px;
+            border: none;
+            background: #f7f9fc;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .palette-tab:hover {
+            background: #e1e8ed;
+        }
+        .palette-tab.active {
+            background: #667eea;
+            color: white;
+        }
+        .command-card {
+            background: #f7f9fc;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .command-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+        }
+        .command-card.copied {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        .command-name {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .command-desc {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        .command-prompt {
+            background: #1a1a2e;
+            color: #22c55e;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            display: none;
+        }
+        .command-card.expanded .command-prompt {
+            display: block;
+        }
+        .command-category {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #667eea;
+            color: white;
+        }
+        .command-category.discovery { background: #0891b2; }
+        .command-category.boards { background: #7c3aed; }
+        .command-category.application { background: #059669; }
+        .command-category.interview { background: #dc2626; }
+        .command-category.analytics { background: #f59e0b; }
+        .command-category.profile { background: #ec4899; }
+        .command-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .command-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-copy-prompt {
+            background: #667eea;
+            color: white;
+        }
+        .btn-copy-prompt:hover {
+            background: #5a6fd6;
+        }
+        .btn-show-prompt {
+            background: #e1e8ed;
+            color: #1a1a2e;
+        }
+        .btn-show-prompt:hover {
+            background: #d1d8e0;
+        }
+    </style>
 
     <div id="updateModal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
@@ -8704,6 +8839,514 @@ After all updates are applied, provide:
                 showToast('Could not copy link', 'error');
             });
         }
+
+        // ============================================================================
+        // COMMAND PALETTE
+        // ============================================================================
+
+        const MCP_COMMANDS = [
+            // DISCOVERY
+            {
+                category: 'discovery',
+                name: 'Search for Jobs',
+                icon: '🔍',
+                description: 'Search job boards for new opportunities matching your criteria',
+                prompt: `Search for jobs matching my profile. Use these tools in order:
+1. get_existing_jobs - Check what I already have to avoid duplicates
+2. get_target_roles - Understand my search criteria
+3. Browse job boards and for each interesting job:
+   - add_job_manual if you can extract the details
+   - Or research_job_url if you need to fetch more data
+
+Focus on roles matching my target titles and preferred industries.`
+            },
+            {
+                category: 'discovery',
+                name: 'Review Inbox',
+                icon: '📥',
+                description: 'Review and triage jobs waiting in the inbox',
+                prompt: `Review my job inbox and help me triage:
+1. get_inbox - Get all inbox jobs sorted by fit score
+2. For each job, present: title, company, fit score, and reasoning
+3. Ask me to categorize each as: apply-now, maybe, or probably-not
+4. confirm_job to move jobs to my chosen status
+
+Present jobs one at a time and wait for my decision.`
+            },
+            {
+                category: 'discovery',
+                name: 'Add Job Manually',
+                icon: '➕',
+                description: 'Add a job you found manually (for auth-required pages)',
+                prompt: `I want to add a job I found. Use add_job_manual with:
+- title: [JOB TITLE]
+- company: [COMPANY NAME]
+- url: [JOB URL]
+- location: [LOCATION]
+- salary: [SALARY if known]
+
+The tool will auto-detect the source board and calculate a fit score.`
+            },
+            {
+                category: 'discovery',
+                name: 'Check for Duplicates',
+                icon: '🔄',
+                description: 'See all tracked jobs to avoid adding duplicates',
+                prompt: `Show me what jobs I'm already tracking:
+1. get_existing_jobs - List all companies and URLs
+2. Summarize by status (inbox, apply-now, maybe, applied, etc.)
+3. Highlight any companies where I have multiple roles`
+            },
+
+            // BOARDS
+            {
+                category: 'boards',
+                name: 'Analyze Board Quality',
+                icon: '📊',
+                description: 'Analyze and rank job boards by quality metrics (auto-saves)',
+                prompt: `Analyze my job board quality and save the results:
+1. analyze_boards - This will:
+   - Calculate extraction rates, freshness, and completeness per board
+   - Generate recommendations (which boards to prioritize/avoid)
+   - Auto-sync scores to the board registry
+
+Show me the ranked boards and any recommendations.`
+            },
+            {
+                category: 'boards',
+                name: 'Preview Board Analysis',
+                icon: '👁️',
+                description: 'Preview board quality without saving',
+                prompt: `Preview board quality analysis (don't save yet):
+analyze_boards with preview: true
+
+Show me the results so I can review before committing.`
+            },
+            {
+                category: 'boards',
+                name: 'View Board Rankings',
+                icon: '🏆',
+                description: 'See current board quality rankings',
+                prompt: `Show my job board rankings:
+get_job_boards - List boards sorted by quality rating
+
+Display each board's quality score, success rate, and job count.`
+            },
+            {
+                category: 'boards',
+                name: 'Get Board Report',
+                icon: '📋',
+                description: 'Detailed quality report for a specific board',
+                prompt: `Give me a detailed report on [BOARD_NAME]:
+get_board_report with boardId: "[BOARD_ID]"
+
+Show all metrics, recommendations, and comparison to other boards.`
+            },
+            {
+                category: 'boards',
+                name: 'Add New Board',
+                icon: '🆕',
+                description: 'Add a new job board for testing',
+                prompt: `Add a new job board to test:
+add_test_board with:
+- name: "[BOARD NAME]"
+- domain: "[domain.com]"
+- notes: "[why I'm adding this board]"
+
+It will start in testing status until promoted.`
+            },
+            {
+                category: 'boards',
+                name: 'Blacklist Board',
+                icon: '🚫',
+                description: 'Blacklist a low-quality board (requires confirmation)',
+                prompt: `I want to blacklist a board that's providing poor results:
+blacklist_board with:
+- boardId: "[BOARD_ID]"
+- reason: "[Why this board should be blacklisted]"
+- userConfirmed: true
+
+This removes it from my active board rotation.`
+            },
+
+            // APPLICATION
+            {
+                category: 'application',
+                name: 'Generate Resume',
+                icon: '📄',
+                description: 'Generate a tailored resume for a specific job',
+                prompt: `Generate a tailored resume for job ID [JOB_ID]:
+1. get_job_detail - Get job requirements
+2. get_profile - Get my experience and skills
+3. generate_optimized_resume - Create keyword-optimized resume
+
+Include relevant experience and skills that match the job description.`
+            },
+            {
+                category: 'application',
+                name: 'Generate Cover Letter',
+                icon: '✉️',
+                description: 'Generate a cover letter with company research',
+                prompt: `Generate a cover letter for job ID [JOB_ID]:
+1. get_job_detail - Get job info
+2. get_research with type: "full" - Get company research
+3. generate_researched_cover_letter - Create personalized letter
+
+Reference specific company initiatives and how my experience aligns.`
+            },
+            {
+                category: 'application',
+                name: 'Research Company',
+                icon: '🔬',
+                description: 'Deep research on a company before applying',
+                prompt: `Research the company for job ID [JOB_ID]:
+1. start_company_research - Initialize research
+2. [Search web for company news, culture, challenges]
+3. save_company_research - Store findings
+
+Focus on: recent news, culture, funding, and challenges I can help with.`
+            },
+            {
+                category: 'application',
+                name: 'Update Job Status',
+                icon: '📝',
+                description: 'Update a job with new information or status change',
+                prompt: `Update job ID [JOB_ID]:
+update_job with:
+- jobId: [JOB_ID]
+- updates: { status: "[new_status]", notes: "[what changed]" }
+
+Valid statuses: inbox, apply-now, maybe, probably-not, applied, archived`
+            },
+            {
+                category: 'application',
+                name: 'Archive Job',
+                icon: '📦',
+                description: 'Archive a closed or rejected job',
+                prompt: `Archive job ID [JOB_ID]:
+archive_job with:
+- jobId: [JOB_ID]
+- reason: "[Why - closed, rejected, withdrew, etc.]"
+
+This moves it out of active tracking.`
+            },
+            {
+                category: 'application',
+                name: 'Check Follow-ups',
+                icon: '📬',
+                description: 'See which jobs need follow-up',
+                prompt: `Show jobs that need follow-up:
+1. get_followups - Get prioritized follow-up queue
+2. For each high-priority item, show:
+   - Job title and company
+   - Days since last activity
+   - Suggested follow-up action`
+            },
+
+            // INTERVIEW
+            {
+                category: 'interview',
+                name: 'Generate Interview Questions',
+                icon: '❓',
+                description: 'Generate likely interview questions for a role',
+                prompt: `Generate interview questions for job ID [JOB_ID]:
+1. get_job_detail - Get role requirements
+2. get_stories_by_category - Get my STAR stories
+3. generate_interview_questions - Create personalized questions
+
+Link each question to relevant stories I can use.`
+            },
+            {
+                category: 'interview',
+                name: 'Practice Session',
+                icon: '🎯',
+                description: 'Start an interview practice session',
+                prompt: `Start interview practice for job ID [JOB_ID]:
+1. start_practice_session with:
+   - jobId: [JOB_ID]
+   - sessionType: "mixed" (behavioral + technical)
+   - feedbackTiming: "after_each"
+2. For each question, let me answer
+3. score_session_answer - Give feedback on my response`
+            },
+            {
+                category: 'interview',
+                name: 'Pre-Interview Checklist',
+                icon: '✅',
+                description: 'Get ready checklist before an interview',
+                prompt: `Get my pre-interview checklist for job ID [JOB_ID]:
+get_pre_interview_checklist with jobId: [JOB_ID]
+
+This includes:
+- Company talking points
+- Top stories to use
+- Questions to ask them
+- Focus areas based on practice`
+            },
+            {
+                category: 'interview',
+                name: 'Research Interviewer',
+                icon: '🔎',
+                description: 'Research your interviewer before meeting',
+                prompt: `Research interviewer for job ID [JOB_ID]:
+start_interviewer_research with:
+- jobId: [JOB_ID]
+- interviewerName: "[NAME]"
+- interviewerTitle: "[TITLE]"
+
+Find: background, interview style, shared interests, talking points.`
+            },
+            {
+                category: 'interview',
+                name: 'Capture Interview Notes',
+                icon: '📝',
+                description: 'Record notes after an interview',
+                prompt: `Capture interview notes for job ID [JOB_ID]:
+capture_interview_transcript with:
+- jobId: [JOB_ID]
+- sessionType: "real"
+- interviewerName: "[NAME]"
+- rawTranscript: "[My notes and recollections]"
+- overallVibe: "positive|neutral|negative"
+- highlights: ["key moment 1", "key moment 2"]`
+            },
+
+            // ANALYTICS
+            {
+                category: 'analytics',
+                name: 'Pipeline Overview',
+                icon: '📊',
+                description: 'See your job search funnel metrics',
+                prompt: `Show my pipeline metrics:
+1. get_funnel_metrics - Sankey flow through stages
+2. get_response_rates - Response rates by dimension
+3. get_application_stats - Overall statistics
+
+Visualize where jobs are getting stuck.`
+            },
+            {
+                category: 'analytics',
+                name: 'Response Rate Analysis',
+                icon: '📈',
+                description: 'Analyze response rates by different factors',
+                prompt: `Analyze my response rates:
+get_response_rates by each dimension:
+- by_industry
+- by_company_size
+- by_source
+
+Show which segments have the highest response rates.`
+            },
+            {
+                category: 'analytics',
+                name: 'Identify Bottlenecks',
+                icon: '⏱️',
+                description: 'Find where jobs are getting stuck',
+                prompt: `Identify pipeline bottlenecks:
+1. get_time_in_stage - How long jobs stay in each status
+2. get_bottlenecks - Stages exceeding threshold
+3. Recommend actions to improve flow`
+            },
+            {
+                category: 'analytics',
+                name: 'Skill Gap Analysis',
+                icon: '🎯',
+                description: 'Find skills employers want that you might be missing',
+                prompt: `Analyze skill gaps:
+1. get_skill_gaps - Skills requested but not in my profile
+2. get_skill_gap_recommendations - Actionable next steps
+
+Prioritize by frequency in job descriptions.`
+            },
+
+            // PROFILE
+            {
+                category: 'profile',
+                name: 'View Profile',
+                icon: '👤',
+                description: 'See your full professional profile',
+                prompt: `Show my professional profile:
+get_profile - Full profile including:
+- Experience with projects
+- Skills by category
+- STAR stories
+- Target roles
+- Communication preferences`
+            },
+            {
+                category: 'profile',
+                name: 'Find Stories by Theme',
+                icon: '📖',
+                description: 'Find STAR stories matching a theme',
+                prompt: `Find my stories about [THEME]:
+get_stories_by_category with category: "[THEME]"
+
+Themes: leadership, conflict, failure, achievement, teamwork, innovation`
+            },
+            {
+                category: 'profile',
+                name: 'Profile Cleanup',
+                icon: '🧹',
+                description: 'Find duplicates, stale items, and gaps in profile',
+                prompt: `Run profile cleanup analysis:
+run_weekly_cleanup - Find:
+- Duplicate skills/stories
+- Stale items not used recently
+- Gaps in evidence
+
+Review findings before making changes.`
+            },
+            {
+                category: 'profile',
+                name: 'Get Resume Match',
+                icon: '🎯',
+                description: 'See how well your profile matches a job',
+                prompt: `Check resume match for job ID [JOB_ID]:
+get_resume_match with jobId: [JOB_ID]
+
+Shows:
+- Match percentage
+- Matching skills/experience
+- Gaps to address in cover letter`
+            }
+        ];
+
+        let currentPaletteCategory = 'all';
+
+        function showCommandPalette() {
+            const modal = document.getElementById('commandPaletteModal');
+            modal.classList.add('active');
+            renderCommands();
+            document.getElementById('commandSearch').focus();
+        }
+
+        function closeCommandPalette() {
+            document.getElementById('commandPaletteModal').classList.remove('active');
+            document.getElementById('commandSearch').value = '';
+            currentPaletteCategory = 'all';
+            // Reset tab styling
+            document.querySelectorAll('.palette-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.palette-tab').classList.add('active');
+        }
+
+        function filterPaletteCategory(category) {
+            currentPaletteCategory = category;
+            document.querySelectorAll('.palette-tab').forEach(t => {
+                t.classList.toggle('active',
+                    (category === 'all' && t.textContent === 'All') ||
+                    t.textContent.toLowerCase().includes(category)
+                );
+            });
+            renderCommands();
+        }
+
+        function filterCommands(searchText) {
+            renderCommands(searchText.toLowerCase());
+        }
+
+        function renderCommands(searchFilter = '') {
+            const container = document.getElementById('commandsList');
+
+            const filtered = MCP_COMMANDS.filter(cmd => {
+                const matchesCategory = currentPaletteCategory === 'all' || cmd.category === currentPaletteCategory;
+                const matchesSearch = !searchFilter ||
+                    cmd.name.toLowerCase().includes(searchFilter) ||
+                    cmd.description.toLowerCase().includes(searchFilter) ||
+                    cmd.prompt.toLowerCase().includes(searchFilter);
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 40px;">No commands match your search.</p>';
+                return;
+            }
+
+            // Group by category
+            const grouped = {};
+            filtered.forEach(cmd => {
+                if (!grouped[cmd.category]) grouped[cmd.category] = [];
+                grouped[cmd.category].push(cmd);
+            });
+
+            const categoryLabels = {
+                discovery: '🔍 Discovery',
+                boards: '📊 Job Boards',
+                application: '📝 Application',
+                interview: '🎤 Interview Prep',
+                analytics: '📈 Analytics',
+                profile: '👤 Profile'
+            };
+
+            let html = '';
+            Object.entries(grouped).forEach(([cat, cmds]) => {
+                if (currentPaletteCategory === 'all') {
+                    html += `<h3 style="margin: 20px 0 10px 0; color: #667eea; font-size: 14px;">${categoryLabels[cat] || cat}</h3>`;
+                }
+                cmds.forEach((cmd, idx) => {
+                    const cmdId = `cmd-${cat}-${idx}`;
+                    html += `
+                        <div class="command-card" id="${cmdId}" onclick="toggleCommandExpand('${cmdId}')">
+                            <div class="command-name">
+                                <span>${cmd.icon}</span>
+                                <span>${cmd.name}</span>
+                                <span class="command-category ${cmd.category}">${cmd.category}</span>
+                            </div>
+                            <div class="command-desc">${cmd.description}</div>
+                            <div class="command-prompt">${escapeHtml(cmd.prompt)}</div>
+                            <div class="command-actions">
+                                <button class="btn-copy-prompt" onclick="copyCommandPrompt(event, '${cmdId}', \`${escapeForJs(cmd.prompt)}\`)">📋 Copy Prompt</button>
+                                <button class="btn-show-prompt" onclick="toggleCommandExpand('${cmdId}', event)">👁️ Show/Hide</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+
+            container.innerHTML = html;
+        }
+
+        function escapeForJs(str) {
+            return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+        }
+
+        function toggleCommandExpand(cmdId, event) {
+            if (event) event.stopPropagation();
+            const card = document.getElementById(cmdId);
+            card.classList.toggle('expanded');
+        }
+
+        function copyCommandPrompt(event, cmdId, prompt) {
+            event.stopPropagation();
+            const card = document.getElementById(cmdId);
+
+            navigator.clipboard.writeText(prompt).then(() => {
+                card.classList.add('copied');
+                showToast('Prompt copied! Paste in Claude.');
+                setTimeout(() => card.classList.remove('copied'), 2000);
+            }).catch(() => {
+                // Fallback: show in command modal
+                const modal = document.getElementById('commandModal');
+                const textarea = document.getElementById('commandText');
+                const title = document.getElementById('commandModalTitle');
+                if (title) title.textContent = '📋 Copy This Prompt';
+                textarea.value = prompt;
+                modal.classList.add('active');
+                setTimeout(() => {
+                    textarea.focus();
+                    textarea.select();
+                }, 100);
+            });
+        }
+
+        // Close palette on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const palette = document.getElementById('commandPaletteModal');
+                if (palette.classList.contains('active')) {
+                    closeCommandPalette();
+                }
+            }
+        });
 
         // Initialize on load
         window.addEventListener('load', async () => {
