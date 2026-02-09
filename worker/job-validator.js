@@ -96,7 +96,7 @@ export default {
 
       // Health check
       if (path === '/health') {
-        return new Response(JSON.stringify({ status: 'ok', version: '1.0.0' }), { headers: corsHeaders });
+        return new Response(JSON.stringify({ status: 'ok', version: '1.1.0' }), { headers: corsHeaders });
       }
 
       return new Response(JSON.stringify({ error: 'Not found' }), {
@@ -183,7 +183,7 @@ async function validateJob(jobUrl, existingJobs = []) {
 
     result.status = 'active';
 
-    // Extract job details
+    // Extract job details from job board page
     const details = extractJobDetails(html, jobUrl);
     result.title = details.title;
     result.company = details.company;
@@ -191,22 +191,55 @@ async function validateJob(jobUrl, existingJobs = []) {
     result.salary = details.salary;
     result.description = details.description;
 
-    // Calculate fit score
-    const fit = calculateFitScore(details);
+    // Check if we have sparse data - try company careers page as fallback
+    const hasSpareData = !details.title || !details.company ||
+                         (details.title && details.title.length < 5) ||
+                         (details.company && details.company.length < 2);
+
+    if (hasSpareData || !details.location) {
+      // Try to find and fetch from company careers page
+      const careersData = await tryCompanyCareersPageFallback(details, jobUrl);
+      if (careersData) {
+        // Merge data - prefer non-empty values
+        if (!result.title || result.title.length < 5) result.title = careersData.title || result.title;
+        if (!result.company || result.company.length < 2) result.company = careersData.company || result.company;
+        if (!result.location) result.location = careersData.location || result.location;
+        if (!result.salary) result.salary = careersData.salary || result.salary;
+        if (!result.description || result.description.length < 100) {
+          result.description = careersData.description || result.description;
+        }
+        if (careersData.originalPosting) {
+          result.originalPosting = careersData.originalPosting;
+          result.warnings.push('Enhanced with data from company careers page');
+        }
+      }
+    }
+
+    // Calculate fit score (now with potentially enhanced data)
+    const fit = calculateFitScore({
+      title: result.title,
+      company: result.company,
+      location: result.location,
+      salary: result.salary,
+      description: result.description
+    });
     result.fitScore = fit.score;
     result.fitBreakdown = fit.breakdown;
 
     // Check for duplicates
-    const duplicate = findDuplicate(details, existingJobs);
+    const duplicate = findDuplicate({
+      title: result.title,
+      company: result.company
+    }, existingJobs);
     if (duplicate) {
       result.isDuplicate = true;
       result.duplicateOf = duplicate;
       result.warnings.push(`Possible duplicate of existing job: ${duplicate.title} at ${duplicate.company}`);
     }
 
-    // Try to find original company careers page
-    if (details.company) {
-      result.originalPosting = await findCompanyCareersPage(details.company, details.title);
+    // If we didn't already find careers page, try now
+    if (!result.originalPosting && result.company) {
+      result.originalPosting = await findCompanyCareersPage(result.company, result.title);
     }
 
   } catch (error) {
@@ -732,6 +765,115 @@ async function findCompanyCareersPage(company, jobTitle) {
       } catch (e) {
         // Domain doesn't exist or blocked, continue
       }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Try to fetch additional job details from company careers page
+ * Used as fallback when job board page has sparse data
+ */
+async function tryCompanyCareersPageFallback(details, originalUrl) {
+  // Try to determine company from URL if not in details
+  let company = details.company;
+  if (!company) {
+    company = extractCompanyFromUrl(originalUrl);
+  }
+
+  if (!company) {
+    return null;
+  }
+
+  // Clean company name for domain search
+  const cleanCompany = company.toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+    .replace(/inc|llc|corp|ltd|limited|company/g, '');
+
+  // Common domain patterns
+  const domains = [
+    `${cleanCompany}.com`,
+    `${cleanCompany}.io`,
+    `${cleanCompany}.org`
+  ];
+
+  for (const domain of domains) {
+    for (const path of CAREERS_PATTERNS) {
+      const careersUrl = `https://${domain}${path}`;
+
+      try {
+        // Full fetch (not HEAD) to get content
+        const response = await fetch(careersUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+            'Accept': 'text/html,application/xhtml+xml'
+          },
+          redirect: 'follow'
+        });
+
+        if (response.status !== 200) continue;
+
+        const html = await response.text();
+
+        // Look for the specific job on the careers page
+        // Try to find a link or section that matches the job title
+        const jobTitle = details.title || '';
+        const jobTitleLower = jobTitle.toLowerCase();
+
+        // Check if this careers page lists the job
+        if (jobTitle && html.toLowerCase().includes(jobTitleLower.substring(0, 20))) {
+          // Extract data from careers page
+          const careersDetails = extractJobDetails(html, careersUrl);
+
+          // Only return if we found useful additional data
+          if (careersDetails.title || careersDetails.location || careersDetails.salary) {
+            return {
+              ...careersDetails,
+              company: company,
+              originalPosting: careersUrl
+            };
+          }
+        }
+
+        // Even if job not found, we found the careers page - save it
+        // and try to extract company info at least
+        const careersDetails = extractJobDetails(html, careersUrl);
+        if (careersDetails.company || careersDetails.location) {
+          return {
+            company: careersDetails.company || company,
+            location: careersDetails.location,
+            originalPosting: careersUrl
+          };
+        }
+
+      } catch (e) {
+        // Domain doesn't exist or blocked, continue
+        continue;
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Extract company name from job board URL
+ */
+function extractCompanyFromUrl(url) {
+  const patterns = [
+    /jobs\.lever\.co\/([^\/]+)/i,
+    /([^.]+)\.lever\.co/i,
+    /boards\.greenhouse\.io\/([^\/]+)/i,
+    /([^.]+)\.greenhouse\.io/i,
+    /jobs\.ashbyhq\.com\/([^\/]+)/i,
+    /([^.]+)\.wd\d*\.myworkdayjobs\.com/i
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      return formatCompanyName(match[1]);
     }
   }
 
