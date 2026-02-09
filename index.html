@@ -2800,21 +2800,17 @@ After all updates are applied, provide:
         };
 
         async function initStorage() {
-            console.log('[JSCC] initStorage called');
             try {
                 const stored = await window.storage.get('job-tracker-data');
-                console.log('[JSCC] Got stored data:', stored ? 'yes' : 'no');
                 if (stored && stored.value) {
                     const parsed = JSON.parse(stored.value);
-                    console.log('[JSCC] Parsed stored jobs:', parsed.jobs?.length || 0);
                     return parsed;
                 }
             } catch (e) {
-                console.log('[JSCC] No stored data error:', e);
+                // Storage error - fall through to sample jobs
             }
 
             const sampleJobs = getSampleJobs();
-            console.log('[JSCC] Using sample jobs:', sampleJobs.length);
             return {
                 jobs: sampleJobs,
                 lastSearch: "2026-01-24T22:00:00Z",
@@ -2848,16 +2844,13 @@ After all updates are applied, provide:
         // Save data (to localStorage and optionally to server)
         async function saveData(data) {
             try {
-                console.log('Attempting to save data to storage...');
                 await window.storage.set('job-tracker-data', JSON.stringify(data));
-                console.log('Data saved successfully');
 
                 // Auto-sync to server if running on localhost (fire and forget)
                 if (typeof autoSyncToServer === 'function') {
                     autoSyncToServer().catch(() => {}); // Silent fail for auto-sync
                 }
             } catch (e) {
-                console.error('Storage error:', e);
                 throw new Error(`Failed to save data: ${e.message}`);
             }
         }
@@ -3001,11 +2994,8 @@ After all updates are applied, provide:
                 });
 
                 if (!response.ok) throw new Error('Server sync failed');
-
-                console.log('✅ Auto-synced to server');
                 return true;
             } catch (err) {
-                console.warn('Auto-sync failed:', err.message);
                 return false;
             }
         }
@@ -3115,9 +3105,6 @@ After all updates are applied, provide:
                                 window.currentData.jobs.push(job);
                                 pulled++;
                             }
-                        }
-                        if (pulled > 0) {
-                            console.log(`[Sync] Pulled ${pulled} new jobs from server`);
                         }
                     }
                 }
@@ -3929,8 +3916,7 @@ After all updates are applied, provide:
                             btn.style.color = originalColor;
                         }, 3000);
                     }
-                }).catch((err) => {
-                    console.log('📋 Clipboard API blocked - showing modal');
+                }).catch(() => {
                     showBrowserResearchModal();
                 });
             } else {
@@ -3965,12 +3951,10 @@ After all updates are applied, provide:
                         btn.style.background = originalBg;
                         btn.style.color = originalColor;
                     }, 3000);
-                }).catch((err) => {
-                    console.log('📋 Clipboard API blocked (' + err.name + ') - trying fallback');
+                }).catch(() => {
                     tryExecCommandCopy(btn);
                 });
             } else {
-                console.log('📋 Clipboard API not available - using fallback');
                 tryExecCommandCopy(btn);
             }
         }
@@ -3990,7 +3974,6 @@ After all updates are applied, provide:
                 document.body.removeChild(textArea);
                 
                 if (successful) {
-                    console.log('✅ Copy succeeded via execCommand');
                     const originalText = btn.innerHTML;
                     const originalBg = btn.style.background || '#7c3aed';
                     const originalColor = btn.style.color || 'white';
@@ -4003,11 +3986,9 @@ After all updates are applied, provide:
                         btn.style.color = originalColor;
                     }, 3000);
                 } else {
-                    console.log('❌ execCommand failed - opening modal');
                     showCommandModal();
                 }
             } catch (e) {
-                console.log('❌ Copy error (' + e.name + ') - opening modal');
                 if (textArea.parentNode) {
                     document.body.removeChild(textArea);
                 }
@@ -4032,12 +4013,10 @@ After all updates are applied, provide:
                             btn.style.background = originalBg;
                         }, 3000);
                     }
-                }).catch((err) => {
-                    console.log('📋 Clipboard API blocked (' + err.name + ') - trying fallback');
+                }).catch(() => {
                     tryStatusCheckExecCommand(btn);
                 });
             } else {
-                console.log('📋 Clipboard API not available - using fallback');
                 tryStatusCheckExecCommand(btn);
             }
         }
@@ -4057,7 +4036,6 @@ After all updates are applied, provide:
                 document.body.removeChild(textArea);
 
                 if (successful) {
-                    console.log('✅ Status check copy succeeded via execCommand');
                     if (btn) {
                         const originalText = btn.innerHTML;
                         btn.innerHTML = '✅ Copied! Paste in Claude';
@@ -4069,11 +4047,9 @@ After all updates are applied, provide:
                         }, 3000);
                     }
                 } else {
-                    console.log('❌ execCommand failed - showing alert');
                     alert('Please manually copy the status check command from the modal that will appear.');
                 }
             } catch (e) {
-                console.log('❌ Copy error (' + e.name + ')');
                 if (textArea.parentNode) {
                     document.body.removeChild(textArea);
                 }
@@ -4084,28 +4060,23 @@ After all updates are applied, provide:
         // Copy Deep Research command for Claude Chat with MCP
         function copyDeepResearchPrompt() {
             try {
-                console.log('🔬 Deep Research button clicked');
                 const data = window.currentData;
                 if (!data || !data.jobs) {
                     showToast('Data not loaded yet. Please wait and try again.', 'error');
                     return;
                 }
                 const jobCount = data.jobs.filter(j => j.status !== 'archived').length;
-                console.log('📊 Jobs to review:', jobCount);
                 const prompt = DEEP_RESEARCH_COMMAND.replace('{JOB_COUNT}', jobCount);
-                console.log('📝 Prompt length:', prompt.length);
 
                 // Always show the modal for reliability (clipboard API is unreliable on file://)
                 showDeepResearchModal(prompt);
 
             } catch (err) {
-                console.error('❌ Deep Research error:', err);
                 alert('Error in Deep Research: ' + err.message);
             }
         }
 
         function showDeepResearchModal(prompt) {
-            console.log('📋 Showing Deep Research modal');
             const modal = document.getElementById('commandModal');
             const textarea = document.getElementById('commandText');
             const title = document.getElementById('commandModalTitle');
@@ -4126,7 +4097,6 @@ After all updates are applied, provide:
 
             textarea.value = prompt;
             modal.classList.add('active');
-            console.log('✅ Modal activated');
 
             // Select the text for easy copying
             setTimeout(() => {
@@ -4375,10 +4345,7 @@ After all updates are applied, provide:
         async function renderDocuments() {
             const container = document.getElementById('documentsContainer');
             const noDocsMsg = document.getElementById('noDocuments');
-            if (!container || !noDocsMsg) {
-                console.log('[JSCC] documentsContainer or noDocuments not found, skipping renderDocuments');
-                return;
-            }
+            if (!container || !noDocsMsg) return;
             const data = await initStorage();
 
             try {
@@ -5834,15 +5801,13 @@ After all updates are applied, provide:
         }
 
         function showUpdateForm(jobId) {
-            console.log('Opening update form for job:', jobId);
-            
             // Reset form first
             document.getElementById('updateForm').reset();
-            
+
             // Get current time in Eastern Time
             const now = new Date();
             const etTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-            
+
             // Format for datetime-local input (YYYY-MM-DDTHH:MM)
             const year = etTime.getFullYear();
             const month = String(etTime.getMonth() + 1).padStart(2, '0');
@@ -5850,9 +5815,7 @@ After all updates are applied, provide:
             const hours = String(etTime.getHours()).padStart(2, '0');
             const minutes = String(etTime.getMinutes()).padStart(2, '0');
             const formattedTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-            
-            console.log('Setting form values:', { jobId, formattedTime });
-            
+
             // Set form values
             document.getElementById('updateJobId').value = jobId;
             document.getElementById('updateTimestamp').value = formattedTime;
@@ -5871,9 +5834,7 @@ After all updates are applied, provide:
                 const type = document.getElementById('updateType').value;
                 const timestamp = document.getElementById('updateTimestamp').value;
                 const notes = document.getElementById('updateNotes').value;
-                
-                console.log('Submitting update:', { jobId, type, timestamp, notes });
-                
+
                 // Validate inputs
                 if (!jobId) {
                     alert('Error: Job ID is missing');
@@ -5901,21 +5862,17 @@ After all updates are applied, provide:
                 // Get current data
                 if (!window.currentData || !window.currentData.jobs) {
                     alert('Error: Data not loaded yet. Please refresh the page.');
-                    console.error('Data not loaded yet');
                     return;
                 }
-                
+
                 const data = window.currentData;
                 const job = data.jobs.find(j => j.id === jobId);
-                
+
                 if (!job) {
                     alert(`Error: Could not find job with ID ${jobId}`);
-                    console.error('Job not found:', jobId);
                     return;
                 }
-                
-                console.log('Found job:', job);
-                
+
                 // Initialize updates array if it doesn't exist
                 if (!job.updates) {
                     job.updates = [];
@@ -5928,9 +5885,7 @@ After all updates are applied, provide:
                     notes: notes
                 };
                 job.updates.push(newUpdate);
-                
-                console.log('Added update:', newUpdate);
-                
+
                 // If rejected, add symbol and update status
                 if (type === 'Rejected') {
                     if (!job.symbols.includes('❌')) {
@@ -5947,18 +5902,13 @@ After all updates are applied, provide:
                 }
                 
                 // Save and reload
-                console.log('Saving data...');
                 await saveData(data);
-                console.log('Reloading data...');
                 await loadData();
-                
+
                 // Close modal and refresh job detail
                 closeUpdateModal();
                 showJobDetail(jobId);
-                
-                console.log('Update complete!');
             } catch (error) {
-                console.error('Error submitting update:', error);
                 alert(`Error saving update: ${error.message}`);
             }
         }
@@ -5967,15 +5917,12 @@ After all updates are applied, provide:
             if (!confirm('Mark this job as rejected? This will add a rejection update and archive the job.')) {
                 return;
             }
-            
-            if (!window.currentData || !window.currentData.jobs) {
-                console.error('Data not loaded yet');
-                return;
-            }
-            
+
+            if (!window.currentData || !window.currentData.jobs) return;
+
             const data = window.currentData;
             const job = data.jobs.find(j => j.id === jobId);
-            
+
             if (!job) return;
             
             // Initialize updates array if it doesn't exist
@@ -6245,14 +6192,9 @@ After all updates are applied, provide:
 
         function applyFilters() {
             // Safety check
-            if (!window.currentData || !window.currentData.jobs) {
-                console.error('[JSCC] Data not loaded yet');
-                return;
-            }
+            if (!window.currentData || !window.currentData.jobs) return;
 
             let filtered = window.currentData.jobs;
-            console.log('[JSCC] applyFilters: starting with', filtered.length, 'jobs');
-            console.log('[JSCC] applyFilters: filterStates =', JSON.stringify(filterStates));
 
             // Check if any status is set to "only"
             const onlyStatus = Object.keys(filterStates).find(key => filterStates[key] === 'only');
@@ -6260,15 +6202,12 @@ After all updates are applied, provide:
             if (onlyStatus) {
                 // Show only this status
                 filtered = filtered.filter(job => job.status === onlyStatus);
-                console.log('[JSCC] applyFilters: showing only', onlyStatus, '→', filtered.length, 'jobs');
             } else {
                 // Hide statuses marked as "hidden" (but ignore 'all' since it's not a real status)
                 const hiddenStatuses = Object.keys(filterStates).filter(key =>
                     filterStates[key] === 'hidden' && key !== 'all'
                 );
-                console.log('[JSCC] applyFilters: hidden statuses =', hiddenStatuses);
                 filtered = filtered.filter(job => !hiddenStatuses.includes(job.status));
-                console.log('[JSCC] applyFilters: after filtering →', filtered.length, 'jobs');
             }
             
             // Sort the filtered array
@@ -6345,10 +6284,7 @@ After all updates are applied, provide:
 
         function renderSearchHistory(data) {
             const container = document.getElementById('searchHistoryContainer');
-            if (!container) {
-                console.log('[JSCC] searchHistoryContainer not found, skipping');
-                return;
-            }
+            if (!container) return;
 
             if (data.searchHistory.length === 0) {
                 container.innerHTML = `
@@ -6371,10 +6307,7 @@ After all updates are applied, provide:
 
         function renderArchive(data) {
             const container = document.getElementById('archiveContainer');
-            if (!container) {
-                console.log('[JSCC] archiveContainer not found, skipping renderArchive');
-                return;
-            }
+            if (!container) return;
 
             if (data.pdfArchive.length === 0) {
                 container.innerHTML = `
@@ -6981,13 +6914,10 @@ After all updates are applied, provide:
         }
 
         async function loadData() {
-            console.log('[JSCC] loadData started');
             const data = await initStorage();
-            console.log('[JSCC] initStorage returned, jobs:', data?.jobs?.length || 'NO DATA');
             window.currentData = data;
 
             if (!data || !data.jobs || data.jobs.length === 0) {
-                console.error('[JSCC] ERROR: No jobs data!');
                 document.getElementById('jobsContainer').innerHTML = '<p style="color: red; padding: 20px;">ERROR: No jobs data loaded. Check console.</p>';
                 return;
             }
@@ -6998,7 +6928,7 @@ After all updates are applied, provide:
                     job.updates = [];
                 }
             });
-            
+
             // ALWAYS set default filter state on load (hide archived, show everything else)
             // This ensures jobs are always visible on first load
             filterStates = {
@@ -7012,9 +6942,6 @@ After all updates are applied, provide:
             sortColumn = 'fitScore';
             sortDirection = 'desc';
 
-            console.log('[JSCC] Default filter state set:', JSON.stringify(filterStates));
-            console.log('[JSCC] Jobs count:', data.jobs.length);
-
             // Sort jobs according to current sort settings
             if (sortColumn === 'fitScore') {
                 data.jobs.sort((a, b) => sortDirection === 'desc' ? b.fitScore - a.fitScore : a.fitScore - b.fitScore);
@@ -7027,15 +6954,12 @@ After all updates are applied, provide:
             updateFilterButtons();
 
             // Apply default filters and render
-            console.log('[JSCC] About to call applyFilters...');
             applyFilters();
-            console.log('[JSCC] loadData complete');
 
             // Safari fallback: if no jobs rendered after 500ms, force render
             setTimeout(() => {
                 const container = document.getElementById('jobsContainer');
                 if (container && (!container.innerHTML || container.innerHTML.includes('No Jobs Found'))) {
-                    console.log('[JSCC] Safari fallback: forcing job render');
                     forceRenderAllJobs();
                 }
             }, 500);
@@ -7043,21 +6967,13 @@ After all updates are applied, provide:
 
         // Force render jobs on load - fallback if filters fail
         function forceRenderAllJobs() {
-            console.log('[JSCC] forceRenderAllJobs called');
-            console.log('[JSCC] window.currentData exists:', !!window.currentData);
-            console.log('[JSCC] jobs array exists:', !!window.currentData?.jobs);
-            console.log('[JSCC] jobs count:', window.currentData?.jobs?.length || 0);
-
             if (window.currentData && window.currentData.jobs && window.currentData.jobs.length > 0) {
                 const nonArchived = window.currentData.jobs.filter(j => j.status !== 'archived');
-                console.log('[JSCC] Force rendering', nonArchived.length, 'non-archived jobs');
                 renderJobs(nonArchived);
             } else {
                 // Last resort: render sample jobs directly
-                console.log('[JSCC] No currentData, rendering sample jobs directly');
                 const sampleJobs = getSampleJobs();
                 const nonArchived = sampleJobs.filter(j => j.status !== 'archived');
-                console.log('[JSCC] Rendering', nonArchived.length, 'sample jobs');
                 renderJobs(nonArchived);
             }
         }
@@ -7154,15 +7070,12 @@ After all updates are applied, provide:
         async function checkExtensionJobs() {
             // Check URL hash for import data
             const hash = window.location.hash;
-            console.log('JSCC Dashboard: Checking for extension jobs, hash:', hash);
 
             if (hash.startsWith('#import=')) {
                 try {
                     const encoded = hash.substring(8); // Remove '#import='
-                    console.log('JSCC Dashboard: Found import hash, decoding...');
                     const decoded = decodeURIComponent(atob(encoded));
                     const pending = JSON.parse(decoded);
-                    console.log('JSCC Dashboard: Decoded jobs:', pending);
 
                     if (pending && pending.length > 0) {
                         // Clear the hash to prevent re-import on refresh
@@ -7173,7 +7086,7 @@ After all updates are applied, provide:
                         return;
                     }
                 } catch (e) {
-                    console.error('JSCC Dashboard: Error decoding extension jobs from URL:', e);
+                    // Invalid import hash - ignore
                 }
                 // Clear invalid hash
                 history.replaceState(null, '', window.location.pathname);
@@ -7191,7 +7104,7 @@ After all updates are applied, provide:
                     }
                 }
             } catch (e) {
-                console.error('Error checking localStorage for extension jobs:', e);
+                // localStorage error - ignore
             }
 
             document.getElementById('extensionImportBtn').style.display = 'none';
@@ -7199,8 +7112,6 @@ After all updates are applied, provide:
 
         // Import an array of jobs (used by both URL hash and localStorage import)
         async function importJobsArray(pending) {
-            console.log('JSCC Dashboard: importJobsArray called with', pending);
-
             if (!pending || pending.length === 0) {
                 showToast('No jobs to import', 'error');
                 return;
@@ -7208,29 +7119,24 @@ After all updates are applied, provide:
 
             const data = window.currentData;
             if (!data) {
-                console.error('JSCC Dashboard: No current data available!');
                 showToast('Dashboard data not loaded. Please refresh.', 'error');
                 return;
             }
-            console.log('JSCC Dashboard: Current data has', data.jobs.length, 'jobs');
+
             let added = 0;
             let skipped = 0;
 
             // Get max ID from current jobs
             const maxId = Math.max(0, ...data.jobs.map(j => j.id));
             let nextId = maxId + 1;
-            console.log('JSCC Dashboard: Max ID is', maxId, ', next ID will be', nextId);
 
-            pending.forEach((job, index) => {
-                console.log(`JSCC Dashboard: Processing job ${index + 1}:`, job.title, '@', job.company);
-
+            pending.forEach((job) => {
                 // Check for duplicates by URL
                 const exists = data.jobs.some(j =>
                     j.url && job.url && j.url.split('?')[0] === job.url.split('?')[0]
                 );
 
                 if (exists) {
-                    console.log('JSCC Dashboard: Job already exists (duplicate URL), skipping');
                     skipped++;
                     return;
                 }
@@ -7243,23 +7149,16 @@ After all updates are applied, provide:
                     found: job.found || new Date().toISOString().split('T')[0],
                     posted: job.posted || new Date().toISOString().split('T')[0]
                 };
-                console.log('JSCC Dashboard: Adding new job with ID', newJob.id);
                 data.jobs.push(newJob);
                 added++;
             });
 
-            console.log('JSCC Dashboard: Import complete. Added:', added, 'Skipped:', skipped);
-
             // Save updated data
-            console.log('JSCC Dashboard: Saving data...');
             await saveData(data);
-            console.log('JSCC Dashboard: Data saved!');
 
             if (added > 0) {
                 showToast(`Imported ${added} job${added > 1 ? 's' : ''} from LinkedIn${skipped > 0 ? ` (${skipped} duplicates skipped)` : ''}`);
-                console.log('JSCC Dashboard: Reloading data...');
                 await loadData();
-                console.log('JSCC Dashboard: Reload complete!');
             } else if (skipped > 0) {
                 showToast(`All ${skipped} jobs already exist in dashboard`, 'error');
             }
@@ -8238,22 +8137,18 @@ After all updates are applied, provide:
         let supabaseInitAttempts = 0;
         function initSupabase() {
             supabaseInitAttempts++;
-            console.log('[JSCC] initSupabase attempt', supabaseInitAttempts);
 
             if (typeof window.supabase !== 'undefined') {
                 try {
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                    console.log('[JSCC] Supabase client created successfully');
                     loadInbox();
                     setupRealtimeSubscription();
                 } catch (err) {
-                    console.error('[JSCC] Failed to create Supabase client:', err);
+                    // Failed to create Supabase client
                 }
             } else if (supabaseInitAttempts < 10) {
-                console.log('[JSCC] Supabase library not loaded yet, retrying...');
                 setTimeout(initSupabase, 500);
             } else {
-                console.error('[JSCC] Supabase library failed to load after 10 attempts');
                 const pendingList = document.getElementById('pendingList');
                 if (pendingList) {
                     pendingList.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">❌ Database library failed to load. Try refreshing the page.</p>';
@@ -8269,8 +8164,7 @@ After all updates are applied, provide:
                 .channel('job_submissions')
                 .on('postgres_changes',
                     { event: 'INSERT', schema: 'public', table: 'job_submissions' },
-                    (payload) => {
-                        console.log('New submission received:', payload);
+                    () => {
                         loadInbox();
                         showToast('New job submission received!', 'info');
                     }
@@ -8287,7 +8181,6 @@ After all updates are applied, provide:
             // FIRST: Try to load local inbox jobs from server API
             if (isLocalServer()) {
                 try {
-                    console.log('loadInbox: Fetching local inbox jobs from server...');
                     const response = await fetch('/api/jobs');
                     if (response.ok) {
                         const serverData = await response.json();
@@ -8310,17 +8203,15 @@ After all updates are applied, provide:
                                 _isLocal: true,  // Flag to identify local jobs
                                 _localId: job.id  // Original job ID for updates
                             }));
-                        console.log('loadInbox: Found', localInboxJobs.length, 'local inbox jobs');
                     }
                 } catch (err) {
-                    console.warn('loadInbox: Could not fetch local inbox:', err.message);
+                    // Could not fetch local inbox
                 }
             }
 
             // SECOND: Try Supabase if available
             if (supabaseClient) {
                 try {
-                    console.log('loadInbox: Fetching Supabase submissions...');
                     const { data: pending, error } = await supabaseClient
                         .from('job_submissions')
                         .select('*')
@@ -8328,17 +8219,15 @@ After all updates are applied, provide:
                         .order('created_at', { ascending: false });
 
                     if (!error && pending) {
-                        console.log('loadInbox: Found', pending.length, 'Supabase submissions');
                         allPending = pending;
                     }
                 } catch (err) {
-                    console.warn('loadInbox: Supabase error:', err.message);
+                    // Supabase error
                 }
             }
 
             // Combine local + Supabase submissions
             const combinedPending = [...localInboxJobs, ...allPending];
-            console.log('loadInbox: Total pending:', combinedPending.length, '(local:', localInboxJobs.length, ', supabase:', allPending.length, ')');
 
             // Render combined results
             if (combinedPending.length > 0 || localInboxJobs.length > 0 || allPending.length > 0) {
@@ -8369,10 +8258,9 @@ After all updates are applied, provide:
                         .order('reviewed_at', { ascending: false })
                         .limit(10);
 
-                    console.log('loadInbox: Found', recent?.length || 0, 'recent activities');
                     renderRecentActivity(recent || []);
                 } catch (err) {
-                    console.warn('loadInbox: Could not fetch recent activity:', err.message);
+                    // Could not fetch recent activity
                 }
             }
 
@@ -8388,10 +8276,7 @@ After all updates are applied, provide:
         function renderPendingSubmissions(submissions) {
             const container = document.getElementById('pendingList');
             const noSubmissions = document.getElementById('noPending');
-            if (!container || !noSubmissions) {
-                console.log('[JSCC] pendingList or noPending not found, skipping renderPendingSubmissions');
-                return;
-            }
+            if (!container || !noSubmissions) return;
 
             if (!submissions || submissions.length === 0) {
                 container.innerHTML = '';
@@ -8506,10 +8391,7 @@ After all updates are applied, provide:
 
         function renderRecentActivity(submissions) {
             const container = document.getElementById('recentActivity');
-            if (!container) {
-                console.log('[JSCC] recentActivity not found, skipping');
-                return;
-            }
+            if (!container) return;
 
             if (!submissions || submissions.length === 0) {
                 container.innerHTML = '<p style="color: #9ca3af;">No recent activity</p>';
@@ -8690,8 +8572,6 @@ After all updates are applied, provide:
 
                 // Handle LOCAL inbox jobs (from browser extension)
                 if (sub && sub._isLocal) {
-                    console.log('Accepting local inbox job:', sub._localId);
-
                     // Update the job status from 'inbox' to appropriate status via server API
                     const newStatus = sub.fit_score >= 75 ? 'apply-now' : 'maybe';
                     const response = await fetch('/api/jobs');
@@ -8810,8 +8690,6 @@ After all updates are applied, provide:
 
                 // Handle LOCAL inbox jobs (from browser extension) - archive them
                 if (sub && sub._isLocal) {
-                    console.log('Rejecting/archiving local inbox job:', sub._localId);
-
                     const response = await fetch('/api/jobs');
                     if (response.ok) {
                         const serverData = await response.json();
@@ -9432,39 +9310,30 @@ Track which board each job came from for quality analysis.`
 
         // Initialize on load
         window.addEventListener('load', async () => {
-            console.log('[JSCC] Page load event fired');
             try {
                 await loadData();
-                console.log('[JSCC] loadData completed');
             } catch (err) {
-                console.error('[JSCC] loadData error:', err);
+                // loadData error - silent fail
             }
 
             try {
                 await checkExtensionJobs();
             } catch (err) {
-                console.error('[JSCC] checkExtensionJobs error:', err);
+                // checkExtensionJobs error - silent fail
             }
 
             // Update inbox badge on initial load (before Supabase loads)
             try {
                 await loadInbox();
-                console.log('[JSCC] Initial inbox badge updated');
             } catch (err) {
-                console.error('[JSCC] Initial loadInbox error:', err);
+                // Initial loadInbox error - silent fail
             }
 
             // Load Supabase dynamically (after main page works)
             setTimeout(() => {
                 const script = document.createElement('script');
                 script.src = 'https://unpkg.com/@supabase/supabase-js@2';
-                script.onload = () => {
-                    console.log('[JSCC] Supabase loaded');
-                    initSupabase();
-                };
-                script.onerror = () => {
-                    console.error('[JSCC] Supabase failed to load');
-                };
+                script.onload = () => initSupabase();
                 document.body.appendChild(script);
             }, 100);
         });
