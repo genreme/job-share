@@ -1009,38 +1009,25 @@
             <div class="header-top">
                 <h1>🎯 Job Search Command Center</h1>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <button class="copy-btn" onclick="showCommandPalette()" style="background: #1a1a2e; color: white;">
+                    <!-- Primary Actions -->
+                    <button class="copy-btn" onclick="showCommandPalette()" style="background: #1a1a2e; color: white;" title="All MCP commands organized by workflow">
                         🎮 Commands
                     </button>
-                    <button class="copy-btn" onclick="copySearchCommand()" style="background: #7c3aed; color: white;">
-                        🔎 Search Prompt
+                    <button class="copy-btn" onclick="showQuickAddModal()" style="background: #059669; color: white;" title="Manually add a job">
+                        ➕ Add Job
                     </button>
-                    <button class="copy-btn" onclick="copyBrowserResearchPrompt()" style="background: #2563eb; color: white;" title="Full browser-driven research with auto-capture">
-                        🌐 Browser Research
+                    <button class="copy-btn" onclick="syncMCP()" style="background: #667eea; color: white;" title="Sync with MCP server (pull then push)">
+                        🔄 Sync
                     </button>
-                    <button class="copy-btn" onclick="showValidateModal()" style="background: #059669; color: white;">
-                        🔍 Validate Jobs
+
+                    <!-- Extension Import (only shown when pending) -->
+                    <button class="copy-btn" onclick="importFromExtension()" id="extensionImportBtn" style="background: #f59e0b; color: white; display: none;">
+                        🔗 Import (<span id="pendingJobCount">0</span>)
                     </button>
-                    <button class="copy-btn" onclick="checkAllJobStatus()" style="background: #0891b2; color: white;">
-                        📊 Check All Status
-                    </button>
-                    <button id="appliedFirstBtn" class="copy-btn" onclick="toggleAppliedFirst()" style="background: #22c55e; color: white;" title="Applied jobs shown first (click to disable)">
+
+                    <!-- View Toggle -->
+                    <button id="appliedFirstBtn" class="copy-btn" onclick="toggleAppliedFirst()" style="background: rgba(255,255,255,0.3); color: white;" title="Toggle: Applied jobs shown first">
                         📌 Applied First
-                    </button>
-                    <button class="copy-btn" onclick="copyDeepResearchPrompt()" style="background: #7c3aed; color: white;" title="Copy prompt for Claude Chat with MCP">
-                        🔬 Deep Research
-                    </button>
-                    <button class="copy-btn" onclick="showQuickAddModal()" style="background: #ec4899; color: white;">
-                        ➕ Quick Add Job
-                    </button>
-                    <button class="copy-btn" onclick="importFromExtension()" id="extensionImportBtn" style="background: #6366f1; color: white; display: none;">
-                        🔗 Import from Extension (<span id="pendingJobCount">0</span>)
-                    </button>
-                    <button class="copy-btn" onclick="syncToMCP()" style="background: #059669; color: white;" title="Push jobs to MCP server (auto when using localhost)">
-                        🔄 Push to MCP
-                    </button>
-                    <button class="copy-btn" onclick="importFromMCP()" style="background: #8b5cf6; color: white;" title="Pull jobs from MCP server (auto when using localhost)">
-                        📥 Pull from MCP
                     </button>
                 </div>
             </div>
@@ -1738,6 +1725,7 @@ HELP ME:
                 <button class="palette-tab" onclick="filterPaletteCategory('interview')">🎤 Interview</button>
                 <button class="palette-tab" onclick="filterPaletteCategory('analytics')">📈 Analytics</button>
                 <button class="palette-tab" onclick="filterPaletteCategory('profile')">👤 Profile</button>
+                <button class="palette-tab" onclick="filterPaletteCategory('maintenance')">🔧 Maintenance</button>
             </div>
 
             <!-- Commands List -->
@@ -1820,6 +1808,7 @@ HELP ME:
         .command-category.interview { background: #dc2626; }
         .command-category.analytics { background: #f59e0b; }
         .command-category.profile { background: #ec4899; }
+        .command-category.maintenance { background: #6b7280; }
         .command-actions {
             display: flex;
             gap: 8px;
@@ -3100,6 +3089,53 @@ After all updates are applied, provide:
             };
 
             input.click();
+        }
+
+        // Combined sync: pull from MCP then push to MCP
+        async function syncMCP() {
+            if (!isLocalServer()) {
+                showToast('Sync only works on localhost server', 'error');
+                return;
+            }
+
+            try {
+                // Step 1: Pull from server
+                const response = await fetch('/api/jobs');
+                if (response.ok) {
+                    const serverData = await response.json();
+                    if (serverData.jobs && serverData.jobs.length > 0) {
+                        // Merge server data into local
+                        let pulled = 0;
+                        for (const job of serverData.jobs) {
+                            const existingIndex = window.currentData.jobs.findIndex(j => j.id === job.id);
+                            if (existingIndex >= 0) {
+                                // Server has newer data? Use server's
+                                window.currentData.jobs[existingIndex] = job;
+                            } else {
+                                window.currentData.jobs.push(job);
+                                pulled++;
+                            }
+                        }
+                        if (pulled > 0) {
+                            console.log(`[Sync] Pulled ${pulled} new jobs from server`);
+                        }
+                    }
+                }
+
+                // Step 2: Push local data to server
+                const synced = await autoSyncToServer();
+                if (synced) {
+                    await saveData(window.currentData);
+                    renderJobs(window.currentData.jobs);
+                    updateStats(window.currentData);
+                    showToast(`Synced ${window.currentData.jobs.length} jobs with MCP`, 'success');
+                } else {
+                    showToast('Sync failed', 'error');
+                }
+            } catch (err) {
+                console.error('Sync error:', err);
+                showToast('Sync error: ' + err.message, 'error');
+            }
         }
 
         // Helper: merge imported jobs with current data
@@ -9208,6 +9244,51 @@ Shows:
 - Match percentage
 - Matching skills/experience
 - Gaps to address in cover letter`
+            },
+
+            // MAINTENANCE
+            {
+                category: 'maintenance',
+                name: 'Verify Active Jobs',
+                icon: '✅',
+                description: 'Check if your active jobs are still open',
+                prompt: `Verify my active job postings are still open:
+1. get_jobs with status filter for apply-now, maybe, applied
+2. For each job with a URL, check if still active
+3. Archive any that are closed with reason
+4. Report: X active, Y closed, Z errors`
+            },
+            {
+                category: 'maintenance',
+                name: 'Browser Job Search',
+                icon: '🌐',
+                description: 'Use browser to search boards and capture jobs directly',
+                prompt: `Search job boards using browser and add jobs directly:
+
+1. First call get_existing_jobs to know what to skip
+2. Navigate to job boards (Lever, Greenhouse, LinkedIn, etc.)
+3. For each interesting job:
+   - Extract: title, company, location, salary
+   - Verify the URL is the direct company posting
+   - Use add_job_manual to add to inbox
+
+Track which board each job came from for quality analysis.`
+            },
+            {
+                category: 'maintenance',
+                name: 'Deep Pipeline Review',
+                icon: '🔬',
+                description: 'Full review of job pipeline with updates',
+                prompt: `Do a deep review of my job pipeline:
+
+1. get_jobs - Load all jobs
+2. For each non-archived job:
+   - Check if posting is still active
+   - Research any updates (new info, company news)
+   - Update notes with findings
+3. Archive closed jobs with reason
+4. Identify follow-up opportunities
+5. Summarize: active jobs, need action, recently closed`
             }
         ];
 
@@ -9274,7 +9355,8 @@ Shows:
                 application: '📝 Application',
                 interview: '🎤 Interview Prep',
                 analytics: '📈 Analytics',
-                profile: '👤 Profile'
+                profile: '👤 Profile',
+                maintenance: '🔧 Maintenance'
             };
 
             let html = '';
