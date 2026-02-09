@@ -1,17 +1,213 @@
 {
   "metadata": {
     "version": 1,
-    "createdAt": "2026-01-30T18:32:00.000Z",
-    "updatedAt": "2026-01-30T18:32:00.000Z",
-    "schemaVersion": "1.0"
+    "createdAt": "2026-02-05T20:54:11.877Z",
+    "updatedAt": "2026-02-05T20:54:11.877Z",
+    "schemaVersion": "1.0",
+    "patterns": [
+      "Effective Interview Introduction (60-90 seconds): 1) Name + decade at PIH, 2) Growth trajectory (designer → senior director), 3) Team scope (11 creatives across design/photo/video/archive/web), 4) Two strengths (branding/visual excellence + systems/operations), 5) Concrete example of systems helping development, 6) Personal connection to role/community, 7) Excitement about opportunity. Tested and validated at EBSC Round 2.",
+      "Content Gathering Philosophy - 'Go At Their Pace': When getting stories from program staff, emphasize relationship building over quick extraction. Advocate for embedded storytellers within communities vs. flying in from HQ. Shows respect for frontline staff time and addresses common org pain point of development 'bothering' programs too much.",
+      "Personal Community Connection as Differentiator: For community-focused roles, leading with authentic personal ties (resident, immigrant background, child in programs) creates immediate rapport and distinguishes from other candidates. Pre-interview casual conversation about shared community (schools, neighborhoods, kids) builds genuine warmth before formal questions begin."
+    ],
+    "achievementNotes": [
+      {
+        "id": "98aabfd1-f442-4925-905b-3278d738d0ee",
+        "content": "Annual Report as Development Strategy Example: Use annual reports to illustrate proactive content planning—defining chapters, impact stats to measure, stories and photos to gather months in advance rather than scrambling before deadline. Creates flexible content library usable across one-pagers, grants, social media, and ads. Resonates when teams are actively working on annual reports.",
+        "sourceQuote": "Ping: 'I'm glad you use annual report as an example because something we're currently working on.'",
+        "createdAt": "2026-02-05T20:54:11.898Z"
+      }
+    ]
   },
   "experience": [],
   "skills": [],
   "summaryBlocks": [],
-  "stories": [],
+  "stories": [
+    {
+      "id": "72d5ed9d-26ae-45e4-93bb-2a9488762806",
+      "title": "Consent-First Storytelling System: Built ethical c",
+      "situation": "To be completed",
+      "task": "To be completed",
+      "action": "To be completed",
+      "result": "To be completed",
+      "questionCategories": [],
+      "themes": [],
+      "variants": [],
+      "createdAt": "2026-02-05T20:54:11.878Z",
+      "updatedAt": "2026-02-05T20:54:11.878Z"
+    },
+    {
+      "id": "4becaaae-f185-4cb4-b66d-fd9cc03f5d12",
+      "title": "Ticketing + Task Management Integration: Combined ",
+      "situation": "To be completed",
+      "task": "To be completed",
+      "action": "To be completed",
+      "result": "To be completed",
+      "questionCategories": [],
+      "themes": [],
+      "variants": [],
+      "createdAt": "2026-02-05T20:54:11.888Z",
+      "updatedAt": "2026-02-05T20:54:11.888Z"
+    },
+    {
+      "id": "3c39c779-1120-46db-8af9-34612245b110",
+      "title": "Timeliness Drives Donations: Built rapid-response ",
+      "situation": "To be completed",
+      "task": "To be completed",
+      "action": "To be completed",
+      "result": "To be completed",
+      "questionCategories": [],
+      "themes": [],
+      "variants": [],
+      "createdAt": "2026-02-05T20:55:04.245Z",
+      "updatedAt": "2026-02-05T20:55:04.245Z"
+    }
+  ],
   "preferences": {
     "targetRoles": [],
-    "communication": null
+    "communication": {
+      "tone": "conversational",
+      "verbosity": "balanced",
+      "emphasisAreas": [
+        "Self-description as 'collaborative, peaceful, but fun' colleague resonates in team-focused nonprofit environments. Creates win-win framing, accepts when ideas aren't right fit, seeks to understand teammates' priorities. Passed explicit 'vibe check' at EBSC."
+      ],
+      "avoidPhrases": [],
+      "createdAt": "2026-02-05T20:54:11.895Z",
+      "updatedAt": "2026-02-05T20:54:11.895Z"
+    }
   },
-  "history": []
+  "history": [
+    {
+      "id": "aba7149e-ce72-456b-9bc4-26326cca473c",
+      "timestamp": "2026-02-05T20:54:11.878Z",
+      "action": "create",
+      "entityType": "story",
+      "entityId": "72d5ed9d-26ae-45e4-93bb-2a9488762806",
+      "previousValue": null,
+      "newValue": {
+        "id": "72d5ed9d-26ae-45e4-93bb-2a9488762806",
+        "title": "Consent-First Storytelling System: Built ethical c",
+        "situation": "To be completed",
+        "task": "To be completed",
+        "action": "To be completed",
+        "result": "To be completed",
+        "questionCategories": [],
+        "themes": [],
+        "variants": [],
+        "createdAt": "2026-02-05T20:54:11.878Z",
+        "updatedAt": "2026-02-05T20:54:11.878Z"
+      },
+      "reason": "Added from extraction: Carolina: 'That was a great answer. Awesome.' after hearing about consent-first approach"
+    },
+    {
+      "id": "1fccca21-7886-417e-bd77-a5c49a01826e",
+      "timestamp": "2026-02-05T20:54:11.888Z",
+      "action": "create",
+      "entityType": "story",
+      "entityId": "4becaaae-f185-4cb4-b66d-fd9cc03f5d12",
+      "previousValue": null,
+      "newValue": {
+        "id": "4becaaae-f185-4cb4-b66d-fd9cc03f5d12",
+        "title": "Ticketing + Task Management Integration: Combined ",
+        "situation": "To be completed",
+        "task": "To be completed",
+        "action": "To be completed",
+        "result": "To be completed",
+        "questionCategories": [],
+        "themes": [],
+        "variants": [],
+        "createdAt": "2026-02-05T20:54:11.888Z",
+        "updatedAt": "2026-02-05T20:54:11.888Z"
+      },
+      "reason": "Added from extraction: Alex: 'Awesome. So you combined a ticketing system with task management? Cool.'"
+    },
+    {
+      "id": "78e3a53c-0a25-47ea-b126-b190330a4eaf",
+      "timestamp": "2026-02-05T20:54:11.888Z",
+      "action": "create",
+      "entityType": "pattern",
+      "entityId": "02df7250-1989-4ade-992b-f7725940865f",
+      "previousValue": null,
+      "newValue": "Effective Interview Introduction (60-90 seconds): 1) Name + decade at PIH, 2) Growth trajectory (designer → senior director), 3) Team scope (11 creatives across design/photo/video/archive/web), 4) Two strengths (branding/visual excellence + systems/operations), 5) Concrete example of systems helping development, 6) Personal connection to role/community, 7) Excitement about opportunity. Tested and validated at EBSC Round 2.",
+      "reason": "Added from extraction: Introduction landed well, led directly into first question about systems implementation"
+    },
+    {
+      "id": "098f71fd-f6e6-44e9-b865-a7ab19202069",
+      "timestamp": "2026-02-05T20:54:11.895Z",
+      "action": "create",
+      "entityType": "preference",
+      "entityId": "711c3b7e-1130-4a02-9d20-aab9d6728ca5",
+      "previousValue": null,
+      "newValue": {
+        "targetRoles": [],
+        "communication": {
+          "tone": "conversational",
+          "verbosity": "balanced",
+          "emphasisAreas": [
+            "Self-description as 'collaborative, peaceful, but fun' colleague resonates in team-focused nonprofit environments. Creates win-win framing, accepts when ideas aren't right fit, seeks to understand teammates' priorities. Passed explicit 'vibe check' at EBSC."
+          ],
+          "avoidPhrases": [],
+          "createdAt": "2026-02-05T20:54:11.895Z",
+          "updatedAt": "2026-02-05T20:54:11.895Z"
+        }
+      },
+      "reason": "Added from extraction: Michelle framed her question as the 'vibe check' - team proud of no drama culture"
+    },
+    {
+      "id": "da860b29-db09-4104-a021-5e177020d954",
+      "timestamp": "2026-02-05T20:54:11.898Z",
+      "action": "create",
+      "entityType": "achievement",
+      "entityId": "98aabfd1-f442-4925-905b-3278d738d0ee",
+      "previousValue": null,
+      "newValue": {
+        "id": "98aabfd1-f442-4925-905b-3278d738d0ee",
+        "content": "Annual Report as Development Strategy Example: Use annual reports to illustrate proactive content planning—defining chapters, impact stats to measure, stories and photos to gather months in advance rather than scrambling before deadline. Creates flexible content library usable across one-pagers, grants, social media, and ads. Resonates when teams are actively working on annual reports.",
+        "sourceQuote": "Ping: 'I'm glad you use annual report as an example because something we're currently working on.'",
+        "createdAt": "2026-02-05T20:54:11.898Z"
+      },
+      "reason": "Added from extraction: Ping: 'I'm glad you use annual report as an example because something we're currently working on.'"
+    },
+    {
+      "id": "5cbf4561-cefe-46bf-818f-64708bb6e27d",
+      "timestamp": "2026-02-05T20:54:11.899Z",
+      "action": "create",
+      "entityType": "pattern",
+      "entityId": "dcbadc04-cce8-4c03-a692-a6cf5d9169e7",
+      "previousValue": null,
+      "newValue": "Content Gathering Philosophy - 'Go At Their Pace': When getting stories from program staff, emphasize relationship building over quick extraction. Advocate for embedded storytellers within communities vs. flying in from HQ. Shows respect for frontline staff time and addresses common org pain point of development 'bothering' programs too much.",
+      "reason": "Added from extraction: Michelle: 'I'm very cognizant of working with the program people that we not bother them too much'"
+    },
+    {
+      "id": "38f2cf5c-27dc-4a8f-a031-142a491916b2",
+      "timestamp": "2026-02-05T20:54:11.900Z",
+      "action": "create",
+      "entityType": "pattern",
+      "entityId": "367ccb87-0421-4f60-932e-a99330eb224f",
+      "previousValue": null,
+      "newValue": "Personal Community Connection as Differentiator: For community-focused roles, leading with authentic personal ties (resident, immigrant background, child in programs) creates immediate rapport and distinguishes from other candidates. Pre-interview casual conversation about shared community (schools, neighborhoods, kids) builds genuine warmth before formal questions begin.",
+      "reason": "Added from extraction: Pre-interview rapport about EEC, kids, lottery created warm connection with Nicki and Carolina"
+    },
+    {
+      "id": "bde67eb3-1e75-4be8-9794-3e5b7948921c",
+      "timestamp": "2026-02-05T20:55:04.245Z",
+      "action": "create",
+      "entityType": "story",
+      "entityId": "3c39c779-1120-46db-8af9-34612245b110",
+      "previousValue": null,
+      "newValue": {
+        "id": "3c39c779-1120-46db-8af9-34612245b110",
+        "title": "Timeliness Drives Donations: Built rapid-response ",
+        "situation": "To be completed",
+        "task": "To be completed",
+        "action": "To be completed",
+        "result": "To be completed",
+        "questionCategories": [],
+        "themes": [],
+        "variants": [],
+        "createdAt": "2026-02-05T20:55:04.245Z",
+        "updatedAt": "2026-02-05T20:55:04.245Z"
+      },
+      "reason": "Added from extraction: We had a massive spike in not just engagement but donations when it wasn't even a direct ask either. So just timeliness of content was extremely effective."
+    }
+  ]
 }
