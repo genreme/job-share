@@ -28,7 +28,9 @@ import {
   researchJobUrl,
   getInboxForReview,
   confirmJobToDashboard,
-  deferJob
+  deferJob,
+  getExistingJobs,
+  addJobManual
 } from './discovery.js'
 
 // Import mocked modules
@@ -792,5 +794,423 @@ describe('integration: reasoning generator wiring', () => {
     // Cleanup
     global.fetch = originalFetch
     process.env.JOB_VALIDATOR_URL = originalEnv
+  })
+})
+
+// ============================================================================
+// getExistingJobs TESTS
+// ============================================================================
+
+describe('getExistingJobs', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('returns summary of all existing jobs', () => {
+    vi.mocked(loadJobsFromDashboard).mockReturnValue({
+      jobs: [
+        { id: 1, title: 'Job A', company: 'Company A', status: 'inbox', url: 'https://a.com/job' },
+        { id: 2, title: 'Job B', company: 'Company B', status: 'apply-now', url: 'https://b.com/job' },
+        { id: 3, title: 'Job C', company: 'Company C', status: 'applied', url: 'https://c.com/job' }
+      ]
+    })
+
+    const result = getExistingJobs()
+
+    expect(result.total).toBe(3)
+    expect(result.companies).toContain('Company A')
+    expect(result.companies).toContain('Company B')
+    expect(result.urls).toContain('https://a.com/job')
+    expect(result.jobs).toHaveLength(3)
+  })
+
+  it('returns counts grouped by status', () => {
+    vi.mocked(loadJobsFromDashboard).mockReturnValue({
+      jobs: [
+        { id: 1, status: 'inbox' },
+        { id: 2, status: 'inbox' },
+        { id: 3, status: 'apply-now' },
+        { id: 4, status: 'applied' }
+      ]
+    })
+
+    const result = getExistingJobs()
+
+    expect(result.byStatus.inbox).toBe(2)
+    expect(result.byStatus['apply-now']).toBe(1)
+    expect(result.byStatus.applied).toBe(1)
+  })
+
+  it('handles empty jobs list', () => {
+    vi.mocked(loadJobsFromDashboard).mockReturnValue({ jobs: [] })
+
+    const result = getExistingJobs()
+
+    expect(result.total).toBe(0)
+    expect(result.companies).toHaveLength(0)
+    expect(result.urls).toHaveLength(0)
+    expect(result.jobs).toHaveLength(0)
+  })
+
+  it('filters out null/undefined companies and URLs', () => {
+    vi.mocked(loadJobsFromDashboard).mockReturnValue({
+      jobs: [
+        { id: 1, company: 'Valid Co', url: 'https://valid.com' },
+        { id: 2, company: null, url: null },
+        { id: 3, company: undefined, url: undefined }
+      ]
+    })
+
+    const result = getExistingJobs()
+
+    expect(result.companies).toHaveLength(1)
+    expect(result.companies).toContain('Valid Co')
+    expect(result.urls).toHaveLength(1)
+    expect(result.urls).toContain('https://valid.com')
+  })
+
+  it('deduplicates company names', () => {
+    vi.mocked(loadJobsFromDashboard).mockReturnValue({
+      jobs: [
+        { id: 1, title: 'Role A', company: 'Same Corp', url: 'https://a.com' },
+        { id: 2, title: 'Role B', company: 'Same Corp', url: 'https://b.com' }
+      ]
+    })
+
+    const result = getExistingJobs()
+
+    expect(result.companies).toHaveLength(1)
+    expect(result.companies).toContain('Same Corp')
+  })
+
+  it('includes helpful message for Claude', () => {
+    vi.mocked(loadJobsFromDashboard).mockReturnValue({
+      jobs: [{ id: 1, company: 'Test' }]
+    })
+
+    const result = getExistingJobs()
+
+    expect(result.message).toContain('1 jobs tracked')
+    expect(result.message).toContain('Skip')
+  })
+})
+
+// ============================================================================
+// addJobManual TESTS
+// ============================================================================
+
+describe('addJobManual', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(loadJobsFromDashboard).mockReturnValue({ jobs: [], searchHistory: [] })
+    vi.mocked(writeJobsData).mockImplementation(() => {})
+    vi.mocked(calculateFitScore).mockReturnValue({
+      score: 75,
+      breakdown: { base: 50, role: 15, industry: 10, location: 0, salary: 0, skills: 0 }
+    })
+    vi.mocked(generateReasoning).mockReturnValue({
+      score: 75,
+      summary: 'Good match',
+      whyIncluded: ['Role matches'],
+      considerations: []
+    })
+  })
+
+  it('returns error for missing title', () => {
+    const result = addJobManual({
+      company: 'Test Co',
+      url: 'https://test.com/job'
+    })
+
+    expect(result.status).toBe('error')
+    expect(result.error).toContain('title')
+  })
+
+  it('returns error for empty title', () => {
+    const result = addJobManual({
+      title: '   ',
+      company: 'Test Co',
+      url: 'https://test.com/job'
+    })
+
+    expect(result.status).toBe('error')
+    expect(result.error).toContain('title')
+  })
+
+  it('returns error for missing company', () => {
+    const result = addJobManual({
+      title: 'Developer',
+      url: 'https://test.com/job'
+    })
+
+    expect(result.status).toBe('error')
+    expect(result.error).toContain('company')
+  })
+
+  it('returns error for invalid URL', () => {
+    const result = addJobManual({
+      title: 'Developer',
+      company: 'Test Co',
+      url: 'not-a-url'
+    })
+
+    expect(result.status).toBe('error')
+    expect(result.error).toContain('url')
+  })
+
+  it('returns error for missing URL', () => {
+    const result = addJobManual({
+      title: 'Developer',
+      company: 'Test Co',
+      url: ''
+    })
+
+    expect(result.status).toBe('error')
+    expect(result.error).toContain('url')
+  })
+
+  it('detects duplicate by URL', () => {
+    vi.mocked(loadJobsFromDashboard).mockReturnValue({
+      jobs: [
+        { id: 1, title: 'Existing', company: 'Old Co', status: 'apply-now', url: 'https://test.com/job', fitScore: 80 }
+      ]
+    })
+
+    const result = addJobManual({
+      title: 'New Job',
+      company: 'New Co',
+      url: 'https://test.com/job'
+    })
+
+    expect(result.status).toBe('duplicate')
+    expect(result.existingJob.id).toBe(1)
+    expect(result.existingJob.status).toBe('apply-now')
+  })
+
+  it('adds job to inbox successfully', () => {
+    const result = addJobManual({
+      title: 'Creative Director',
+      company: 'Acme Corp',
+      url: 'https://acme.com/jobs/cd',
+      location: 'Boston',
+      salary: '$150,000'
+    })
+
+    expect(result.status).toBe('added_to_inbox')
+    expect(result.job.title).toBe('Creative Director')
+    expect(result.job.company).toBe('Acme Corp')
+    expect(result.job.fitScore).toBe(75)
+    expect(writeJobsData).toHaveBeenCalled()
+  })
+
+  it('includes reasoning in response', () => {
+    const result = addJobManual({
+      title: 'Designer',
+      company: 'Test Co',
+      url: 'https://test.com/job'
+    })
+
+    expect(result.reasoning).toBeDefined()
+    expect(result.reasoning.score).toBe(75)
+    expect(result.reasoning.summary).toBe('Good match')
+    expect(result.reasoning.whyIncluded).toContain('Role matches')
+  })
+
+  it('detects source board from greenhouse URL', () => {
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    addJobManual({
+      title: 'Engineer',
+      company: 'Tech Co',
+      url: 'https://boards.greenhouse.io/techco/jobs/123'
+    })
+
+    const savedJob = savedData.jobs[0]
+    expect(savedJob.sourceBoard).toBe('greenhouse')
+    expect(savedJob.isDirectToCompany).toBe(true)
+  })
+
+  it('detects source board from linkedin URL', () => {
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    addJobManual({
+      title: 'Designer',
+      company: 'Big Corp',
+      url: 'https://www.linkedin.com/jobs/view/12345'
+    })
+
+    const savedJob = savedData.jobs[0]
+    expect(savedJob.sourceBoard).toBe('linkedin')
+    expect(savedJob.isDirectToCompany).toBe(false)
+  })
+
+  it('uses provided sourceBoard when specified', () => {
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    addJobManual({
+      title: 'Manager',
+      company: 'Custom Co',
+      url: 'https://custom.com/job',
+      sourceBoard: 'custom-board'
+    })
+
+    const savedJob = savedData.jobs[0]
+    expect(savedJob.sourceBoard).toBe('custom-board')
+  })
+
+  it('sets extractionQuality based on data completeness', () => {
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    // Complete data
+    addJobManual({
+      title: 'Full Job',
+      company: 'Complete Co',
+      url: 'https://complete.com/job',
+      location: 'Boston'
+    })
+
+    expect(savedData.jobs[0].extractionQuality).toBe('complete')
+  })
+
+  it('sets partial extractionQuality when missing location', () => {
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    // Partial data (no location)
+    addJobManual({
+      title: 'Partial Job',
+      company: 'Partial Co',
+      url: 'https://partial.com/job'
+    })
+
+    expect(savedData.jobs[0].extractionQuality).toBe('partial')
+  })
+
+  it('uses provided extractionQuality when specified', () => {
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    addJobManual({
+      title: 'Manual',
+      company: 'Manual Co',
+      url: 'https://manual.com/job',
+      extractionQuality: 'failed'
+    })
+
+    expect(savedData.jobs[0].extractionQuality).toBe('failed')
+  })
+
+  it('generates next job ID correctly', () => {
+    vi.mocked(loadJobsFromDashboard).mockReturnValue({
+      jobs: [
+        { id: 1 },
+        { id: 5 },
+        { id: 3 }
+      ]
+    })
+
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    addJobManual({
+      title: 'New Job',
+      company: 'New Co',
+      url: 'https://new.com/job'
+    })
+
+    expect(savedData.jobs[3].id).toBe(6) // max(1,5,3) + 1
+  })
+
+  it('trims whitespace from title and company', () => {
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    addJobManual({
+      title: '  Trimmed Title  ',
+      company: '  Trimmed Company  ',
+      url: 'https://trim.com/job'
+    })
+
+    expect(savedData.jobs[0].title).toBe('Trimmed Title')
+    expect(savedData.jobs[0].company).toBe('Trimmed Company')
+  })
+
+  it('detects lever as direct company URL', () => {
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    addJobManual({
+      title: 'Role',
+      company: 'Lever Co',
+      url: 'https://jobs.lever.co/company/12345'
+    })
+
+    expect(savedData.jobs[0].sourceBoard).toBe('lever')
+    expect(savedData.jobs[0].isDirectToCompany).toBe(true)
+  })
+
+  it('detects workday as direct company URL', () => {
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    addJobManual({
+      title: 'Role',
+      company: 'Corp',
+      url: 'https://corp.wd5.myworkdayjobs.com/careers'
+    })
+
+    expect(savedData.jobs[0].sourceBoard).toBe('workday')
+    expect(savedData.jobs[0].isDirectToCompany).toBe(true)
+  })
+
+  it('detects indeed as non-direct URL', () => {
+    let savedData
+    vi.mocked(writeJobsData).mockImplementation((data) => {
+      savedData = data
+    })
+
+    addJobManual({
+      title: 'Role',
+      company: 'Corp',
+      url: 'https://www.indeed.com/viewjob?jk=abc123'
+    })
+
+    expect(savedData.jobs[0].sourceBoard).toBe('indeed')
+    expect(savedData.jobs[0].isDirectToCompany).toBe(false)
+  })
+
+  it('includes next step guidance', () => {
+    const result = addJobManual({
+      title: 'Job',
+      company: 'Co',
+      url: 'https://co.com/job'
+    })
+
+    expect(result.nextStep).toContain('inbox')
+    expect(result.message).toContain('inbox')
   })
 })
