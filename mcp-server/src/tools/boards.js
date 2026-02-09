@@ -14,8 +14,15 @@ import {
   updateBoardMetrics,
   blacklistBoard as blacklistBoardService,
   getBoardById,
-  loadBoardRegistry
+  loadBoardRegistry,
+  promoteBoardToActive
 } from '../services/board-registry.js'
+
+import {
+  analyzeBoardQuality,
+  syncQualityToRegistry,
+  getBoardQualityReport
+} from '../services/board-quality-analyzer.js'
 
 /**
  * Get job boards for scanning
@@ -174,4 +181,122 @@ export function recordScanResults({ boardId, scanned, successful, failed }) {
     success: false,
     error: result.error
   }
+}
+
+/**
+ * Analyze job board quality from historical job data
+ *
+ * Examines all jobs to calculate quality metrics for each source board:
+ * - Extraction success rate
+ * - Expired/closed job rate (freshness)
+ * - Direct-to-company rate
+ * - Data completeness
+ * - Application conversion rate
+ *
+ * @returns {object} Quality analysis with recommendations
+ */
+export function analyzeBoards() {
+  const analysis = analyzeBoardQuality()
+
+  return {
+    success: true,
+    totalJobsAnalyzed: analysis.totalJobsAnalyzed,
+    boardsFound: analysis.boardsFound,
+    boards: analysis.boards.map(board => ({
+      boardId: board.boardId,
+      name: formatBoardName(board.boardId),
+      qualityScore: board.qualityScore,
+      totalJobs: board.totalJobs,
+      metrics: board.metrics,
+      recentActivity: board.recentActivity
+    })),
+    recommendations: analysis.recommendations,
+    nextStep: 'Use sync_board_quality to update registry with these scores'
+  }
+}
+
+/**
+ * Format board ID into readable name
+ */
+function formatBoardName(boardId) {
+  const names = {
+    'linkedin': 'LinkedIn',
+    'indeed': 'Indeed',
+    'glassdoor': 'Glassdoor',
+    'greenhouse': 'Greenhouse',
+    'lever': 'Lever',
+    'workday': 'Workday',
+    'ashby': 'Ashby',
+    'wellfound': 'Wellfound (AngelList)',
+    'builtin': 'Built In',
+    'company-direct': 'Company Career Pages',
+    'unknown': 'Unknown Sources'
+  }
+  return names[boardId] || boardId.charAt(0).toUpperCase() + boardId.slice(1)
+}
+
+/**
+ * Sync analyzed quality scores to the board registry
+ *
+ * Updates existing boards and auto-discovers new boards from job data.
+ *
+ * @returns {object} Sync result
+ */
+export function syncBoardQuality() {
+  const result = syncQualityToRegistry()
+
+  return {
+    success: true,
+    ...result,
+    nextStep: 'Call get_job_boards to see updated quality rankings'
+  }
+}
+
+/**
+ * Get detailed quality report for a specific board
+ *
+ * @param {object} params - Parameters
+ * @param {string} params.boardId - Board ID to analyze
+ * @returns {object} Board quality report
+ */
+export function getBoardReport({ boardId }) {
+  if (!boardId || typeof boardId !== 'string') {
+    return { success: false, error: 'boardId is required' }
+  }
+
+  const report = getBoardQualityReport(boardId)
+
+  if (report.error) {
+    return { success: false, ...report }
+  }
+
+  return {
+    success: true,
+    ...report
+  }
+}
+
+/**
+ * Promote a testing board to active rotation
+ *
+ * @param {object} params - Parameters
+ * @param {string} params.boardId - Board ID to promote
+ * @returns {object} Result
+ */
+export function promoteBoard({ boardId }) {
+  if (!boardId || typeof boardId !== 'string') {
+    return { success: false, error: 'boardId is required' }
+  }
+
+  const result = promoteBoardToActive({ boardId })
+
+  if (result.success) {
+    return {
+      success: true,
+      board: result.board,
+      message: `Board '${result.board.name}' promoted to active rotation`
+    }
+  }
+
+  return { success: false, error: result.error }
 }

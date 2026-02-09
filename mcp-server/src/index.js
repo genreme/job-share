@@ -171,6 +171,18 @@ import {
   saveAnalyticsSnapshot
 } from './tools/analytics.js';
 
+// Job Board Quality Management tools
+import {
+  getJobBoards,
+  addTestBoard,
+  blacklistBoard,
+  recordScanResults,
+  analyzeBoards,
+  syncBoardQuality,
+  getBoardReport,
+  promoteBoard
+} from './tools/boards.js';
+
 // Create server
 const server = new Server(
   {
@@ -995,7 +1007,9 @@ const TOOLS = [
         salary: { type: 'string', description: 'Salary range if shown' },
         industry: { type: 'string', description: 'Industry (e.g., "Education", "Healthcare")' },
         description: { type: 'string', description: 'Job description text' },
-        notes: { type: 'string', description: 'Notes about why this job is interesting' }
+        notes: { type: 'string', description: 'Notes about why this job is interesting' },
+        sourceBoard: { type: 'string', description: 'Job board ID (e.g., "linkedin", "indeed", "greenhouse"). Auto-detected from URL if not provided.' },
+        extractionQuality: { type: 'string', enum: ['complete', 'partial', 'failed'], description: 'Quality of data extraction' }
       },
       required: ['title', 'company', 'url']
     }
@@ -1808,6 +1822,143 @@ const TOOLS = [
       type: 'object',
       properties: {}
     }
+  },
+
+  // === Job Board Quality Management ===
+  {
+    name: 'get_job_boards',
+    description: 'Get job boards sorted by quality rating. Shows success rates, data completeness, and scan history. Use to prioritize which boards to search.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        minQuality: {
+          type: 'number',
+          description: 'Minimum quality rating (0-100) to include'
+        },
+        includeBlacklisted: {
+          type: 'boolean',
+          description: 'Include blacklisted boards in results (default: false)'
+        }
+      }
+    }
+  },
+  {
+    name: 'add_test_board',
+    description: 'Add a new job board for testing. Testing boards are tracked separately until promoted to active rotation based on quality metrics.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'Board name (e.g., "Workday", "Lever")'
+        },
+        domain: {
+          type: 'string',
+          description: 'Domain pattern (e.g., "myworkday.com", "jobs.lever.co")'
+        },
+        selectors: {
+          type: 'object',
+          description: 'CSS selectors for extraction (title, company, location, etc.)'
+        },
+        notes: {
+          type: 'string',
+          description: 'Notes about the board'
+        }
+      },
+      required: ['name', 'domain']
+    }
+  },
+  {
+    name: 'blacklist_board',
+    description: 'Blacklist a job board that consistently provides low-quality leads (expired jobs, no direct company links, poor data). Requires userConfirmed=true.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        boardId: {
+          type: 'string',
+          description: 'Board ID to blacklist'
+        },
+        reason: {
+          type: 'string',
+          description: 'Reason for blacklisting (e.g., "80% expired jobs", "redirects to other aggregators")'
+        },
+        userConfirmed: {
+          type: 'boolean',
+          description: 'Must be true to proceed with blacklisting'
+        }
+      },
+      required: ['boardId', 'reason']
+    }
+  },
+  {
+    name: 'record_scan_results',
+    description: 'Record results after scanning jobs from a board. Updates quality metrics (success rate, extraction failures). Call after each discovery session.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        boardId: {
+          type: 'string',
+          description: 'Board ID that was scanned'
+        },
+        scanned: {
+          type: 'number',
+          description: 'Total jobs scanned'
+        },
+        successful: {
+          type: 'number',
+          description: 'Jobs with successful data extraction'
+        },
+        failed: {
+          type: 'number',
+          description: 'Jobs with failed/incomplete extraction'
+        }
+      },
+      required: ['boardId', 'scanned', 'successful', 'failed']
+    }
+  },
+  {
+    name: 'analyze_boards',
+    description: 'Analyze job board quality from historical job data. Calculates extraction rate, freshness (expired job rate), direct-to-company rate, and data completeness for each board. Returns recommendations for which boards to prioritize or avoid.',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
+  },
+  {
+    name: 'sync_board_quality',
+    description: 'Sync analyzed quality scores to the board registry. Updates existing boards and auto-discovers new boards from job source data. Call after analyze_boards to persist scores.',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
+  },
+  {
+    name: 'get_board_report',
+    description: 'Get detailed quality report for a specific job board. Includes metrics, recommendations, and comparison to other boards.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        boardId: {
+          type: 'string',
+          description: 'Board ID to analyze (e.g., "linkedin", "indeed", "greenhouse")'
+        }
+      },
+      required: ['boardId']
+    }
+  },
+  {
+    name: 'promote_board',
+    description: 'Promote a testing board to active rotation. Use after a board has proven quality through testing.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        boardId: {
+          type: 'string',
+          description: 'Board ID to promote from testing to active'
+        }
+      },
+      required: ['boardId']
+    }
   }
 ];
 
@@ -2309,6 +2460,32 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         break;
       case 'save_analytics_snapshot':
         result = saveAnalyticsSnapshot();
+        break;
+
+      // Job Board Quality Management
+      case 'get_job_boards':
+        result = getJobBoards(args || {});
+        break;
+      case 'add_test_board':
+        result = addTestBoard(args);
+        break;
+      case 'blacklist_board':
+        result = blacklistBoard(args);
+        break;
+      case 'record_scan_results':
+        result = recordScanResults(args);
+        break;
+      case 'analyze_boards':
+        result = analyzeBoards();
+        break;
+      case 'sync_board_quality':
+        result = syncBoardQuality();
+        break;
+      case 'get_board_report':
+        result = getBoardReport(args);
+        break;
+      case 'promote_board':
+        result = promoteBoard(args);
         break;
 
       default:

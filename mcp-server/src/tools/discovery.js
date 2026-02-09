@@ -61,6 +61,101 @@ function getNextJobId(jobs) {
 }
 
 /**
+ * Detect job board from URL
+ * @param {string} url - Job URL
+ * @returns {string} Board ID
+ */
+function detectBoardFromUrl(url) {
+  if (!url) return 'unknown'
+  const lower = url.toLowerCase()
+
+  // Major job boards
+  if (lower.includes('linkedin.com')) return 'linkedin'
+  if (lower.includes('indeed.com')) return 'indeed'
+  if (lower.includes('glassdoor.com')) return 'glassdoor'
+  if (lower.includes('ziprecruiter.com')) return 'ziprecruiter'
+  if (lower.includes('monster.com')) return 'monster'
+
+  // ATS platforms (often direct-to-company)
+  if (lower.includes('greenhouse.io') || lower.includes('boards.greenhouse')) return 'greenhouse'
+  if (lower.includes('lever.co')) return 'lever'
+  if (lower.includes('myworkday') || lower.includes('wd5.myworkday')) return 'workday'
+  if (lower.includes('ashbyhq.com')) return 'ashby'
+  if (lower.includes('smartrecruiters.com')) return 'smartrecruiters'
+  if (lower.includes('icims.com')) return 'icims'
+  if (lower.includes('jobvite.com')) return 'jobvite'
+  if (lower.includes('taleo.net')) return 'taleo'
+  if (lower.includes('breezy.hr')) return 'breezy'
+  if (lower.includes('jazz.co') || lower.includes('applytojob.com')) return 'jazzhr'
+  if (lower.includes('bamboohr.com')) return 'bamboohr'
+
+  // Tech-specific
+  if (lower.includes('angel.co') || lower.includes('wellfound.com')) return 'wellfound'
+  if (lower.includes('builtin.com')) return 'builtin'
+  if (lower.includes('dice.com')) return 'dice'
+  if (lower.includes('hired.com')) return 'hired'
+
+  // Company careers pages (generic detection)
+  if (lower.includes('/careers') || lower.includes('/jobs') || lower.includes('jobs.')) {
+    return 'company-direct'
+  }
+
+  return 'unknown'
+}
+
+/**
+ * Check if URL is a direct company career page (not an aggregator)
+ * @param {string} url - Job URL
+ * @returns {boolean} True if URL is likely a company's own career site
+ */
+function isDirectCompanyUrl(url) {
+  if (!url) return false
+  const lower = url.toLowerCase()
+
+  // ATS platforms are typically "direct" - they host company's actual job
+  const directPlatforms = [
+    'greenhouse.io', 'boards.greenhouse',
+    'lever.co',
+    'myworkday', 'wd5.myworkday',
+    'ashbyhq.com',
+    'smartrecruiters.com',
+    'icims.com',
+    'jobvite.com',
+    'taleo.net',
+    'breezy.hr',
+    'jazz.co', 'applytojob.com',
+    'bamboohr.com'
+  ]
+
+  // Check if URL is from a direct platform
+  for (const platform of directPlatforms) {
+    if (lower.includes(platform)) return true
+  }
+
+  // Aggregators are NOT direct
+  const aggregators = [
+    'linkedin.com',
+    'indeed.com',
+    'glassdoor.com',
+    'ziprecruiter.com',
+    'monster.com',
+    'dice.com',
+    'careerbuilder.com'
+  ]
+
+  for (const agg of aggregators) {
+    if (lower.includes(agg)) return false
+  }
+
+  // If it has /careers or /jobs in the path and isn't an aggregator, likely direct
+  if (lower.includes('/careers') || lower.includes('/jobs/')) {
+    return true
+  }
+
+  return false
+}
+
+/**
  * Get existing jobs to avoid duplicates during research
  * Call this FIRST before browsing job boards so you know what to skip
  *
@@ -273,7 +368,7 @@ export async function researchJobUrl({ url, notes }) {
  * @param {string} [params.notes] - Notes about the job
  * @returns {object} Result with job ID and fit analysis
  */
-export function addJobManual({ title, company, url, location, salary, industry, description, notes }) {
+export function addJobManual({ title, company, url, location, salary, industry, description, notes, sourceBoard, extractionQuality }) {
   // Validate required fields
   if (!title || typeof title !== 'string' || !title.trim()) {
     return { status: 'error', error: 'title is required' }
@@ -305,6 +400,9 @@ export function addJobManual({ title, company, url, location, salary, industry, 
     }
   }
 
+  // Detect source board from URL if not provided
+  const detectedBoard = sourceBoard || detectBoardFromUrl(url)
+
   // Create job object
   const jobData = {
     id: getNextJobId(jobs),
@@ -317,10 +415,15 @@ export function addJobManual({ title, company, url, location, salary, industry, 
     url: url,
     found: new Date().toISOString().split('T')[0],
     status: 'inbox',
-    source: 'manual-browser',
     notes: notes || '',
     updates: [],
-    symbols: []
+    symbols: [],
+
+    // Source tracking for board quality analysis
+    sourceBoard: detectedBoard,
+    sourceUrl: url,
+    extractionQuality: extractionQuality || (title && company && location ? 'complete' : 'partial'),
+    isDirectToCompany: isDirectCompanyUrl(url)
   }
 
   // Calculate fit score

@@ -94,6 +94,17 @@ export const JobSchema = z.object({
   notes: z.string().optional().default(''),
   updates: z.array(UpdateSchema).optional().default([]),
   hiringManager: z.string().optional(),
+
+  // Source tracking for board quality analysis
+  sourceBoard: z.string().optional(), // Board ID that found this job (e.g., 'linkedin', 'indeed')
+  sourceUrl: z.string().optional(), // Original URL from the job board
+  finalUrl: z.string().optional(), // Where URL ultimately lands (company ATS or another aggregator)
+  isDirectToCompany: z.boolean().optional(), // true if finalUrl is company's own career site
+  extractionQuality: z.enum(['complete', 'partial', 'failed']).optional(), // Data extraction result
+  verifiedAt: z.string().optional(), // When job was last verified as active
+  closedAt: z.string().optional(), // When job was detected as closed/expired
+  closedReason: z.string().optional(), // Why job was marked closed
+
   // Additional fields that may be present
   scoreFeedback: z.string().optional(),
   scoreFeedbackNote: z.string().optional(),
