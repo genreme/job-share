@@ -16,7 +16,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid'
-import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync, unlinkSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync, unlinkSync, readdirSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { tmpdir } from 'os'
@@ -149,10 +149,10 @@ export function createPracticeSession(jobId, options = {}) {
     jobId,
     sessionType,
     startedAt: new Date().toISOString(),
-    completedAt: null,
+    // completedAt: undefined (not set until session completes)
     answers: [],
-    feedbackTiming,
-    summary: null
+    feedbackTiming
+    // summary: undefined (not set until session completes)
   }
 
   // Validate session structure
@@ -341,7 +341,7 @@ function findSession(sessionId) {
   }
 
   try {
-    const files = require('fs').readdirSync(RESEARCH_DIR)
+    const files = readdirSync(RESEARCH_DIR)
     const sessionFiles = files.filter(f => f.endsWith('-practice-sessions.json'))
 
     for (const file of sessionFiles) {
