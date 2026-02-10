@@ -11,25 +11,25 @@
         <div class="header">
             <div class="header-top">
                 <h1>🎯 Job Search Command Center</h1>
-                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <div class="header-actions">
                     <!-- Primary Actions -->
-                    <button class="copy-btn" onclick="showCommandPalette()" style="background: #1a1a2e; color: white;" title="All MCP commands organized by workflow">
+                    <button class="btn btn--dark" onclick="showCommandPalette()" title="All MCP commands organized by workflow">
                         🎮 Commands
                     </button>
-                    <button class="copy-btn" onclick="showQuickAddModal()" style="background: #059669; color: white;" title="Manually add a job">
+                    <button class="btn btn--success" onclick="showQuickAddModal()" title="Manually add a job">
                         ➕ Add Job
                     </button>
-                    <button class="copy-btn" onclick="syncMCP()" style="background: #667eea; color: white;" title="Sync with MCP server (pull then push)">
+                    <button class="btn btn--primary" onclick="syncMCP()" title="Sync with MCP server (pull then push)">
                         🔄 Sync
                     </button>
 
                     <!-- Extension Import (only shown when pending) -->
-                    <button class="copy-btn" onclick="importFromExtension()" id="extensionImportBtn" style="background: #f59e0b; color: white; display: none;">
+                    <button class="btn btn--warning" onclick="importFromExtension()" id="extensionImportBtn" style="display: none;">
                         🔗 Import (<span id="pendingJobCount">0</span>)
                     </button>
 
                     <!-- View Toggle -->
-                    <button id="appliedFirstBtn" class="copy-btn" onclick="toggleAppliedFirst()" style="background: rgba(255,255,255,0.3); color: white;" title="Toggle: Applied jobs shown first">
+                    <button id="appliedFirstBtn" class="btn btn--ghost-light" onclick="toggleAppliedFirst()" title="Toggle: Applied jobs shown first">
                         📌 Applied First
                     </button>
                 </div>
@@ -69,14 +69,14 @@
         <div id="pipeline" class="tab-content active">
             <input type="text" class="search-box" placeholder="🔍 Search jobs by title, company, or keywords..." id="searchInput" oninput="filterJobs()">
             
-            <div id="filterStatus" style="font-size: 12px; color: #6c757d; margin-bottom: 10px; min-height: 18px;"></div>
+            <div id="filterStatus" class="filter-status"></div>
             
             <div class="filters-bar">
                 <button class="filter-btn active tooltip" onclick="filterByStatus('all')">
                     All Jobs
                     <span class="tooltiptext">Show all jobs</span>
                 </button>
-                <button class="filter-btn tooltip" onclick="setDefaultView()" style="background: #667eea; color: white; font-weight: 600;">
+                <button class="filter-btn filter-btn--primary tooltip" onclick="setDefaultView()">
                     ⭐ Default View
                     <span class="tooltiptext">Sort by fit score, hide archived jobs</span>
                 </button>
