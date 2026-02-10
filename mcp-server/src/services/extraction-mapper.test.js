@@ -466,6 +466,100 @@ describe('mergeWithExisting', () => {
     })
   })
 
+  describe('summaryBlock merging', () => {
+    it('finds and updates summaryBlock by ID', () => {
+      const profile = createTestProfile()
+      profile.summaryBlocks = [
+        {
+          id: 'summary-1',
+          title: 'Professional Summary',
+          content: 'Experienced leader',
+          audience: 'general',
+          createdAt: '2026-01-30T10:00:00.000Z',
+          updatedAt: '2026-01-30T10:00:00.000Z'
+        }
+      ]
+
+      const extraction = {
+        id: 'ext-1',
+        category: 'skill',
+        content: 'Updated summary content',
+        confidence: 'high',
+        detectedAt: '2026-01-30T10:00:00.000Z',
+        status: 'pending'
+      }
+
+      const updatedProfile = mergeWithExisting(profile, extraction, 'summary-1')
+
+      // Should find item and process (even if skill category doesn't match)
+      expect(updatedProfile.history).toHaveLength(1)
+    })
+  })
+
+  describe('targetRoles merging', () => {
+    it('finds and updates targetRole by ID', () => {
+      const profile = createTestProfile()
+      profile.preferences.targetRoles = [
+        {
+          id: 'role-1',
+          title: 'Senior Engineer',
+          level: 'senior',
+          createdAt: '2026-01-30T10:00:00.000Z'
+        }
+      ]
+
+      const extraction = {
+        id: 'ext-1',
+        category: 'skill',
+        content: 'Updated role',
+        confidence: 'high',
+        detectedAt: '2026-01-30T10:00:00.000Z',
+        status: 'pending'
+      }
+
+      const updatedProfile = mergeWithExisting(profile, extraction, 'role-1')
+
+      expect(updatedProfile.history).toHaveLength(1)
+    })
+  })
+
+  describe('achievement merging', () => {
+    it('updates project description when merging achievement', () => {
+      const profile = createTestProfile()
+      const extraction = {
+        id: 'ext-1',
+        category: 'achievement',
+        targetField: 'experience.0.projects.0',
+        content: 'Led migration of legacy system to cloud, reducing costs by 40%',
+        confidence: 'high',
+        detectedAt: '2026-01-30T10:00:00.000Z',
+        status: 'pending'
+      }
+
+      const updatedProfile = mergeWithExisting(profile, extraction, 'proj-1')
+
+      expect(updatedProfile.experience[0].projects[0].description).toContain('40%')
+    })
+  })
+
+  describe('default case handling', () => {
+    it('adds unknown category content to metadata notes', () => {
+      const profile = createTestProfile()
+      const extraction = {
+        id: 'ext-1',
+        category: 'unknown_category',
+        content: 'Some random insight',
+        confidence: 'medium',
+        detectedAt: '2026-01-30T10:00:00.000Z',
+        status: 'pending'
+      }
+
+      const updatedProfile = mergeWithExisting(profile, extraction, 'skill-1')
+
+      expect(updatedProfile.metadata.notes).toContain('Some random insight')
+    })
+  })
+
   describe('history tracking', () => {
     it('adds history entry with previousValue on merge', () => {
       const profile = createTestProfile()

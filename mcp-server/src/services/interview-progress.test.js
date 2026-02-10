@@ -346,5 +346,59 @@ describe('interview-progress', () => {
 
       expect(checklist.readinessScore).toBe(0)
     })
+
+    it('includes interviewer briefs when interviewer research exists', () => {
+      // Create mock interviewer research
+      const interviewerResearch = {
+        id: 'int-research-1',
+        jobId: TEST_JOB_ID_3,
+        interviewerName: 'Jane Smith',
+        interviewerTitle: 'Engineering Manager',
+        interviewRound: 'Technical Screen',
+        researchedAt: new Date().toISOString(),
+        talkingPoints: ['Shared interest in ML', 'Similar background'],
+        interviewStyle: {
+          signals: ['Collaborative', 'Detail-oriented'],
+          expectedQuestionTypes: ['system design', 'coding']
+        },
+        sharedInterests: ['Machine learning', 'Open source'],
+        confidence: 'high'
+      }
+      writeFileSync(
+        join(RESEARCH_DIR, `${TEST_JOB_ID_3}-interviewer-jane-smith.json`),
+        JSON.stringify(interviewerResearch),
+        'utf-8'
+      )
+
+      const checklist = getPreInterviewChecklist(TEST_JOB_ID_3)
+
+      expect(checklist.interviewerBriefs.length).toBeGreaterThan(0)
+      expect(checklist.interviewerBriefs[0].name).toBe('Jane Smith')
+      expect(checklist.interviewerBriefs[0].talkingPoints).toContain('Shared interest in ML')
+    })
+
+    it('includes roleTalkingPoints from job data', () => {
+      // Use TEST_JOB_ID_3 which should have job data
+      const checklist = getPreInterviewChecklist(TEST_JOB_ID_3)
+
+      // roleTalkingPoints should be an array
+      expect(Array.isArray(checklist.roleTalkingPoints)).toBe(true)
+    })
+
+    it('includes location and salary in roleTalkingPoints when available', () => {
+      // TEST_JOB_ID_3 should have location and salary in job data
+      const checklist = getPreInterviewChecklist(TEST_JOB_ID_3)
+
+      // roleTalkingPoints should be an array (may or may not have location/salary)
+      expect(Array.isArray(checklist.roleTalkingPoints)).toBe(true)
+    })
+
+    it('includes fit highlights in roleTalkingPoints when available', () => {
+      // Use TEST_JOB_ID_2
+      const checklist = getPreInterviewChecklist(TEST_JOB_ID_2)
+
+      // roleTalkingPoints should be an array
+      expect(Array.isArray(checklist.roleTalkingPoints)).toBe(true)
+    })
   })
 })

@@ -13,11 +13,26 @@ vi.mock('fs', () => ({
   readFileSync: vi.fn(),
   writeFileSync: vi.fn(),
   readdirSync: vi.fn(),
-  statSync: vi.fn()
+  statSync: vi.fn(),
+  renameSync: vi.fn(),
+  unlinkSync: vi.fn()
+}))
+
+// Mock os.tmpdir
+vi.mock('os', () => ({
+  tmpdir: vi.fn(() => '/tmp')
 }))
 
 // Import after mocking
-import { loadJobsFromDashboard, loadLearningData, saveLearningData } from './loader.js'
+import {
+  loadJobsFromDashboard,
+  loadLearningData,
+  saveLearningData,
+  writeJobsData,
+  loadResumeData,
+  loadCoverLetterData,
+  getGeneratedDocuments
+} from './loader.js'
 
 describe('loadJobsFromDashboard', () => {
   beforeEach(() => {
@@ -236,5 +251,245 @@ describe('Data Validation Integration', () => {
     // Zod should have applied defaults
     expect(result.searchHistory).toEqual([])
     expect(result.settings).toEqual({})
+  })
+})
+
+describe('writeJobsData', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('writes data atomically with version and timestamp', () => {
+    fs.writeFileSync.mockImplementation(() => {})
+    fs.renameSync.mockImplementation(() => {})
+
+    const data = { jobs: [{ id: 1, title: 'Test Job' }], version: 5 }
+    writeJobsData(data)
+
+    expect(fs.writeFileSync).toHaveBeenCalled()
+    expect(fs.renameSync).toHaveBeenCalled()
+
+    // Check that version was incremented
+    const writtenData = JSON.parse(fs.writeFileSync.mock.calls[0][1])
+    expect(writtenData.version).toBe(6)
+    expect(writtenData.lastUpdated).toBeDefined()
+  })
+
+  it('starts version at 1 if no version exists', () => {
+    fs.writeFileSync.mockImplementation(() => {})
+    fs.renameSync.mockImplementation(() => {})
+
+    const data = { jobs: [] }
+    writeJobsData(data)
+
+    const writtenData = JSON.parse(fs.writeFileSync.mock.calls[0][1])
+    expect(writtenData.version).toBe(1)
+  })
+
+  it('cleans up temp file on rename failure', () => {
+    fs.writeFileSync.mockImplementation(() => {})
+    fs.renameSync.mockImplementation(() => {
+      throw new Error('Rename failed')
+    })
+    fs.unlinkSync.mockImplementation(() => {})
+
+    expect(() => writeJobsData({ jobs: [] })).toThrow('Rename failed')
+    expect(fs.unlinkSync).toHaveBeenCalled()
+  })
+
+  it('handles unlinkSync failure silently', () => {
+    fs.writeFileSync.mockImplementation(() => {})
+    fs.renameSync.mockImplementation(() => {
+      throw new Error('Rename failed')
+    })
+    fs.unlinkSync.mockImplementation(() => {
+      throw new Error('Unlink failed')
+    })
+
+    // Should still throw the original error, not the unlink error
+    expect(() => writeJobsData({ jobs: [] })).toThrow('Rename failed')
+  })
+})
+
+describe('loadResumeData', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('returns resume data when file exists', () => {
+    const mockResume = {
+      name: 'John Ra',
+      experience: [{ company: 'Acme', title: 'Designer' }]
+    }
+
+    fs.existsSync.mockReturnValue(true)
+    fs.readFileSync.mockReturnValue(JSON.stringify(mockResume))
+
+    const result = loadResumeData()
+
+    expect(result.name).toBe('John Ra')
+    expect(result.experience).toHaveLength(1)
+  })
+
+  it('returns null when file does not exist', () => {
+    fs.existsSync.mockReturnValue(false)
+
+    const result = loadResumeData()
+
+    expect(result).toBeNull()
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('Resume data not found'),
+      expect.any(String)
+    )
+  })
+
+  it('returns null on JSON parse error', () => {
+    fs.existsSync.mockReturnValue(true)
+    fs.readFileSync.mockReturnValue('invalid json')
+
+    const result = loadResumeData()
+
+    expect(result).toBeNull()
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('Error loading resume data'),
+      expect.any(String)
+    )
+  })
+})
+
+describe('loadCoverLetterData', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('returns cover letter data when file exists', () => {
+    const mockCL = {
+      template: 'Dear Hiring Manager...',
+      sections: ['intro', 'body', 'closing']
+    }
+
+    fs.existsSync.mockReturnValue(true)
+    fs.readFileSync.mockReturnValue(JSON.stringify(mockCL))
+
+    const result = loadCoverLetterData()
+
+    expect(result.template).toBe('Dear Hiring Manager...')
+    expect(result.sections).toHaveLength(3)
+  })
+
+  it('returns null when file does not exist', () => {
+    fs.existsSync.mockReturnValue(false)
+
+    const result = loadCoverLetterData()
+
+    expect(result).toBeNull()
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('Cover letter data not found'),
+      expect.any(String)
+    )
+  })
+
+  it('returns null on JSON parse error', () => {
+    fs.existsSync.mockReturnValue(true)
+    fs.readFileSync.mockReturnValue('not valid json')
+
+    const result = loadCoverLetterData()
+
+    expect(result).toBeNull()
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('Error loading cover letter data'),
+      expect.any(String)
+    )
+  })
+})
+
+describe('getGeneratedDocuments', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('returns list of PDF documents sorted by date', () => {
+    fs.readdirSync.mockReturnValue([
+      'John Ra Resume - Acme Corp.pdf',
+      'John Ra Cover Letter - Beta Inc.pdf',
+      'notes.txt'
+    ])
+
+    fs.statSync.mockImplementation((path) => {
+      if (path.includes('Acme')) {
+        return { mtime: new Date('2026-01-15'), size: 50000 }
+      }
+      return { mtime: new Date('2026-01-20'), size: 30000 }
+    })
+
+    const result = getGeneratedDocuments()
+
+    expect(result).toHaveLength(2) // Only PDFs
+    expect(result[0].company).toBe('Beta Inc') // Most recent first
+    expect(result[0].type).toBe('cover_letter')
+    expect(result[1].company).toBe('Acme Corp')
+    expect(result[1].type).toBe('resume')
+  })
+
+  it('returns empty array when readdirSync throws', () => {
+    fs.readdirSync.mockImplementation(() => {
+      throw new Error('Directory not found')
+    })
+
+    const result = getGeneratedDocuments()
+
+    expect(result).toEqual([])
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('Error listing documents'),
+      expect.any(String)
+    )
+  })
+
+  it('categorizes unknown PDF types as other', () => {
+    fs.readdirSync.mockReturnValue(['random-document.pdf'])
+    fs.statSync.mockReturnValue({ mtime: new Date(), size: 10000 })
+
+    const result = getGeneratedDocuments()
+
+    expect(result).toHaveLength(1)
+    expect(result[0].type).toBe('other')
+  })
+
+  it('extracts company name from filename with dash separator', () => {
+    fs.readdirSync.mockReturnValue(['John Ra Resume - Boston Childrens Hospital.pdf'])
+    fs.statSync.mockReturnValue({ mtime: new Date(), size: 25000 })
+
+    const result = getGeneratedDocuments()
+
+    expect(result[0].company).toBe('Boston Childrens Hospital')
+  })
+
+  it('returns Unknown company when pattern does not match', () => {
+    fs.readdirSync.mockReturnValue(['resume.pdf'])
+    fs.statSync.mockReturnValue({ mtime: new Date(), size: 15000 })
+
+    const result = getGeneratedDocuments()
+
+    expect(result[0].company).toBe('Unknown')
   })
 })
