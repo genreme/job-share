@@ -1859,15 +1859,15 @@ function renderJobs(jobs) {
         <table class="jobs-table">
             <thead>
                 <tr>
-                    <th onclick="sortJobs('fitScore')" style="cursor: pointer;">Fit${getSortArrow('fitScore')}</th>
-                    <th onclick="sortJobs('title')" style="cursor: pointer;">Title${getSortArrow('title')}</th>
-                    <th onclick="sortJobs('company')" style="cursor: pointer;">Company${getSortArrow('company')}</th>
+                    <th class="sortable" onclick="sortJobs('fitScore')">Fit${getSortArrow('fitScore')}</th>
+                    <th class="sortable" onclick="sortJobs('title')">Title${getSortArrow('title')}</th>
+                    <th class="sortable" onclick="sortJobs('company')">Company${getSortArrow('company')}</th>
                     <th>Industry</th>
                     <th>Location</th>
-                    <th onclick="sortJobs('salary')" style="cursor: pointer;">Salary${getSortArrow('salary')}</th>
-                    <th onclick="sortJobs('status')" style="cursor: pointer;">Status${getSortArrow('status')}</th>
-                    <th onclick="sortJobs('connections')" style="cursor: pointer;">Connections${getSortArrow('connections')}</th>
-                    <th onclick="sortJobs('daysSince')" style="cursor: pointer;">Days Since${getSortArrow('daysSince')}</th>
+                    <th class="sortable" onclick="sortJobs('salary')">Salary${getSortArrow('salary')}</th>
+                    <th class="sortable" onclick="sortJobs('status')">Status${getSortArrow('status')}</th>
+                    <th class="sortable" onclick="sortJobs('connections')">Connections${getSortArrow('connections')}</th>
+                    <th class="sortable" onclick="sortJobs('daysSince')">Days Since${getSortArrow('daysSince')}</th>
                     <th>Info</th>
                 </tr>
             </thead>
@@ -1889,7 +1889,7 @@ function renderJobs(jobs) {
                             <a href="${job.url}" target="_blank" class="company-link" onclick="event.stopPropagation()">
                                 ${job.company}
                             </a>
-                            ${job.url ? '<span style="color: #10b981; margin-left: 5px;" title="Direct job posting link verified">🔗</span>' : '<span style="color: #dc2626; margin-left: 5px;" title="No direct link - may be closed or needs URL from application email">⚠️</span>'}
+                            ${job.url ? '<span class="link-status link-status--verified" title="Direct job posting link verified">🔗</span>' : '<span class="link-status link-status--missing" title="No direct link - may be closed or needs URL from application email">⚠️</span>'}
                         </td>
                         <td>${job.industry}</td>
                         <td>${job.location}</td>
@@ -2002,32 +2002,32 @@ function getFitBreakdownHTML(job) {
     ];
 
     const baseScore = 50; // Starting score before category bonuses
-    let html = `<div style="display: grid; gap: 8px;">`;
+    let html = `<div class="fit-breakdown-grid">`;
 
     categories.forEach(cat => {
         const score = breakdown[cat.key] || 0;
         const percent = Math.round((score / cat.max) * 100);
-        const barColor = percent >= 80 ? '#22c55e' : percent >= 50 ? '#f59e0b' : '#ef4444';
+        const colorClass = percent >= 80 ? 'fit-bar--high' : percent >= 50 ? 'fit-bar--medium' : 'fit-bar--low';
 
         html += `
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="width: 24px; text-align: center;">${cat.icon}</span>
-                <span style="width: 100px; font-size: 13px; color: #374151;">${cat.label}</span>
-                <div style="flex: 1; background: #e5e7eb; border-radius: 4px; height: 16px; overflow: hidden;">
-                    <div style="width: ${percent}%; background: ${barColor}; height: 100%; border-radius: 4px; transition: width 0.3s;"></div>
+            <div class="fit-breakdown-row">
+                <span class="fit-breakdown-icon">${cat.icon}</span>
+                <span class="fit-breakdown-label">${cat.label}</span>
+                <div class="fit-breakdown-bar-container">
+                    <div class="fit-breakdown-bar ${colorClass}" style="width: ${percent}%;"></div>
                 </div>
-                <span style="width: 50px; text-align: right; font-weight: 600; color: ${barColor};">+${score}/${cat.max}</span>
+                <span class="fit-breakdown-score ${colorClass}">+${score}/${cat.max}</span>
             </div>
         `;
     });
 
     // Show base score
     html += `
-        <div style="display: flex; align-items: center; gap: 10px; padding-top: 8px; border-top: 1px solid #e5e7eb;">
-            <span style="width: 24px; text-align: center;">🎯</span>
-            <span style="width: 100px; font-size: 13px; color: #374151;">Base Score</span>
-            <div style="flex: 1;"></div>
-            <span style="width: 50px; text-align: right; font-weight: 600; color: #6b7280;">+${baseScore}</span>
+        <div class="fit-breakdown-row fit-breakdown-row--base">
+            <span class="fit-breakdown-icon">🎯</span>
+            <span class="fit-breakdown-label">Base Score</span>
+            <div class="fit-breakdown-bar-container"></div>
+            <span class="fit-breakdown-score fit-breakdown-score--base">+${baseScore}</span>
         </div>
     `;
 
@@ -2164,10 +2164,10 @@ function getConnectionsHTML(job) {
 
     return sortedConnections.map(conn => {
         const badgeClass = conn.reachedOut ? 'connection-reached-out' : 'connection-not-reached';
+        const primaryClass = conn.isPrimary ? 'connection-badge--primary' : '';
         const status = conn.reachedOut ? '✓' : '○';
         const primaryStar = conn.isPrimary ? '⭐ ' : '';
-        const primaryStyle = conn.isPrimary ? 'border: 2px solid #f59e0b; font-weight: 600;' : '';
-        return `<span class="connection-badge ${badgeClass}" onclick="toggleReachOut(${job.id}, '${escapeHtml(conn.name)}')" style="cursor: pointer; ${primaryStyle}" title="${conn.isPrimary ? 'Primary Referral - ' : ''}${conn.role || 'No role'}${conn.notes ? ' | ' + conn.notes : ''}">
+        return `<span class="connection-badge connection-badge--clickable ${badgeClass} ${primaryClass}" onclick="toggleReachOut(${job.id}, '${escapeHtml(conn.name)}')" title="${conn.isPrimary ? 'Primary Referral - ' : ''}${conn.role || 'No role'}${conn.notes ? ' | ' + conn.notes : ''}">
             ${primaryStar}${status} ${escapeHtml(conn.name)}
         </span>`;
     }).join('');
@@ -2208,12 +2208,12 @@ function getDaysSinceHTML(job) {
         tooltipParts.push(`<span class="date-applied">Applied: ${job.applied}</span>`);
     }
     if (job.followup) {
-        tooltipParts.push(`<span style="color: #9c27b0;">Follow-up: ${job.followup}</span>`);
+        tooltipParts.push(`<span class="date-followup">Follow-up: ${job.followup}</span>`);
     }
     
     return `<span class="tooltip days-since ${colorClass}">
         ${daysSince}d
-        <span class="tooltiptext" style="white-space: normal; text-align: left; min-width: 150px;">
+        <span class="tooltiptext tooltiptext--wide">
             ${tooltipParts.join('<br>')}
             <br><strong>${daysSince} days since ${mostRecent.label}</strong>
         </span>

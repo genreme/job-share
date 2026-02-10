@@ -379,6 +379,15 @@ body {
     top: 0;
 }
 
+.jobs-table th.sortable {
+    cursor: pointer;
+}
+
+.jobs-table th.sortable:hover {
+    background: var(--color-bg-muted);
+    color: var(--color-primary);
+}
+
 .jobs-table td {
     padding: 15px 12px;
     border-bottom: 1px solid #e1e8ed;
@@ -597,6 +606,15 @@ input:checked + .slider:before {
     margin: 2px;
 }
 
+.connection-badge--clickable {
+    cursor: pointer;
+}
+
+.connection-badge--primary {
+    border: 2px solid var(--color-warning);
+    font-weight: 600;
+}
+
 .connection-reached-out {
     background: #e8f5e9;
     color: #2e7d32;
@@ -628,6 +646,101 @@ input:checked + .slider:before {
 
 .days-old {
     color: #2e7d32;
+}
+
+/* Link status indicators in table */
+.link-status {
+    margin-left: var(--space-1);
+}
+
+.link-status--verified {
+    color: var(--color-success);
+}
+
+.link-status--missing {
+    color: var(--color-danger);
+}
+
+/* Date colors in tooltips */
+.date-followup {
+    color: #9c27b0;
+}
+
+/* Wide tooltip variant */
+.tooltiptext--wide {
+    white-space: normal;
+    text-align: left;
+    min-width: 150px;
+}
+
+/* Fit breakdown grid */
+.fit-breakdown-grid {
+    display: grid;
+    gap: var(--space-2);
+}
+
+.fit-breakdown-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.fit-breakdown-row--base {
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border);
+}
+
+.fit-breakdown-icon {
+    width: 24px;
+    text-align: center;
+}
+
+.fit-breakdown-label {
+    width: 100px;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+}
+
+.fit-breakdown-bar-container {
+    flex: 1;
+    background: var(--color-border);
+    border-radius: var(--radius-sm);
+    height: 16px;
+    overflow: hidden;
+}
+
+.fit-breakdown-bar {
+    height: 100%;
+    border-radius: var(--radius-sm);
+    transition: width var(--transition-base);
+}
+
+.fit-breakdown-bar--high,
+.fit-breakdown-score.fit-bar--high {
+    background: var(--color-success);
+    color: var(--color-success);
+}
+
+.fit-breakdown-bar--medium,
+.fit-breakdown-score.fit-bar--medium {
+    background: var(--color-warning);
+    color: var(--color-warning);
+}
+
+.fit-breakdown-bar--low,
+.fit-breakdown-score.fit-bar--low {
+    background: var(--color-danger);
+    color: var(--color-danger);
+}
+
+.fit-breakdown-score {
+    width: 50px;
+    text-align: right;
+    font-weight: 600;
+}
+
+.fit-breakdown-score--base {
+    color: var(--color-text-secondary);
 }
 
 .empty-state {
