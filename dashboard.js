@@ -1955,16 +1955,7 @@ function getStatusLabel(status) {
     return labels[status] || status;
 }
 
-function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-    
-    if (diff === 0) return '⚡ Today';
-    if (diff === 1) return '1 day ago';
-    if (diff < 7) return `${diff} days ago`;
-    return dateStr;
-}
+// Note: formatDate and formatRelativeDate are defined in js/utils.js
 
 function getSalaryHTML(salary) {
     // Extract number from salary string if possible
@@ -3440,45 +3431,6 @@ document.addEventListener('click', (e) => {
         }
     }
 });
-
-// Toast notification utility
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: ${type === 'error' ? '#dc3545' : '#28a745'};
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
-        z-index: 10000;
-        font-weight: 500;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        animation: slideIn 0.3s ease;
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.animation = 'fadeOut 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-    }, 2000);
-}
-
-// Add animation styles
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from { transform: translateY(20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes fadeOut {
-        from { opacity: 1; }
-        to { opacity: 0; }
-    }
-`;
-document.head.appendChild(style);
 
 // ============================================
 // CHROME EXTENSION INTEGRATION
