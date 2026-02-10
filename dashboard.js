@@ -2410,40 +2410,38 @@ function showJobDetail(jobId) {
     const content = document.getElementById('modalContent');
     
     content.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+        <div class="modal-header">
             <div>
-                <h2 style="margin-bottom: 5px;">${job.title}</h2>
+                <h2>${job.title}</h2>
                 <h3><a href="${job.url}" target="_blank" class="company-link">${job.company}</a></h3>
             </div>
             <button onclick="copyJobInfo(${job.id})"
                 id="copyJobBtn-${job.id}"
-                style="padding: 8px 14px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 13px; white-space: nowrap; display: flex; align-items: center; gap: 5px;"
+                class="btn btn--ghost"
                 title="Copy job title, company, and URL to clipboard">
                 📋 Copy Info
             </button>
         </div>
 
-        <div style="margin: 20px 0;">
+        <div class="status-row">
             <span class="status-badge status-${job.status}">${getStatusLabel(job.status)}</span>
-            <span class="fit-score ${getFitClass(job.fitScore)}" style="margin-left: 10px; font-size: 20px;">
+            <span class="fit-score fit-score--lg ${getFitClass(job.fitScore)}">
                 Fit Score: ${job.fitScore}/100
             </span>
         </div>
 
         <!-- FIT SCORE BREAKDOWN -->
-        <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #bae6fd;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h4 style="margin: 0; color: #0369a1;">📊 Fit Score Breakdown</h4>
-                <div style="display: flex; gap: 8px;">
+        <div class="fit-breakdown">
+            <div class="fit-breakdown-header">
+                <h4 class="fit-breakdown-title">📊 Fit Score Breakdown</h4>
+                <div class="feedback-buttons">
                     <button onclick="submitScoreFeedback(${job.id}, 'up')"
-                        class="feedback-btn ${job.scoreFeedback === 'up' ? 'feedback-active-up' : ''}"
-                        style="padding: 6px 12px; border: 2px solid #22c55e; background: ${job.scoreFeedback === 'up' ? '#22c55e' : 'white'}; color: ${job.scoreFeedback === 'up' ? 'white' : '#22c55e'}; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;"
+                        class="feedback-btn feedback-btn--up ${job.scoreFeedback === 'up' ? 'active' : ''}"
                         title="Score should be higher - this job is a better fit than shown">
                         👆 Too Low
                     </button>
                     <button onclick="submitScoreFeedback(${job.id}, 'down')"
-                        class="feedback-btn ${job.scoreFeedback === 'down' ? 'feedback-active-down' : ''}"
-                        style="padding: 6px 12px; border: 2px solid #ef4444; background: ${job.scoreFeedback === 'down' ? '#ef4444' : 'white'}; color: ${job.scoreFeedback === 'down' ? 'white' : '#ef4444'}; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;"
+                        class="feedback-btn feedback-btn--down ${job.scoreFeedback === 'down' ? 'active' : ''}"
                         title="Score should be lower - this job is not as good a fit">
                         👇 Too High
                     </button>
@@ -2451,7 +2449,7 @@ function showJobDetail(jobId) {
             </div>
             ${getFitBreakdownHTML(job)}
             ${job.scoreFeedbackNote ? `
-                <div style="margin-top: 10px; padding: 8px 12px; background: ${job.scoreFeedback === 'up' ? '#dcfce7' : '#fef3c7'}; border-radius: 6px; font-size: 13px; border-left: 3px solid ${job.scoreFeedback === 'up' ? '#22c55e' : '#f59e0b'};">
+                <div class="feedback-note ${job.scoreFeedback === 'up' ? 'feedback-note--up' : 'feedback-note--down'}">
                     <strong>${job.scoreFeedback === 'up' ? '👆 Score too low:' : '👇 Score too high:'}</strong> ${escapeHtml(job.scoreFeedbackNote)}
                 </div>
             ` : ''}
@@ -2470,56 +2468,49 @@ function showJobDetail(jobId) {
         </div>
         
         <!-- CONNECTIONS SECTION -->
-        <div style="margin-top: 20px; background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h4 style="margin: 0; color: #166534;">🔗 Connections at ${job.company}</h4>
-                <button onclick="showAddConnectionForm(${job.id})"
-                    style="padding: 6px 12px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+        <div class="section-card section-card--connections">
+            <div class="section-card-header">
+                <h4 class="section-card-title">🔗 Connections at ${job.company}</h4>
+                <button onclick="showAddConnectionForm(${job.id})" class="btn btn--success btn--sm">
                     + Add Connection
                 </button>
             </div>
 
             <!-- Add Connection Form (hidden by default) -->
-            <div id="addConnectionForm-${job.id}" style="display: none; background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 1px solid #d1d5db;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <div>
-                        <label style="display: block; font-size: 11px; color: #6b7280; margin-bottom: 2px;">Name *</label>
-                        <input type="text" id="connName-${job.id}" placeholder="Jane Smith"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+            <div id="addConnectionForm-${job.id}" class="connection-form">
+                <div class="connection-form-row">
+                    <div class="form-group">
+                        <label class="form-label">Name *</label>
+                        <input type="text" id="connName-${job.id}" placeholder="Jane Smith" class="form-input">
                     </div>
-                    <div>
-                        <label style="display: block; font-size: 11px; color: #6b7280; margin-bottom: 2px;">Role/Title</label>
-                        <input type="text" id="connRole-${job.id}" placeholder="VP of Design"
-                            style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                    <div class="form-group">
+                        <label class="form-label">Role/Title</label>
+                        <input type="text" id="connRole-${job.id}" placeholder="VP of Design" class="form-input">
                     </div>
                 </div>
-                <div style="margin-bottom: 10px;">
-                    <label style="display: block; font-size: 11px; color: #6b7280; margin-bottom: 2px;">LinkedIn URL</label>
-                    <input type="text" id="connLinkedIn-${job.id}" placeholder="https://linkedin.com/in/janesmith"
-                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                <div class="form-group">
+                    <label class="form-label">LinkedIn URL</label>
+                    <input type="text" id="connLinkedIn-${job.id}" placeholder="https://linkedin.com/in/janesmith" class="form-input">
                 </div>
-                <div style="margin-bottom: 10px;">
-                    <label style="display: block; font-size: 11px; color: #6b7280; margin-bottom: 2px;">Notes (how you know them, context)</label>
-                    <input type="text" id="connNotes-${job.id}" placeholder="Former colleague at PIH, strong reference"
-                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                <div class="form-group">
+                    <label class="form-label">Notes (how you know them, context)</label>
+                    <input type="text" id="connNotes-${job.id}" placeholder="Former colleague at PIH, strong reference" class="form-input">
                 </div>
-                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
-                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                <div class="connection-form-checkboxes">
+                    <label class="checkbox-label">
                         <input type="checkbox" id="connPrimary-${job.id}">
-                        <span style="color: #f59e0b;">⭐ Primary Referral</span>
+                        <span class="checkbox-text--primary">⭐ Primary Referral</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                    <label class="checkbox-label">
                         <input type="checkbox" id="connReachedOut-${job.id}">
                         <span>Already reached out</span>
                     </label>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="saveConnection(${job.id})"
-                        style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                <div class="connection-form-actions">
+                    <button onclick="saveConnection(${job.id})" class="btn btn--success">
                         Save Connection
                     </button>
-                    <button onclick="hideAddConnectionForm(${job.id})"
-                        style="padding: 8px 16px; background: white; color: #6b7280; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                    <button onclick="hideAddConnectionForm(${job.id})" class="btn btn--ghost">
                         Cancel
                     </button>
                 </div>
@@ -2528,48 +2519,48 @@ function showJobDetail(jobId) {
             <!-- Connections List -->
             <div id="connectionsList-${job.id}">
                 ${job.connections && job.connections.length > 0 ? job.connections.map((conn, idx) => `
-                    <div style="padding: 12px; background: white; border-radius: 6px; margin-bottom: 8px; border: 1px solid ${conn.isPrimary ? '#fbbf24' : '#e5e7eb'}; ${conn.isPrimary ? 'border-width: 2px;' : ''}">
-                        <div style="display: flex; justify-content: space-between; align-items: start;">
-                            <div style="flex: 1;">
-                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                    <strong style="font-size: 14px;">${escapeHtml(conn.name)}</strong>
-                                    ${conn.isPrimary ? '<span style="background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 600;">⭐ PRIMARY REFERRAL</span>' : ''}
-                                    ${conn.reachedOut ? '<span style="background: #d1fae5; color: #065f46; padding: 2px 6px; border-radius: 3px; font-size: 10px;">✓ Contacted</span>' : '<span style="background: #fef9c3; color: #854d0e; padding: 2px 6px; border-radius: 3px; font-size: 10px;">⏳ Not contacted</span>'}
+                    <div class="connection-card ${conn.isPrimary ? 'connection-card--primary' : ''}">
+                        <div class="connection-card-content">
+                            <div class="connection-info">
+                                <div class="connection-name-row">
+                                    <strong class="connection-name">${escapeHtml(conn.name)}</strong>
+                                    ${conn.isPrimary ? '<span class="badge badge--primary">⭐ PRIMARY REFERRAL</span>' : ''}
+                                    ${conn.reachedOut ? '<span class="badge badge--success">✓ Contacted</span>' : '<span class="badge badge--warning">⏳ Not contacted</span>'}
                                 </div>
-                                ${conn.role ? `<div style="color: #6b7280; font-size: 13px; margin-top: 3px;">${escapeHtml(conn.role)}</div>` : ''}
-                                ${conn.linkedIn ? `<div style="margin-top: 3px;"><a href="${escapeHtml(conn.linkedIn)}" target="_blank" style="color: #0077b5; font-size: 12px; text-decoration: none;">🔗 LinkedIn Profile</a></div>` : ''}
-                                ${conn.notes ? `<div style="color: #9ca3af; font-size: 12px; margin-top: 5px; font-style: italic;">"${escapeHtml(conn.notes)}"</div>` : ''}
+                                ${conn.role ? `<div class="connection-role">${escapeHtml(conn.role)}</div>` : ''}
+                                ${conn.linkedIn ? `<div class="connection-linkedin"><a href="${escapeHtml(conn.linkedIn)}" target="_blank">🔗 LinkedIn Profile</a></div>` : ''}
+                                ${conn.notes ? `<div class="connection-notes">"${escapeHtml(conn.notes)}"</div>` : ''}
                             </div>
-                            <div style="display: flex; gap: 5px; flex-shrink: 0;">
+                            <div class="connection-actions">
                                 <button onclick="toggleReachOut(${job.id}, '${escapeHtml(conn.name)}'); showJobDetail(${job.id});"
                                     title="${conn.reachedOut ? 'Mark as not contacted' : 'Mark as contacted'}"
-                                    style="padding: 4px 8px; background: ${conn.reachedOut ? '#fee2e2' : '#d1fae5'}; color: ${conn.reachedOut ? '#991b1b' : '#065f46'}; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
+                                    class="btn btn--xs ${conn.reachedOut ? 'btn--danger-light' : 'btn--success-light'}">
                                     ${conn.reachedOut ? '↩ Undo' : '✓ Reached Out'}
                                 </button>
                                 <button onclick="editConnection(${job.id}, ${idx})"
                                     title="Edit connection"
-                                    style="padding: 4px 8px; background: #e0e7ff; color: #3730a3; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
+                                    class="btn btn--xs btn--primary-light">
                                     ✏️
                                 </button>
                                 <button onclick="deleteConnection(${job.id}, ${idx})"
                                     title="Remove connection"
-                                    style="padding: 4px 8px; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
+                                    class="btn btn--xs btn--danger-light">
                                     🗑️
                                 </button>
                             </div>
                         </div>
                     </div>
-                `).join('') : '<p style="color: #6b7280; font-size: 13px; margin: 0; text-align: center; padding: 10px;">No connections yet. Add someone who can help!</p>'}
+                `).join('') : '<p class="empty-state-text">No connections yet. Add someone who can help!</p>'}
             </div>
         </div>
         
-        <div style="margin-top: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <h4 style="margin: 0;">Notes:</h4>
+        <div class="notes-section">
+            <div class="section-card-header">
+                <h4 class="section-card-title">Notes:</h4>
                 ${job.notes ? `
                     <button onclick="copyJobNotes(${job.id})"
                         id="copyNotesBtn-${job.id}"
-                        style="padding: 4px 10px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer; font-size: 12px;"
+                        class="btn btn--ghost btn--sm"
                         title="Copy notes to clipboard">
                         📋 Copy
                     </button>
@@ -2577,64 +2568,62 @@ function showJobDetail(jobId) {
             </div>
             <p>${formatNotes(job.notes)}</p>
         </div>
-        
+
         ${job.updates && job.updates.length > 0 ? `
-        <div style="margin-top: 20px; background: #f7f9fc; padding: 15px; border-radius: 8px;">
-            <h4 style="margin-top: 0;">📝 Update History:</h4>
+        <div class="section-card section-card--history">
+            <h4 class="section-card-title">📝 Update History:</h4>
             ${job.updates.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map(update => `
-                <div style="padding: 10px 0; border-bottom: 1px solid #e0e4e8;">
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div>
-                            <strong style="color: #667eea;">${update.type}</strong>
-                            <span style="color: #6c757d; font-size: 12px; margin-left: 10px;">
-                                ${new Date(update.timestamp).toLocaleString('en-US', {
-                                    timeZone: 'America/New_York',
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                    hour: 'numeric',
-                                    minute: '2-digit',
-                                    hour12: true
-                                })} ET
-                            </span>
-                        </div>
+                <div class="update-item">
+                    <div class="update-header">
+                        <strong class="update-type">${update.type}</strong>
+                        <span class="update-timestamp">
+                            ${new Date(update.timestamp).toLocaleString('en-US', {
+                                timeZone: 'America/New_York',
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true
+                            })} ET
+                        </span>
                     </div>
-                    ${update.notes ? `<p style="margin: 5px 0 0 0; color: #495057;">${formatNotes(update.notes)}</p>` : ''}
+                    ${update.notes ? `<p class="update-notes">${formatNotes(update.notes)}</p>` : ''}
                 </div>
             `).join('')}
         </div>
         ` : ''}
 
         <!-- DOCUMENTS SECTION -->
-        <div style="margin-top: 20px; background: #f0f9ff; padding: 15px; border-radius: 8px; border: 1px solid #bfdbfe;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h4 style="margin: 0;">📁 Documents</h4>
-                <div style="display: flex; gap: 8px;">
-                    <label style="padding: 6px 12px; background: #3b82f6; color: white; border-radius: 4px; cursor: pointer; font-size: 12px;">
+        <div class="section-card section-card--documents">
+            <div class="section-card-header">
+                <h4 class="section-card-title">📁 Documents</h4>
+                <div class="upload-buttons">
+                    <label class="upload-btn upload-btn--resume">
                         📄 Add Resume
-                        <input type="file" accept=".pdf,.doc,.docx" style="display: none;" onchange="handleJobUpload(event, ${job.id}, 'resume')">
+                        <input type="file" accept=".pdf,.doc,.docx" onchange="handleJobUpload(event, ${job.id}, 'resume')">
                     </label>
-                    <label style="padding: 6px 12px; background: #10b981; color: white; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                    <label class="upload-btn upload-btn--cover">
                         ✉️ Add Cover Letter
-                        <input type="file" accept=".pdf,.doc,.docx" style="display: none;" onchange="handleJobUpload(event, ${job.id}, 'cover_letter')">
+                        <input type="file" accept=".pdf,.doc,.docx" onchange="handleJobUpload(event, ${job.id}, 'cover_letter')">
                     </label>
-                    <label style="padding: 6px 12px; background: #f59e0b; color: white; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                    <label class="upload-btn upload-btn--jd">
                         📋 Add JD
-                        <input type="file" accept=".pdf,.doc,.docx,.txt" style="display: none;" onchange="handleJobUpload(event, ${job.id}, 'job_description')">
+                        <input type="file" accept=".pdf,.doc,.docx,.txt" onchange="handleJobUpload(event, ${job.id}, 'job_description')">
                     </label>
                 </div>
             </div>
-            <div id="jobDocsContainer-${job.id}" style="min-height: 40px;">
-                <p style="color: #6c757d; font-size: 13px; margin: 0;">Loading documents...</p>
+            <div id="jobDocsContainer-${job.id}" class="docs-container">
+                <p class="loading-text">Loading documents...</p>
             </div>
         </div>
 
-        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-            <button class="btn-primary" onclick="window.open('${job.url}', '_blank')" style="background: #28a745;">View Job</button>
-            <button class="btn-primary" onclick="updateJobStatus(${job.id}, 'applied')">Applied</button>
-            <button class="btn-primary" onclick="showUpdateForm(${job.id})" style="background: #667eea;">Update</button>
-            <button class="btn-primary" onclick="markAsRejected(${job.id})" style="background: #dc3545;">Rejected</button>
-            <button class="btn-primary" onclick="updateJobStatus(${job.id}, 'archived')" style="background: #6c757d;">Archive</button>
+        <div class="action-bar">
+            <button class="btn btn--success" onclick="window.open('${job.url}', '_blank')">View Job</button>
+            <button class="btn btn--primary" onclick="updateJobStatus(${job.id}, 'applied')">Applied</button>
+            <button class="btn btn--primary" onclick="showUpdateForm(${job.id})">Update</button>
+            <button class="btn btn--danger" onclick="markAsRejected(${job.id})">Rejected</button>
+            <button class="btn btn--ghost" onclick="updateJobStatus(${job.id}, 'archived')">Archive</button>
         </div>
     `;
 
